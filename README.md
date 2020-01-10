@@ -1,2 +1,0 @@
-# dartz
-Dart Tracker WebApp
