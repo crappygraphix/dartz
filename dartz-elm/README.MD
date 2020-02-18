@@ -1,6 +1,10 @@
 # Dart Game List
 https://www.darts501.com/Games.html
 
+# Gen Artifacts
+
+`elm make src/Main.elm --output /src/index.html`
+
 # Get Rollin
 `elm init`
 
