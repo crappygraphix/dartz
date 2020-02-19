@@ -1,3 +1,6 @@
+# Elm Live
+`elm-live src/Main.elm --open --start-page=index.html -- --output=js/elm.js`
+
 # Dart Game List
 https://www.darts501.com/Games.html
 

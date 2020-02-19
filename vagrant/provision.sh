@@ -40,6 +40,7 @@ function node_bootstrap
 {
   nvm install 13.6.0
   npm install -g uglify-js
+  npm install -g elm-live
 }
 
 function prov_done

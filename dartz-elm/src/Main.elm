@@ -36,10 +36,12 @@ type Hit
   | HitDoubleBullseye
 
 type PlayerName = PlayerName String
+player_name_string (PlayerName s) = s
+type NewPlayerName = NewPlayerName String
 type PlayerHits = PlayerHits (List Hit)
-
-type alias Inning = Int
-type alias Score = Int
+type PlayerIndex = PlayerIndex Int
+type Inning = Inning Int
+type Score = Score Int
 type GameScore 
   = NoScore
   | NumbersScore Score
@@ -53,7 +55,11 @@ type alias Player =
   { name    : PlayerName
   , hits    : PlayerHits
   , score   : GameScore
+  , index   : PlayerIndex
   }
+
+new_player : PlayerIndex -> NewPlayerName -> Player
+new_player i (NewPlayerName n) = { name = PlayerName n, hits = PlayerHits [], score = NoScore, index = i }
 
 type alias AppState =
   { playerData : List Player
@@ -64,7 +70,7 @@ type alias AppState =
 
 type Screen
   = Home
-  | EditPlayers
+  | EditPlayers NewPlayerName
   | SelectGame
   | PlayGame
 
@@ -346,6 +352,9 @@ type Action
   | GoSelectGame
   | GoPlayGame
   | GameSelected GameMode
+  | NewPlayerInput NewPlayerName
+  | NewPlayerCommit NewPlayerName
+  | DeletePlayer Player
 
 init : AppState
 init =
@@ -359,10 +368,13 @@ update : Action -> AppState -> AppState
 update action state =
   case action of
     GoHome -> { state | screen = Home }
-    GoEditPlayers -> { state | screen = EditPlayers }
+    GoEditPlayers -> { state | screen = EditPlayers (NewPlayerName "") }
     GoSelectGame -> { state | screen = SelectGame }
     GoPlayGame -> { state | screen = PlayGame }
     GameSelected mode -> { state | game = mode }
+    NewPlayerInput p -> { state | screen = EditPlayers p }
+    NewPlayerCommit p -> { state | playerData = add_player state.playerData p, screen = EditPlayers (NewPlayerName "") }
+    DeletePlayer p -> { state | playerData = delete_player state.playerData p }
 
 view : AppState -> Html Action
 view state =
@@ -370,7 +382,7 @@ view state =
     render = 
       case state.screen of
         Home -> render_home state
-        EditPlayers -> render_edit_players state.playerData
+        EditPlayers np -> render_edit_players state.playerData np
         SelectGame -> render_select_game state.game
         PlayGame -> render_game state
   in
@@ -378,31 +390,29 @@ view state =
     
 
 render_home : AppState -> List (Html Action)
-render_home state =  
-  [ div []
-    [ button [ onClick GoEditPlayers ] [ text "Edit Players" ]
-    , button [ onClick GoSelectGame ] [ text "Select Game" ]
-    , button [ onClick GoPlayGame ] [ text "Start Game" ]
+render_home state =
+  let
+    start_game =  
+      if List.length state.playerData > 0 && state.game /= NoGame
+      then [ button [ onClick GoPlayGame ] [ text "Start Game" ] ]
+      else []
+  in
+    [ div [] <|
+      start_game ++
+      [ button [ onClick GoEditPlayers ] [ text "Edit Players" ]
+      , button [ onClick GoSelectGame ] [ text "Select Game" ]
+      ]
+    , div [] 
+      [ text "Selected Game: "
+      , game_name state.game
+      ]
     ]
-  , div [] 
-    [ text "Selected Game: "
-    , game_name state.game
-    ]
-  ]
-
-render_edit_players : List Player -> List (Html Action)
-render_edit_players players =
-  [ button [ onClick GoHome ] [ text "Home" ]
-  , button [ onClick GoSelectGame ] [ text "Select Game" ]
-  , button [ onClick GoPlayGame ] [ text "Start Game" ]
-  ]
 
 render_select_game : GameMode -> List (Html Action)
 render_select_game mode =
   [ div []
     [ button [ onClick GoHome ] [ text "Home" ]
     , button [ onClick GoEditPlayers ] [ text "Edit Players" ]            
-    , button [ onClick GoPlayGame ] [ text "Start Game" ]      
     ]
   , div [] 
     [ text "Selected Game: "
@@ -412,11 +422,6 @@ render_select_game mode =
   mode_selector mode ++
   variant_selector mode ++
   [ div [] [game_description mode] ]
-
-render_game : AppState -> List (Html Action)
-render_game state =
-  [ button [ onClick GoHome ] [ text "Home" ]
-  ]
 
 mode_selector : GameMode -> List (Html Action)
 mode_selector _ = 
@@ -531,4 +536,53 @@ variant_selector mode =
           ]
         ]
       ]
-    
+
+render_edit_players : List Player -> NewPlayerName -> List (Html Action)
+render_edit_players players np =
+  [ div []
+    [ button [ onClick GoHome ] [ text "Home" ]
+    , button [ onClick GoSelectGame ] [ text "Select Game" ]
+    ]
+  ] ++
+  (add_player_form np) ++
+  [ div []
+    [ text "Players" ]
+  ] ++
+  (list_players players)
+
+add_player_form : NewPlayerName -> List (Html Action)
+add_player_form (NewPlayerName t) = 
+  [ div [] [ text "Player Name" ]
+  , div []
+    [ input [ value t, placeholder "Name", onInput (NewPlayerInput << NewPlayerName) ] [] ]
+  , div []
+    [ button [ onClick (NewPlayerCommit <| NewPlayerName t) ] [ text "Add Player" ] ]
+  ]
+
+add_player : List Player -> NewPlayerName -> List Player
+add_player l n =
+  let
+    empty (NewPlayerName s) = String.isEmpty <| String.trim s
+  in
+    if empty n 
+    then l 
+    else new_player (PlayerIndex <| 1 + List.length l) n :: l
+
+delete_player : List Player -> Player -> List Player
+delete_player l d = List.filter (\p -> p /= d) l
+
+list_players : List Player -> List (Html Action)
+list_players l = 
+  let
+    player_edit_row player = 
+      tr [] 
+        [ td [] [ text <| player_name_string player.name ]
+        , td [] [ button [ onClick (DeletePlayer player) ] [ text "X"] ]
+        ]
+  in
+    [ table [] (List.map player_edit_row l) ]
+
+render_game : AppState -> List (Html Action)
+render_game state =
+  [ button [ onClick GoHome ] [ text "Home" ]
+  ]
