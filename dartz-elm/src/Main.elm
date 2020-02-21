@@ -668,7 +668,7 @@ render_board =
       20 -> Hit20 s      
       _ -> HitMissed
     panels : List ((Float, Float), Int)
-    panels = List.indexedMap (\i v -> ((Basics.degrees (toFloat <| (-) 9 <| i * 18), Basics.degrees (toFloat <| (-) 9 <| (i + 1) * 18)), v)) [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5]
+    panels = List.indexedMap (\i v -> ((Basics.degrees (toFloat <| (-) 189 <| i * 18), Basics.degrees (toFloat <| (-) 189 <| (i + 1) * 18)), v)) [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5]
     double_slice : ((Float, Float), Int) -> S.Svg Action
     double_slice (d, v) = S.path [ SE.onClick (Toss <| index_to_hit v DoubleHit) , SA.d (d_from_deg d 45), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] []
     outer_single_slice : ((Float, Float), Int) -> S.Svg Action
