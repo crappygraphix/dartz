@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.M.C === region.S.C)
+	if (region.N.D === region.T.D)
 	{
-		return 'on line ' + region.M.C;
+		return 'on line ' + region.N.D;
 	}
-	return 'on lines ' + region.M.C + ' through ' + region.S.C;
+	return 'on lines ' + region.N.D + ' through ' + region.T.D;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aB,
-		impl.aI,
-		impl.aG,
+		impl.aC,
+		impl.aJ,
+		impl.aH,
 		function() { return function() {} }
 	);
 });
@@ -2705,8 +2705,8 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		p: func(record.p),
-		N: record.N,
-		K: record.K
+		O: record.O,
+		L: record.L
 	}
 });
 
@@ -2975,10 +2975,10 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.p;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.N;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.O;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.K) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.L) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3928,11 +3928,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aB,
-		impl.aI,
-		impl.aG,
+		impl.aC,
+		impl.aJ,
+		impl.aH,
 		function(sendToApp, initialModel) {
-			var view = impl.aJ;
+			var view = impl.aK;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3964,12 +3964,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aB,
-		impl.aI,
-		impl.aG,
+		impl.aC,
+		impl.aJ,
+		impl.aH,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.L && impl.L(sendToApp)
-			var view = impl.aJ;
+			var divertHrefToApp = impl.M && impl.M(sendToApp)
+			var view = impl.aK;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3977,12 +3977,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.au);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.av);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aH) && (_VirtualDom_doc.title = title = doc.aH);
+				(title !== doc.aI) && (_VirtualDom_doc.title = title = doc.aI);
 			});
 		}
 	);
@@ -4038,12 +4038,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.aC;
-	var onUrlRequest = impl.aD;
+	var onUrlChange = impl.aD;
+	var onUrlRequest = impl.aE;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		L: function(sendToApp)
+		M: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4059,9 +4059,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.ag === next.ag
-							&& curr.X === next.X
-							&& curr.ad.a === next.ad.a
+							&& curr.ah === next.ah
+							&& curr.Y === next.Y
+							&& curr.ae.a === next.ae.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4069,13 +4069,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aB: function(flags)
+		aC: function(flags)
 		{
-			return A3(impl.aB, flags, _Browser_getUrl(), key);
+			return A3(impl.aC, flags, _Browser_getUrl(), key);
 		},
+		aK: impl.aK,
 		aJ: impl.aJ,
-		aI: impl.aI,
-		aG: impl.aG
+		aH: impl.aH
 	});
 }
 
@@ -4141,17 +4141,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { az: 'hidden', av: 'visibilitychange' }
+		? { aA: 'hidden', aw: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { az: 'mozHidden', av: 'mozvisibilitychange' }
+		? { aA: 'mozHidden', aw: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { az: 'msHidden', av: 'msvisibilitychange' }
+		? { aA: 'msHidden', aw: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { az: 'webkitHidden', av: 'webkitvisibilitychange' }
-		: { az: 'hidden', av: 'visibilitychange' };
+		? { aA: 'webkitHidden', aw: 'webkitvisibilitychange' }
+		: { aA: 'hidden', aw: 'visibilitychange' };
 }
 
 
@@ -4232,12 +4232,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		ak: _Browser_getScene(),
-		ao: {
-			aq: _Browser_window.pageXOffset,
-			ar: _Browser_window.pageYOffset,
-			ap: _Browser_doc.documentElement.clientWidth,
-			V: _Browser_doc.documentElement.clientHeight
+		al: _Browser_getScene(),
+		ap: {
+			ar: _Browser_window.pageXOffset,
+			as: _Browser_window.pageYOffset,
+			aq: _Browser_doc.documentElement.clientWidth,
+			W: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4247,8 +4247,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		ap: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		V: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		aq: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		W: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4271,15 +4271,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			ak: {
-				ap: node.scrollWidth,
-				V: node.scrollHeight
+			al: {
+				aq: node.scrollWidth,
+				W: node.scrollHeight
 			},
-			ao: {
-				aq: node.scrollLeft,
-				ar: node.scrollTop,
-				ap: node.clientWidth,
-				V: node.clientHeight
+			ap: {
+				ar: node.scrollLeft,
+				as: node.scrollTop,
+				aq: node.clientWidth,
+				W: node.clientHeight
 			}
 		};
 	});
@@ -4309,18 +4309,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			ak: _Browser_getScene(),
-			ao: {
-				aq: x,
-				ar: y,
-				ap: _Browser_doc.documentElement.clientWidth,
-				V: _Browser_doc.documentElement.clientHeight
+			al: _Browser_getScene(),
+			ap: {
+				ar: x,
+				as: y,
+				aq: _Browser_doc.documentElement.clientWidth,
+				W: _Browser_doc.documentElement.clientHeight
 			},
-			ax: {
-				aq: x + rect.left,
-				ar: y + rect.top,
-				ap: rect.width,
-				V: rect.height
+			ay: {
+				ar: x + rect.left,
+				as: y + rect.top,
+				aq: rect.width,
+				W: rect.height
 			}
 		};
 	});
@@ -4437,7 +4437,7 @@ var $elm$core$Basics$GT = 2;
 var $elm$core$Basics$LT = 0;
 var $author$project$Main$Home = {$: 0};
 var $author$project$Main$NoGame = {$: 0};
-var $author$project$Main$init = {Q: 0, y: $author$project$Main$NoGame, q: _List_Nil, m: $author$project$Main$Home};
+var $author$project$Main$init = {R: 0, C: _List_Nil, y: $author$project$Main$NoGame, q: _List_Nil, m: $author$project$Main$Home};
 var $elm$core$Result$Err = function (a) {
 	return {$: 1, a: a};
 };
@@ -4862,7 +4862,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {U: fragment, X: host, ab: path, ad: port_, ag: protocol, ah: query};
+		return {V: fragment, Y: host, ac: path, ae: port_, ah: protocol, ai: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5147,19 +5147,19 @@ var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $elm$browser$Browser$sandbox = function (impl) {
 	return _Browser_element(
 		{
-			aB: function (_v0) {
-				return _Utils_Tuple2(impl.aB, $elm$core$Platform$Cmd$none);
+			aC: function (_v0) {
+				return _Utils_Tuple2(impl.aC, $elm$core$Platform$Cmd$none);
 			},
-			aG: function (_v1) {
+			aH: function (_v1) {
 				return $elm$core$Platform$Sub$none;
 			},
-			aI: F2(
+			aJ: F2(
 				function (msg, model) {
 					return _Utils_Tuple2(
-						A2(impl.aI, msg, model),
+						A2(impl.aJ, msg, model),
 						$elm$core$Platform$Cmd$none);
 				}),
-			aJ: impl.aJ
+			aK: impl.aK
 		});
 };
 var $author$project$Main$EditPlayers = function (a) {
@@ -5175,7 +5175,7 @@ var $author$project$Main$PlayerName = $elm$core$Basics$identity;
 var $author$project$Main$new_player = F2(
 	function (i, _v0) {
 		var n = _v0;
-		return {W: _List_Nil, Y: i, I: n, al: $author$project$Main$NoScore};
+		return {X: _List_Nil, Z: i, J: n, am: $author$project$Main$NoScore};
 	});
 var $elm$core$String$trim = _String_trim;
 var $author$project$Main$add_player = F2(
@@ -5213,6 +5213,132 @@ var $author$project$Main$delete_player = F2(
 				return !_Utils_eq(p, d);
 			},
 			l);
+	});
+var $elm$core$List$takeReverse = F3(
+	function (n, list, kept) {
+		takeReverse:
+		while (true) {
+			if (n <= 0) {
+				return kept;
+			} else {
+				if (!list.b) {
+					return kept;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs,
+						$temp$kept = A2($elm$core$List$cons, x, kept);
+					n = $temp$n;
+					list = $temp$list;
+					kept = $temp$kept;
+					continue takeReverse;
+				}
+			}
+		}
+	});
+var $elm$core$List$takeTailRec = F2(
+	function (n, list) {
+		return $elm$core$List$reverse(
+			A3($elm$core$List$takeReverse, n, list, _List_Nil));
+	});
+var $elm$core$List$takeFast = F3(
+	function (ctr, n, list) {
+		if (n <= 0) {
+			return _List_Nil;
+		} else {
+			var _v0 = _Utils_Tuple2(n, list);
+			_v0$1:
+			while (true) {
+				_v0$5:
+				while (true) {
+					if (!_v0.b.b) {
+						return list;
+					} else {
+						if (_v0.b.b.b) {
+							switch (_v0.a) {
+								case 1:
+									break _v0$1;
+								case 2:
+									var _v2 = _v0.b;
+									var x = _v2.a;
+									var _v3 = _v2.b;
+									var y = _v3.a;
+									return _List_fromArray(
+										[x, y]);
+								case 3:
+									if (_v0.b.b.b.b) {
+										var _v4 = _v0.b;
+										var x = _v4.a;
+										var _v5 = _v4.b;
+										var y = _v5.a;
+										var _v6 = _v5.b;
+										var z = _v6.a;
+										return _List_fromArray(
+											[x, y, z]);
+									} else {
+										break _v0$5;
+									}
+								default:
+									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
+										var _v7 = _v0.b;
+										var x = _v7.a;
+										var _v8 = _v7.b;
+										var y = _v8.a;
+										var _v9 = _v8.b;
+										var z = _v9.a;
+										var _v10 = _v9.b;
+										var w = _v10.a;
+										var tl = _v10.b;
+										return (ctr > 1000) ? A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
+									} else {
+										break _v0$5;
+									}
+							}
+						} else {
+							if (_v0.a === 1) {
+								break _v0$1;
+							} else {
+								break _v0$5;
+							}
+						}
+					}
+				}
+				return list;
+			}
+			var _v1 = _v0.b;
+			var x = _v1.a;
+			return _List_fromArray(
+				[x]);
+		}
+	});
+var $elm$core$List$take = F2(
+	function (n, list) {
+		return A3($elm$core$List$takeFast, 0, n, list);
 	});
 var $author$project$Main$update = F2(
 	function (action, state) {
@@ -5255,12 +5381,22 @@ var $author$project$Main$update = F2(
 						q: A2($author$project$Main$add_player, state.q, p),
 						m: $author$project$Main$EditPlayers('')
 					});
-			default:
+			case 7:
 				var p = action.a;
 				return _Utils_update(
 					state,
 					{
 						q: A2($author$project$Main$delete_player, state.q, p)
+					});
+			default:
+				var h = action.a;
+				return _Utils_update(
+					state,
+					{
+						C: A2(
+							$elm$core$List$take,
+							3,
+							A2($elm$core$List$cons, h, state.C))
 					});
 		}
 	});
@@ -5411,7 +5547,7 @@ var $author$project$Main$list_players = function (l) {
 					_List_fromArray(
 						[
 							$elm$html$Html$text(
-							$author$project$Main$player_name_string(player.I))
+							$author$project$Main$player_name_string(player.J))
 						])),
 					A2(
 					$elm$html$Html$td,
@@ -5488,6 +5624,404 @@ var $author$project$Main$render_edit_players = F2(
 					$author$project$Main$list_players(players))));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
+var $author$project$Main$DoubleHit = 1;
+var $author$project$Main$Hit1 = function (a) {
+	return {$: 1, a: a};
+};
+var $author$project$Main$Hit10 = function (a) {
+	return {$: 10, a: a};
+};
+var $author$project$Main$Hit11 = function (a) {
+	return {$: 11, a: a};
+};
+var $author$project$Main$Hit12 = function (a) {
+	return {$: 12, a: a};
+};
+var $author$project$Main$Hit13 = function (a) {
+	return {$: 13, a: a};
+};
+var $author$project$Main$Hit14 = function (a) {
+	return {$: 14, a: a};
+};
+var $author$project$Main$Hit15 = function (a) {
+	return {$: 15, a: a};
+};
+var $author$project$Main$Hit16 = function (a) {
+	return {$: 16, a: a};
+};
+var $author$project$Main$Hit17 = function (a) {
+	return {$: 17, a: a};
+};
+var $author$project$Main$Hit18 = function (a) {
+	return {$: 18, a: a};
+};
+var $author$project$Main$Hit19 = function (a) {
+	return {$: 19, a: a};
+};
+var $author$project$Main$Hit2 = function (a) {
+	return {$: 2, a: a};
+};
+var $author$project$Main$Hit20 = function (a) {
+	return {$: 20, a: a};
+};
+var $author$project$Main$Hit3 = function (a) {
+	return {$: 3, a: a};
+};
+var $author$project$Main$Hit4 = function (a) {
+	return {$: 4, a: a};
+};
+var $author$project$Main$Hit5 = function (a) {
+	return {$: 5, a: a};
+};
+var $author$project$Main$Hit6 = function (a) {
+	return {$: 6, a: a};
+};
+var $author$project$Main$Hit7 = function (a) {
+	return {$: 7, a: a};
+};
+var $author$project$Main$Hit8 = function (a) {
+	return {$: 8, a: a};
+};
+var $author$project$Main$Hit9 = function (a) {
+	return {$: 9, a: a};
+};
+var $author$project$Main$HitBullseye = {$: 21};
+var $author$project$Main$HitDoubleBullseye = {$: 22};
+var $author$project$Main$HitMissed = {$: 0};
+var $author$project$Main$SingleHit = 0;
+var $author$project$Main$Toss = function (a) {
+	return {$: 8, a: a};
+};
+var $author$project$Main$TripleHit = 2;
+var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
+var $elm$svg$Svg$circle = $elm$svg$Svg$trustedNode('circle');
+var $elm$core$Basics$cos = _Basics_cos;
+var $elm$svg$Svg$Attributes$cx = _VirtualDom_attribute('cx');
+var $elm$svg$Svg$Attributes$cy = _VirtualDom_attribute('cy');
+var $elm$svg$Svg$Attributes$d = _VirtualDom_attribute('d');
+var $elm$core$Basics$pi = _Basics_pi;
+var $elm$core$Basics$degrees = function (angleInDegrees) {
+	return (angleInDegrees * $elm$core$Basics$pi) / 180;
+};
+var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
+var $elm$core$String$fromFloat = _String_fromNumber;
+var $elm$svg$Svg$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $elm$svg$Svg$path = $elm$svg$Svg$trustedNode('path');
+var $elm$svg$Svg$Attributes$r = _VirtualDom_attribute('r');
+var $elm$core$Basics$sin = _Basics_sin;
+var $elm$svg$Svg$Attributes$stroke = _VirtualDom_attribute('stroke');
+var $elm$svg$Svg$Attributes$strokeWidth = _VirtualDom_attribute('stroke-width');
+var $author$project$Main$render_board = function () {
+	var start_end_points = F2(
+		function (_v8, r) {
+			var s = _v8.a;
+			var e = _v8.b;
+			return _Utils_Tuple2(
+				_Utils_Tuple2(
+					r * $elm$core$Basics$sin(s),
+					r * $elm$core$Basics$cos(s)),
+				_Utils_Tuple2(
+					r * $elm$core$Basics$sin(e),
+					r * $elm$core$Basics$cos(e)));
+		});
+	var panels = A2(
+		$elm$core$List$indexedMap,
+		F2(
+			function (i, v) {
+				return _Utils_Tuple2(
+					_Utils_Tuple2(
+						$elm$core$Basics$degrees(9 - (i * 18)),
+						$elm$core$Basics$degrees(9 - ((i + 1) * 18))),
+					v);
+			}),
+		_List_fromArray(
+			[20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5]));
+	var l_from = function (_v5) {
+		var _v6 = _v5.a;
+		var x0 = _v6.a;
+		var y0 = _v6.b;
+		var _v7 = _v5.b;
+		var x1 = _v7.a;
+		var y1 = _v7.b;
+		return 'L ' + ($elm$core$String$fromFloat(50 + x0) + (' ' + ($elm$core$String$fromFloat(50 + y0) + (' L ' + ($elm$core$String$fromFloat(50 + x1) + (' ' + $elm$core$String$fromFloat(50 + y1)))))));
+	};
+	var index_to_hit = F2(
+		function (id, s) {
+			switch (id) {
+				case 1:
+					return $author$project$Main$Hit1(s);
+				case 2:
+					return $author$project$Main$Hit2(s);
+				case 3:
+					return $author$project$Main$Hit3(s);
+				case 4:
+					return $author$project$Main$Hit4(s);
+				case 5:
+					return $author$project$Main$Hit5(s);
+				case 6:
+					return $author$project$Main$Hit6(s);
+				case 7:
+					return $author$project$Main$Hit7(s);
+				case 8:
+					return $author$project$Main$Hit8(s);
+				case 9:
+					return $author$project$Main$Hit9(s);
+				case 10:
+					return $author$project$Main$Hit10(s);
+				case 11:
+					return $author$project$Main$Hit11(s);
+				case 12:
+					return $author$project$Main$Hit12(s);
+				case 13:
+					return $author$project$Main$Hit13(s);
+				case 14:
+					return $author$project$Main$Hit14(s);
+				case 15:
+					return $author$project$Main$Hit15(s);
+				case 16:
+					return $author$project$Main$Hit16(s);
+				case 17:
+					return $author$project$Main$Hit17(s);
+				case 18:
+					return $author$project$Main$Hit18(s);
+				case 19:
+					return $author$project$Main$Hit19(s);
+				case 20:
+					return $author$project$Main$Hit20(s);
+				default:
+					return $author$project$Main$HitMissed;
+			}
+		});
+	var double_bull = A2(
+		$elm$svg$Svg$circle,
+		_List_fromArray(
+			[
+				$elm$svg$Svg$Events$onClick(
+				$author$project$Main$Toss($author$project$Main$HitDoubleBullseye)),
+				$elm$svg$Svg$Attributes$cx('50'),
+				$elm$svg$Svg$Attributes$cy('50'),
+				$elm$svg$Svg$Attributes$r('5'),
+				$elm$svg$Svg$Attributes$stroke('white'),
+				$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+				$elm$svg$Svg$Attributes$fill('red')
+			]),
+		_List_Nil);
+	var d_from_deg = F2(
+		function (d, r) {
+			return 'M 50 50 ' + (l_from(
+				A2(start_end_points, d, r)) + ' Z');
+		});
+	var double_slice = function (_v3) {
+		var d = _v3.a;
+		var v = _v3.b;
+		return A2(
+			$elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Events$onClick(
+					$author$project$Main$Toss(
+						A2(index_to_hit, v, 1))),
+					$elm$svg$Svg$Attributes$d(
+					A2(d_from_deg, d, 45)),
+					$elm$svg$Svg$Attributes$stroke('white'),
+					$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+					$elm$svg$Svg$Attributes$fill('green')
+				]),
+			_List_Nil);
+	};
+	var inner_single_slice = function (_v2) {
+		var d = _v2.a;
+		var v = _v2.b;
+		return A2(
+			$elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Events$onClick(
+					$author$project$Main$Toss(
+						A2(index_to_hit, v, 0))),
+					$elm$svg$Svg$Attributes$d(
+					A2(d_from_deg, d, 21)),
+					$elm$svg$Svg$Attributes$stroke('white'),
+					$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+					$elm$svg$Svg$Attributes$fill('black')
+				]),
+			_List_Nil);
+	};
+	var outer_single_slice = function (_v1) {
+		var d = _v1.a;
+		var v = _v1.b;
+		return A2(
+			$elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Events$onClick(
+					$author$project$Main$Toss(
+						A2(index_to_hit, v, 0))),
+					$elm$svg$Svg$Attributes$d(
+					A2(d_from_deg, d, 38)),
+					$elm$svg$Svg$Attributes$stroke('white'),
+					$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+					$elm$svg$Svg$Attributes$fill('black')
+				]),
+			_List_Nil);
+	};
+	var triple_slice = function (_v0) {
+		var d = _v0.a;
+		var v = _v0.b;
+		return A2(
+			$elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Events$onClick(
+					$author$project$Main$Toss(
+						A2(index_to_hit, v, 2))),
+					$elm$svg$Svg$Attributes$d(
+					A2(d_from_deg, d, 29)),
+					$elm$svg$Svg$Attributes$stroke('white'),
+					$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+					$elm$svg$Svg$Attributes$fill('green')
+				]),
+			_List_Nil);
+	};
+	var bull = A2(
+		$elm$svg$Svg$circle,
+		_List_fromArray(
+			[
+				$elm$svg$Svg$Events$onClick(
+				$author$project$Main$Toss($author$project$Main$HitBullseye)),
+				$elm$svg$Svg$Attributes$cx('50'),
+				$elm$svg$Svg$Attributes$cy('50'),
+				$elm$svg$Svg$Attributes$r('10'),
+				$elm$svg$Svg$Attributes$stroke('white'),
+				$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+				$elm$svg$Svg$Attributes$fill('green')
+			]),
+		_List_Nil);
+	return _Utils_ap(
+		A2($elm$core$List$map, double_slice, panels),
+		_Utils_ap(
+			A2($elm$core$List$map, outer_single_slice, panels),
+			_Utils_ap(
+				A2($elm$core$List$map, triple_slice, panels),
+				_Utils_ap(
+					A2($elm$core$List$map, inner_single_slice, panels),
+					_List_fromArray(
+						[bull, double_bull])))));
+}();
+var $author$project$Main$sub_hit_text = function (s) {
+	switch (s) {
+		case 0:
+			return 'Single';
+		case 1:
+			return 'Double';
+		default:
+			return 'Triple';
+	}
+};
+var $author$project$Main$hit_text = function (h) {
+	switch (h.$) {
+		case 0:
+			return 'Miss';
+		case 1:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '1');
+		case 2:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '2');
+		case 3:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '3');
+		case 4:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '4');
+		case 5:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '5');
+		case 6:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '6');
+		case 7:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '7');
+		case 8:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '8');
+		case 9:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '9');
+		case 10:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '10');
+		case 11:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '11');
+		case 12:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '12');
+		case 13:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '13');
+		case 14:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '14');
+		case 15:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '15');
+		case 16:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '16');
+		case 17:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '17');
+		case 18:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '18');
+		case 19:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '19');
+		case 20:
+			var s = h.a;
+			return $author$project$Main$sub_hit_text(s) + (' ' + '20');
+		case 21:
+			return 'Bull';
+		default:
+			return 'Double Bull';
+	}
+};
+var $author$project$Main$render_hits = function (hits) {
+	var hit_div = function (hit) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('col-4')
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(
+					$author$project$Main$hit_text(hit))
+				]));
+	};
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('row')
+			]),
+		A2(
+			$elm$core$List$map,
+			hit_div,
+			$elm$core$List$reverse(hits)));
+};
+var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
+var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
+var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
 var $author$project$Main$render_game = function (state) {
 	return _List_fromArray(
 		[
@@ -5513,7 +6047,19 @@ var $author$project$Main$render_game = function (state) {
 				[
 					$elm$html$Html$Attributes$class('board')
 				]),
-			_List_Nil)
+			_List_fromArray(
+				[
+					A2(
+					$elm$svg$Svg$svg,
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$width('100%'),
+							$elm$svg$Svg$Attributes$height('100%'),
+							$elm$svg$Svg$Attributes$viewBox('0 0 100 100')
+						]),
+					$author$project$Main$render_board)
+				])),
+			$author$project$Main$render_hits(state.C)
 		]);
 };
 var $author$project$Main$GoEditPlayers = {$: 1};
@@ -5689,166 +6235,6 @@ var $author$project$Main$game_name = function (mode) {
 					]));
 	}
 };
-var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
-var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
-var $elm$svg$Svg$circle = $elm$svg$Svg$trustedNode('circle');
-var $elm$core$Basics$cos = _Basics_cos;
-var $elm$svg$Svg$Attributes$cx = _VirtualDom_attribute('cx');
-var $elm$svg$Svg$Attributes$cy = _VirtualDom_attribute('cy');
-var $elm$svg$Svg$Attributes$d = _VirtualDom_attribute('d');
-var $elm$core$Basics$pi = _Basics_pi;
-var $elm$core$Basics$degrees = function (angleInDegrees) {
-	return (angleInDegrees * $elm$core$Basics$pi) / 180;
-};
-var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
-var $elm$core$String$fromFloat = _String_fromNumber;
-var $elm$svg$Svg$path = $elm$svg$Svg$trustedNode('path');
-var $elm$svg$Svg$Attributes$r = _VirtualDom_attribute('r');
-var $elm$core$Basics$sin = _Basics_sin;
-var $elm$svg$Svg$Attributes$stroke = _VirtualDom_attribute('stroke');
-var $elm$svg$Svg$Attributes$strokeWidth = _VirtualDom_attribute('stroke-width');
-var $author$project$Main$render_board = function () {
-	var start_end_points = F2(
-		function (_v7, r) {
-			var s = _v7.a;
-			var e = _v7.b;
-			return _Utils_Tuple2(
-				_Utils_Tuple2(
-					r * $elm$core$Basics$sin(s),
-					r * $elm$core$Basics$cos(s)),
-				_Utils_Tuple2(
-					r * $elm$core$Basics$sin(e),
-					r * $elm$core$Basics$cos(e)));
-		});
-	var panels = A2(
-		$elm$core$List$indexedMap,
-		F2(
-			function (i, v) {
-				return _Utils_Tuple3(
-					_Utils_Tuple2(
-						$elm$core$Basics$degrees(9 - (i * 18)),
-						$elm$core$Basics$degrees(9 - ((i + 1) * 18))),
-					v,
-					$elm$core$String$fromInt(v));
-			}),
-		_List_fromArray(
-			[20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5]));
-	var l_from = function (_v4) {
-		var _v5 = _v4.a;
-		var x0 = _v5.a;
-		var y0 = _v5.b;
-		var _v6 = _v4.b;
-		var x1 = _v6.a;
-		var y1 = _v6.b;
-		return 'L ' + ($elm$core$String$fromFloat(50 + x0) + (' ' + ($elm$core$String$fromFloat(50 + y0) + (' L ' + ($elm$core$String$fromFloat(50 + x1) + (' ' + $elm$core$String$fromFloat(50 + y1)))))));
-	};
-	var double_bull = A2(
-		$elm$svg$Svg$circle,
-		_List_fromArray(
-			[
-				$elm$svg$Svg$Attributes$cx('50'),
-				$elm$svg$Svg$Attributes$cy('50'),
-				$elm$svg$Svg$Attributes$r('5'),
-				$elm$svg$Svg$Attributes$stroke('white'),
-				$elm$svg$Svg$Attributes$strokeWidth('0.25'),
-				$elm$svg$Svg$Attributes$fill('red')
-			]),
-		_List_Nil);
-	var d_from_deg = F2(
-		function (d, r) {
-			return 'M 50 50 ' + (l_from(
-				A2(start_end_points, d, r)) + ' Z');
-		});
-	var double_slice = function (_v3) {
-		var d = _v3.a;
-		var v = _v3.b;
-		var t = _v3.c;
-		return A2(
-			$elm$svg$Svg$path,
-			_List_fromArray(
-				[
-					$elm$svg$Svg$Attributes$d(
-					A2(d_from_deg, d, 45)),
-					$elm$svg$Svg$Attributes$stroke('white'),
-					$elm$svg$Svg$Attributes$strokeWidth('0.25'),
-					$elm$svg$Svg$Attributes$fill('green')
-				]),
-			_List_Nil);
-	};
-	var inner_single_slice = function (_v2) {
-		var d = _v2.a;
-		var v = _v2.b;
-		var t = _v2.c;
-		return A2(
-			$elm$svg$Svg$path,
-			_List_fromArray(
-				[
-					$elm$svg$Svg$Attributes$d(
-					A2(d_from_deg, d, 20)),
-					$elm$svg$Svg$Attributes$stroke('white'),
-					$elm$svg$Svg$Attributes$strokeWidth('0.25'),
-					$elm$svg$Svg$Attributes$fill('black')
-				]),
-			_List_Nil);
-	};
-	var outer_single_slice = function (_v1) {
-		var d = _v1.a;
-		var v = _v1.b;
-		var t = _v1.c;
-		return A2(
-			$elm$svg$Svg$path,
-			_List_fromArray(
-				[
-					$elm$svg$Svg$Attributes$d(
-					A2(d_from_deg, d, 38)),
-					$elm$svg$Svg$Attributes$stroke('white'),
-					$elm$svg$Svg$Attributes$strokeWidth('0.25'),
-					$elm$svg$Svg$Attributes$fill('black')
-				]),
-			_List_Nil);
-	};
-	var triple_slice = function (_v0) {
-		var d = _v0.a;
-		var v = _v0.b;
-		var t = _v0.c;
-		return A2(
-			$elm$svg$Svg$path,
-			_List_fromArray(
-				[
-					$elm$svg$Svg$Attributes$d(
-					A2(d_from_deg, d, 28)),
-					$elm$svg$Svg$Attributes$stroke('white'),
-					$elm$svg$Svg$Attributes$strokeWidth('0.25'),
-					$elm$svg$Svg$Attributes$fill('green')
-				]),
-			_List_Nil);
-	};
-	var bull = A2(
-		$elm$svg$Svg$circle,
-		_List_fromArray(
-			[
-				$elm$svg$Svg$Attributes$cx('50'),
-				$elm$svg$Svg$Attributes$cy('50'),
-				$elm$svg$Svg$Attributes$r('10'),
-				$elm$svg$Svg$Attributes$stroke('white'),
-				$elm$svg$Svg$Attributes$strokeWidth('0.25'),
-				$elm$svg$Svg$Attributes$fill('green')
-			]),
-		_List_Nil);
-	return _Utils_ap(
-		A2($elm$core$List$map, double_slice, panels),
-		_Utils_ap(
-			A2($elm$core$List$map, outer_single_slice, panels),
-			_Utils_ap(
-				A2($elm$core$List$map, triple_slice, panels),
-				_Utils_ap(
-					A2($elm$core$List$map, inner_single_slice, panels),
-					_List_fromArray(
-						[bull, double_bull])))));
-}();
-var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
-var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
-var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
 var $author$project$Main$render_home = function (state) {
 	var start_game = (($elm$core$List$length(state.q) > 0) && (!_Utils_eq(state.y, $author$project$Main$NoGame))) ? _List_fromArray(
 		[
@@ -5900,24 +6286,6 @@ var $author$project$Main$render_home = function (state) {
 				[
 					$elm$html$Html$text('Selected Game: '),
 					$author$project$Main$game_name(state.y)
-				])),
-			A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('board')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$svg$Svg$svg,
-					_List_fromArray(
-						[
-							$elm$svg$Svg$Attributes$width('100%'),
-							$elm$svg$Svg$Attributes$height('100%'),
-							$elm$svg$Svg$Attributes$viewBox('0 0 100 100')
-						]),
-					$author$project$Main$render_board)
 				]))
 		]);
 };
@@ -7280,6 +7648,6 @@ var $author$project$Main$view = function (state) {
 	return A2($elm$html$Html$div, _List_Nil, render);
 };
 var $author$project$Main$main = $elm$browser$Browser$sandbox(
-	{aB: $author$project$Main$init, aI: $author$project$Main$update, aJ: $author$project$Main$view});
+	{aC: $author$project$Main$init, aJ: $author$project$Main$update, aK: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));

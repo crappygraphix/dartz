@@ -6,36 +6,69 @@ import Html.Attributes exposing (class, placeholder, selected, value)
 import Html.Events exposing (onClick, onInput)
 import Svg as S
 import Svg.Attributes as SA
+import Svg.Events as SE
 
 main : Program () AppState Action
 main = Browser.sandbox { init = init, update = update, view = view }
 
 type SubHit = SingleHit | DoubleHit | TripleHit
 
+sub_hit_text : SubHit -> String
+sub_hit_text s = case s of
+   SingleHit -> "Single"
+   DoubleHit -> "Double"
+   TripleHit -> "Triple"
+
 type Hit
   = HitMissed
-  | HitOne SubHit
-  | HitTwo SubHit
-  | HitThree SubHit
-  | HitFour SubHit
-  | HitFive SubHit
-  | HitSix SubHit
-  | HitSeven SubHit
-  | HitEight SubHit
-  | HitNine SubHit
-  | HitTen SubHit
-  | HitEleven SubHit
-  | HitTwelve SubHit
-  | HitThirteen SubHit
-  | HitFourteen SubHit
-  | HitFifteen SubHit
-  | HitSixteen SubHit
-  | HitSeventeen SubHit
-  | HitEighteen SubHit
-  | HitNineteen SubHit
-  | HitTwenty SubHit
+  | Hit1 SubHit
+  | Hit2 SubHit
+  | Hit3 SubHit
+  | Hit4 SubHit
+  | Hit5 SubHit
+  | Hit6 SubHit
+  | Hit7 SubHit
+  | Hit8 SubHit
+  | Hit9 SubHit
+  | Hit10 SubHit
+  | Hit11 SubHit
+  | Hit12 SubHit
+  | Hit13 SubHit
+  | Hit14 SubHit
+  | Hit15 SubHit
+  | Hit16 SubHit
+  | Hit17 SubHit
+  | Hit18 SubHit
+  | Hit19 SubHit
+  | Hit20 SubHit
   | HitBullseye
   | HitDoubleBullseye
+
+hit_text : Hit -> String
+hit_text h = case h of
+   HitMissed -> "Miss"
+   Hit1 s -> sub_hit_text s ++ " " ++ "1"
+   Hit2 s -> sub_hit_text s ++ " " ++ "2"
+   Hit3 s -> sub_hit_text s ++ " " ++ "3"
+   Hit4 s -> sub_hit_text s ++ " " ++ "4"
+   Hit5 s -> sub_hit_text s ++ " " ++ "5"
+   Hit6 s -> sub_hit_text s ++ " " ++ "6"
+   Hit7 s -> sub_hit_text s ++ " " ++ "7"
+   Hit8 s -> sub_hit_text s ++ " " ++ "8"
+   Hit9 s -> sub_hit_text s ++ " " ++ "9"
+   Hit10 s -> sub_hit_text s ++ " " ++ "10"
+   Hit11 s -> sub_hit_text s ++ " " ++ "11"
+   Hit12 s -> sub_hit_text s ++ " " ++ "12"
+   Hit13 s -> sub_hit_text s ++ " " ++ "13"
+   Hit14 s -> sub_hit_text s ++ " " ++ "14"
+   Hit15 s -> sub_hit_text s ++ " " ++ "15"
+   Hit16 s -> sub_hit_text s ++ " " ++ "16"
+   Hit17 s -> sub_hit_text s ++ " " ++ "17"
+   Hit18 s -> sub_hit_text s ++ " " ++ "18"
+   Hit19 s -> sub_hit_text s ++ " " ++ "19"
+   Hit20 s -> sub_hit_text s ++ " " ++ "20"
+   HitBullseye -> "Bull"
+   HitDoubleBullseye -> "Double Bull"
 
 type PlayerName = PlayerName String
 player_name_string (PlayerName s) = s
@@ -68,6 +101,7 @@ type alias AppState =
   , game : GameMode
   , screen : Screen
   , currentPlayer : Int
+  , currentTurn : List Hit
   }
 
 type Screen
@@ -357,12 +391,14 @@ type Action
   | NewPlayerInput NewPlayerName
   | NewPlayerCommit NewPlayerName
   | DeletePlayer Player
+  | Toss Hit
 
 init : AppState
 init =
   { playerData = []
   , game = NoGame
   , currentPlayer = 0
+  , currentTurn = []
   , screen = Home
   }
 
@@ -377,6 +413,8 @@ update action state =
     NewPlayerInput p -> { state | screen = EditPlayers p }
     NewPlayerCommit p -> { state | playerData = add_player state.playerData p, screen = EditPlayers (NewPlayerName "") }
     DeletePlayer p -> { state | playerData = delete_player state.playerData p }
+    Toss h -> { state | currentTurn = List.take 3 <| h :: state.currentTurn }
+
 
 view : AppState -> Html Action
 view state =
@@ -407,44 +445,8 @@ render_home state =
     , div [] 
       [ text "Selected Game: "
       , game_name state.game
-      ]
-    , div [ class "board" ] [
-        S.svg [SA.width "100%", SA.height "100%", SA.viewBox "0 0 100 100"] render_board
-      ]
+      ]    
     ]
-
-render_board =
-  let
-    panels : List ((Float, Float), Int, String)
-    panels = List.indexedMap (\i v -> ((Basics.degrees (toFloat <| (-) 9 <| i * 18), Basics.degrees (toFloat <| (-) 9 <| (i + 1) * 18)), v, String.fromInt v)) [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5]
-    double_slice : ((Float, Float), Int, String) -> S.Svg msg
-    double_slice (d, v, t) = S.path [ SA.d (d_from_deg d 45), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] []
-    outer_single_slice : ((Float, Float), Int, String) -> S.Svg msg
-    outer_single_slice (d, v, t) = S.path [ SA.d (d_from_deg d 38), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] []
-    triple_slice : ((Float, Float), Int, String) -> S.Svg msg
-    triple_slice (d, v, t) = S.path [ SA.d (d_from_deg d 28), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] []
-    inner_single_slice : ((Float, Float), Int, String) -> S.Svg msg
-    inner_single_slice (d, v, t) = S.path [ SA.d (d_from_deg d 20), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] []
-    bull : S.Svg msg
-    bull = S.circle [ SA.cx "50", SA.cy "50", SA.r "10", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] []
-    double_bull : S.Svg msg
-    double_bull = S.circle [ SA.cx "50", SA.cy "50", SA.r "5", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "red" ] []
-    start_end_points : (Float, Float) -> Float -> ((Float, Float), (Float, Float))
-    start_end_points (s, e) r = ((r * sin s, r * cos s), (r * sin e, r * cos e))
-
-    d_from_deg : (Float, Float) -> Float -> String
-    d_from_deg d r = "M 50 50 " ++ (l_from <| start_end_points d r) ++ " Z"
-
-    l_from : ((Float, Float), (Float, Float)) -> String
-    l_from ((x0, y0), (x1, y1)) = "L " ++ (String.fromFloat <| 50 + x0) ++ " " ++ (String.fromFloat <| 50 + y0) ++ " L " ++ (String.fromFloat <| 50 + x1) ++ " " ++ (String.fromFloat <| 50 + y1)
-  in
-    (List.map double_slice panels) ++
-    (List.map outer_single_slice panels) ++
-    (List.map triple_slice panels) ++
-    (List.map inner_single_slice panels) ++
-    [ bull, double_bull ]
-
-
 
 
 render_select_game : GameMode -> List (Html Action)
@@ -626,5 +628,70 @@ render_game state =
   [ div []
     [ button [ onClick GoHome ] [ text "Home" ]
     ]
-  , div [ class "board" ] []
+  , div [ class "board" ] 
+    [ S.svg [SA.width "100%", SA.height "100%", SA.viewBox "0 0 100 100"] render_board
+    ]
+  , render_hits state.currentTurn
   ]
+
+render_hits : List (Hit) -> Html msg
+render_hits hits =
+  let
+    hit_div hit = div [ class "col-4" ] [ text (hit_text hit) ]
+  in
+    div [ class "row"] <| List.map hit_div <| List.reverse hits
+
+render_board : List (S.Svg Action)
+render_board =
+  let
+    index_to_hit : Int -> SubHit -> Hit
+    index_to_hit id s = case id of
+      1 -> Hit1 s
+      2 -> Hit2 s
+      3 -> Hit3 s
+      4 -> Hit4 s
+      5 -> Hit5 s
+      6 -> Hit6 s
+      7 -> Hit7 s
+      8 -> Hit8 s
+      9 -> Hit9 s
+      10 -> Hit10 s
+      11 -> Hit11 s
+      12 -> Hit12 s
+      13 -> Hit13 s
+      14 -> Hit14 s
+      15 -> Hit15 s
+      16 -> Hit16 s
+      17 -> Hit17 s
+      18 -> Hit18 s
+      19 -> Hit19 s
+      20 -> Hit20 s      
+      _ -> HitMissed
+    panels : List ((Float, Float), Int)
+    panels = List.indexedMap (\i v -> ((Basics.degrees (toFloat <| (-) 9 <| i * 18), Basics.degrees (toFloat <| (-) 9 <| (i + 1) * 18)), v)) [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5]
+    double_slice : ((Float, Float), Int) -> S.Svg Action
+    double_slice (d, v) = S.path [ SE.onClick (Toss <| index_to_hit v DoubleHit) , SA.d (d_from_deg d 45), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] []
+    outer_single_slice : ((Float, Float), Int) -> S.Svg Action
+    outer_single_slice (d, v) = S.path [ SE.onClick (Toss <| index_to_hit v SingleHit), SA.d (d_from_deg d 38), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] []
+    triple_slice : ((Float, Float), Int) -> S.Svg Action
+    triple_slice (d, v) = S.path [ SE.onClick (Toss <| index_to_hit v TripleHit), SA.d (d_from_deg d 29), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] []
+    inner_single_slice : ((Float, Float), Int) -> S.Svg Action
+    inner_single_slice (d, v) = S.path [ SE.onClick (Toss <| index_to_hit v SingleHit), SA.d (d_from_deg d 21), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] []
+    bull : S.Svg Action
+    bull = S.circle [ SE.onClick (Toss HitBullseye), SA.cx "50", SA.cy "50", SA.r "10", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] []
+    double_bull : S.Svg Action
+    double_bull = S.circle [ SE.onClick (Toss HitDoubleBullseye), SA.cx "50", SA.cy "50", SA.r "5", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "red" ] []
+    start_end_points : (Float, Float) -> Float -> ((Float, Float), (Float, Float))
+    start_end_points (s, e) r = ((r * sin s, r * cos s), (r * sin e, r * cos e))
+
+    d_from_deg : (Float, Float) -> Float -> String
+    d_from_deg d r = "M 50 50 " ++ (l_from <| start_end_points d r) ++ " Z"
+
+    l_from : ((Float, Float), (Float, Float)) -> String
+    l_from ((x0, y0), (x1, y1)) = "L " ++ (String.fromFloat <| 50 + x0) ++ " " ++ (String.fromFloat <| 50 + y0) ++ " L " ++ (String.fromFloat <| 50 + x1) ++ " " ++ (String.fromFloat <| 50 + y1)
+  in
+    List.map double_slice panels ++
+    List.map outer_single_slice panels ++
+    List.map triple_slice panels ++
+    List.map inner_single_slice panels ++
+    [ bull, double_bull ]
