@@ -1,9 +1,10 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, div, span, text, option, button, select, input, tr, td, table)
+import Html exposing (Attribute, Html, div, span, text, option, button, select, input, tr, td, table)
 import Html.Attributes exposing (class, placeholder, selected, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, preventDefaultOn)
+import Json.Decode as Json
 import Svg as S
 import Svg.Attributes as SA
 import Svg.Events as SE
@@ -448,7 +449,6 @@ render_home state =
       ]    
     ]
 
-
 render_select_game : GameMode -> List (Html Action)
 render_select_game mode =
   [ div []
@@ -669,18 +669,31 @@ render_board =
       _ -> HitMissed
     panels : List ((Float, Float), Int)
     panels = List.indexedMap (\i v -> ((Basics.degrees (toFloat <| (-) 189 <| i * 18), Basics.degrees (toFloat <| (-) 189 <| (i + 1) * 18)), v)) [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5]
+
     double_slice : ((Float, Float), Int) -> S.Svg Action
     double_slice (d, v) = S.path [ SE.onClick (Toss <| index_to_hit v DoubleHit) , SA.d (d_from_deg d 45), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] []
+
     outer_single_slice : ((Float, Float), Int) -> S.Svg Action
     outer_single_slice (d, v) = S.path [ SE.onClick (Toss <| index_to_hit v SingleHit), SA.d (d_from_deg d 38), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] []
+
     triple_slice : ((Float, Float), Int) -> S.Svg Action
     triple_slice (d, v) = S.path [ SE.onClick (Toss <| index_to_hit v TripleHit), SA.d (d_from_deg d 29), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] []
+
     inner_single_slice : ((Float, Float), Int) -> S.Svg Action
     inner_single_slice (d, v) = S.path [ SE.onClick (Toss <| index_to_hit v SingleHit), SA.d (d_from_deg d 21), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] []
+
     bull : S.Svg Action
     bull = S.circle [ SE.onClick (Toss HitBullseye), SA.cx "50", SA.cy "50", SA.r "10", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] []
+
     double_bull : S.Svg Action
     double_bull = S.circle [ SE.onClick (Toss HitDoubleBullseye), SA.cx "50", SA.cy "50", SA.r "5", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "red" ] []
+
+    miss : List (S.Svg Action)
+    miss = 
+      [ S.circle [ SE.onClick (Toss HitMissed), SA.cx "92", SA.cy "92", SA.r "8", SA.stroke "red", SA.strokeWidth "0.3", SA.fill "orange" ] []
+      , S.text_ [ SE.onClick (Toss HitMissed), SA.x "92", SA.y "93", SA.alignmentBaseline "middle", SA.textAnchor "middle", SA.fontSize "5", SA.fill "red" ] [ text "MISS" ] 
+      ]
+
     start_end_points : (Float, Float) -> Float -> ((Float, Float), (Float, Float))
     start_end_points (s, e) r = ((r * sin s, r * cos s), (r * sin e, r * cos e))
 
@@ -689,9 +702,26 @@ render_board =
 
     l_from : ((Float, Float), (Float, Float)) -> String
     l_from ((x0, y0), (x1, y1)) = "L " ++ (String.fromFloat <| 50 + x0) ++ " " ++ (String.fromFloat <| 50 + y0) ++ " L " ++ (String.fromFloat <| 50 + x1) ++ " " ++ (String.fromFloat <| 50 + y1)
+    
+    number_ring : List (S.Svg msg)
+    number_ring = 
+      let
+        nums : List (Float, Int)
+        nums = List.indexedMap (\i v -> (Basics.degrees (toFloat <| (-) 180 <| i * 18), v)) [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5]
+
+        point : Float -> Float -> (Float, Float)
+        point d r = (r * sin d, r * cos d)
+
+        draw_num : (Float, Int) -> S.Svg msg
+        draw_num (d, v) = 
+          S.text_ (((\(x, y) -> [ SA.x (String.fromFloat (50 + x)), SA.y (String.fromFloat (51 + y)) ]) <| point d 48) ++ [ SA.alignmentBaseline "middle", SA.textAnchor "middle", SA.fontSize "5" ]) [ text <| String.fromInt v ]
+      in
+        List.map draw_num nums        
   in
     List.map double_slice panels ++
     List.map outer_single_slice panels ++
     List.map triple_slice panels ++
     List.map inner_single_slice panels ++
-    [ bull, double_bull ]
+    [ bull, double_bull] ++
+    miss ++
+    number_ring

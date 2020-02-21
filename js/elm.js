@@ -5694,6 +5694,7 @@ var $author$project$Main$Toss = function (a) {
 	return {$: 8, a: a};
 };
 var $author$project$Main$TripleHit = 2;
+var $elm$svg$Svg$Attributes$alignmentBaseline = _VirtualDom_attribute('alignment-baseline');
 var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
 var $elm$svg$Svg$circle = $elm$svg$Svg$trustedNode('circle');
 var $elm$core$Basics$cos = _Basics_cos;
@@ -5705,6 +5706,7 @@ var $elm$core$Basics$degrees = function (angleInDegrees) {
 	return (angleInDegrees * $elm$core$Basics$pi) / 180;
 };
 var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
+var $elm$svg$Svg$Attributes$fontSize = _VirtualDom_attribute('font-size');
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$svg$Svg$Events$onClick = function (msg) {
 	return A2(
@@ -5717,11 +5719,15 @@ var $elm$svg$Svg$Attributes$r = _VirtualDom_attribute('r');
 var $elm$core$Basics$sin = _Basics_sin;
 var $elm$svg$Svg$Attributes$stroke = _VirtualDom_attribute('stroke');
 var $elm$svg$Svg$Attributes$strokeWidth = _VirtualDom_attribute('stroke-width');
+var $elm$svg$Svg$Attributes$textAnchor = _VirtualDom_attribute('text-anchor');
+var $elm$svg$Svg$text_ = $elm$svg$Svg$trustedNode('text');
+var $elm$svg$Svg$Attributes$x = _VirtualDom_attribute('x');
+var $elm$svg$Svg$Attributes$y = _VirtualDom_attribute('y');
 var $author$project$Main$render_board = function () {
 	var start_end_points = F2(
-		function (_v8, r) {
-			var s = _v8.a;
-			var e = _v8.b;
+		function (_v10, r) {
+			var s = _v10.a;
+			var e = _v10.b;
 			return _Utils_Tuple2(
 				_Utils_Tuple2(
 					r * $elm$core$Basics$sin(s),
@@ -5736,12 +5742,95 @@ var $author$project$Main$render_board = function () {
 			function (i, v) {
 				return _Utils_Tuple2(
 					_Utils_Tuple2(
-						$elm$core$Basics$degrees(9 - (i * 18)),
-						$elm$core$Basics$degrees(9 - ((i + 1) * 18))),
+						$elm$core$Basics$degrees(189 - (i * 18)),
+						$elm$core$Basics$degrees(189 - ((i + 1) * 18))),
 					v);
 			}),
 		_List_fromArray(
 			[20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5]));
+	var number_ring = function () {
+		var point = F2(
+			function (d, r) {
+				return _Utils_Tuple2(
+					r * $elm$core$Basics$sin(d),
+					r * $elm$core$Basics$cos(d));
+			});
+		var nums = A2(
+			$elm$core$List$indexedMap,
+			F2(
+				function (i, v) {
+					return _Utils_Tuple2(
+						$elm$core$Basics$degrees(180 - (i * 18)),
+						v);
+				}),
+			_List_fromArray(
+				[20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5]));
+		var draw_num = function (_v9) {
+			var d = _v9.a;
+			var v = _v9.b;
+			return A2(
+				$elm$svg$Svg$text_,
+				_Utils_ap(
+					function (_v8) {
+						var x = _v8.a;
+						var y = _v8.b;
+						return _List_fromArray(
+							[
+								$elm$svg$Svg$Attributes$x(
+								$elm$core$String$fromFloat(50 + x)),
+								$elm$svg$Svg$Attributes$y(
+								$elm$core$String$fromFloat(51 + y))
+							]);
+					}(
+						A2(point, d, 48)),
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$alignmentBaseline('middle'),
+							$elm$svg$Svg$Attributes$textAnchor('middle'),
+							$elm$svg$Svg$Attributes$fontSize('5')
+						])),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						$elm$core$String$fromInt(v))
+					]));
+		};
+		return A2($elm$core$List$map, draw_num, nums);
+	}();
+	var miss = _List_fromArray(
+		[
+			A2(
+			$elm$svg$Svg$circle,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Events$onClick(
+					$author$project$Main$Toss($author$project$Main$HitMissed)),
+					$elm$svg$Svg$Attributes$cx('92'),
+					$elm$svg$Svg$Attributes$cy('92'),
+					$elm$svg$Svg$Attributes$r('8'),
+					$elm$svg$Svg$Attributes$stroke('red'),
+					$elm$svg$Svg$Attributes$strokeWidth('0.3'),
+					$elm$svg$Svg$Attributes$fill('orange')
+				]),
+			_List_Nil),
+			A2(
+			$elm$svg$Svg$text_,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Events$onClick(
+					$author$project$Main$Toss($author$project$Main$HitMissed)),
+					$elm$svg$Svg$Attributes$x('92'),
+					$elm$svg$Svg$Attributes$y('93'),
+					$elm$svg$Svg$Attributes$alignmentBaseline('middle'),
+					$elm$svg$Svg$Attributes$textAnchor('middle'),
+					$elm$svg$Svg$Attributes$fontSize('5'),
+					$elm$svg$Svg$Attributes$fill('red')
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('MISS')
+				]))
+		]);
 	var l_from = function (_v5) {
 		var _v6 = _v5.a;
 		var x0 = _v6.a;
@@ -5911,8 +6000,10 @@ var $author$project$Main$render_board = function () {
 				A2($elm$core$List$map, triple_slice, panels),
 				_Utils_ap(
 					A2($elm$core$List$map, inner_single_slice, panels),
-					_List_fromArray(
-						[bull, double_bull])))));
+					_Utils_ap(
+						_List_fromArray(
+							[bull, double_bull]),
+						_Utils_ap(miss, number_ring))))));
 }();
 var $author$project$Main$sub_hit_text = function (s) {
 	switch (s) {
