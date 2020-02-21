@@ -388,7 +388,7 @@ view state =
         SelectGame -> render_select_game state.game
         PlayGame -> render_game state
   in
-    div [ class "container" ] render
+    div [] render
     
 
 render_home : AppState -> List (Html Action)

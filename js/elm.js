@@ -5264,15 +5264,6 @@ var $author$project$Main$update = F2(
 					});
 		}
 	});
-var $elm$json$Json$Encode$string = _Json_wrap;
-var $elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$string(string));
-	});
-var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$Main$GoHome = {$: 0};
 var $author$project$Main$GoSelectGame = {$: 2};
@@ -5339,6 +5330,14 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			$elm$html$Html$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
@@ -5488,6 +5487,7 @@ var $author$project$Main$render_edit_players = F2(
 						]),
 					$author$project$Main$list_players(players))));
 	});
+var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $author$project$Main$render_game = function (state) {
 	return _List_fromArray(
 		[
@@ -7349,13 +7349,7 @@ var $author$project$Main$view = function (state) {
 				return $author$project$Main$render_game(state);
 		}
 	}();
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('container')
-			]),
-		render);
+	return A2($elm$html$Html$div, _List_Nil, render);
 };
 var $author$project$Main$main = $elm$browser$Browser$sandbox(
 	{aB: $author$project$Main$init, aI: $author$project$Main$update, aJ: $author$project$Main$view});
