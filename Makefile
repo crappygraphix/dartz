@@ -1,5 +1,7 @@
+include dartz-elm/scss/Makefile
+
 .PHONY: site
-site:
+site: css
     # Build elm app
 	cd dartz-elm && elm make src/Main.elm --optimize --output=js/elm.js
 	# Copy JS
@@ -16,4 +18,3 @@ site:
 	cp -r dartz-elm/css css
 	# Copy Icon
 	cp -f dartz-elm/favicon.ico favicon.ico
-

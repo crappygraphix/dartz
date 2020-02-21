@@ -5492,19 +5492,34 @@ var $author$project$Main$render_game = function (state) {
 	return _List_fromArray(
 		[
 			A2(
-			$elm$html$Html$button,
+			$elm$html$Html$div,
+			_List_Nil,
 			_List_fromArray(
 				[
-					$elm$html$Html$Events$onClick($author$project$Main$GoHome)
+					A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick($author$project$Main$GoHome)
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Home')
+						]))
+				])),
+			A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('board')
 				]),
-			_List_fromArray(
-				[
-					$elm$html$Html$text('Home')
-				]))
+			_List_Nil)
 		]);
 };
 var $author$project$Main$GoEditPlayers = {$: 1};
 var $author$project$Main$GoPlayGame = {$: 3};
+var $elm$svg$Svg$Attributes$d = _VirtualDom_attribute('d');
+var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
 var $author$project$Main$around_the_clock_180_variation_text = function (v) {
 	if (!v) {
 		return 'Double Bonus';
@@ -5676,6 +5691,14 @@ var $author$project$Main$game_name = function (mode) {
 					]));
 	}
 };
+var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
+var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
+var $elm$svg$Svg$path = $elm$svg$Svg$trustedNode('path');
+var $elm$svg$Svg$Attributes$stroke = _VirtualDom_attribute('stroke');
+var $elm$svg$Svg$Attributes$strokeWidth = _VirtualDom_attribute('stroke-width');
+var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
+var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
+var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
 var $author$project$Main$render_home = function (state) {
 	var start_game = (($elm$core$List$length(state.q) > 0) && (!_Utils_eq(state.y, $author$project$Main$NoGame))) ? _List_fromArray(
 		[
@@ -5727,6 +5750,246 @@ var $author$project$Main$render_home = function (state) {
 				[
 					$elm$html$Html$text('Selected Game: '),
 					$author$project$Main$game_name(state.y)
+				])),
+			A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('board')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$svg$Svg$svg,
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$width('100%'),
+							$elm$svg$Svg$Attributes$height('100%'),
+							$elm$svg$Svg$Attributes$viewBox('0 0 100 100')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 5 5 L 23 5 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 23 5 L 41 5 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 41 5 L 59 5 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 59 5 L 77 5 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 77 5 L 95 5 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 95 5 L 95 23 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 95 23 L 95 41 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 95 41 L 95 59 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 95 59 L 95 77 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 95 77 L 95 95 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 95 95 L 77 95 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 77 95 L 59 95 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 59 95 L 41 95 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 41 95 L 23 95 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 23 95 L 5 95 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 5 95 L 5 77 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 5 77 L 5 59 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 5 59 L 5 41 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 5 41 L 5 23 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 50 L 5 23 L 5 5 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('black')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 60 L 60 50 L 50 40 L 40 50 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('green')
+								]),
+							_List_Nil),
+							A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$d('M 50 55 L 55 50 L 50 45 L 45 50 Z'),
+									$elm$svg$Svg$Attributes$stroke('white'),
+									$elm$svg$Svg$Attributes$strokeWidth('0.25'),
+									$elm$svg$Svg$Attributes$fill('red')
+								]),
+							_List_Nil)
+						]))
 				]))
 		]);
 };
