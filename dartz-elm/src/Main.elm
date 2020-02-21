@@ -409,32 +409,43 @@ render_home state =
       , game_name state.game
       ]
     , div [ class "board" ] [
-        S.svg [SA.width "100%", SA.height "100%", SA.viewBox "0 0 100 100"] 
-        [ S.path [ SA.d "M 50 50 L 5 5 L 23 5 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 12
-        , S.path [ SA.d "M 50 50 L 23 5 L 41 5 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 5
-        , S.path [ SA.d "M 50 50 L 41 5 L 59 5 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 20
-        , S.path [ SA.d "M 50 50 L 59 5 L 77 5 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 1
-        , S.path [ SA.d "M 50 50 L 77 5 L 95 5 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 18
-        , S.path [ SA.d "M 50 50 L 95 5 L 95 23 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 4
-        , S.path [ SA.d "M 50 50 L 95 23 L 95 41 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 13
-        , S.path [ SA.d "M 50 50 L 95 41 L 95 59 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 6
-        , S.path [ SA.d "M 50 50 L 95 59 L 95 77 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 10
-        , S.path [ SA.d "M 50 50 L 95 77 L 95 95 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 15
-        , S.path [ SA.d "M 50 50 L 95 95 L 77 95 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 2
-        , S.path [ SA.d "M 50 50 L 77 95 L 59 95 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 17
-        , S.path [ SA.d "M 50 50 L 59 95 L 41 95 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 3
-        , S.path [ SA.d "M 50 50 L 41 95 L 23 95 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 19
-        , S.path [ SA.d "M 50 50 L 23 95 L 5 95 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 7
-        , S.path [ SA.d "M 50 50 L 5 95 L 5 77 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 16
-        , S.path [ SA.d "M 50 50 L 5 77 L 5 59 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 8
-        , S.path [ SA.d "M 50 50 L 5 59 L 5 41 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 11
-        , S.path [ SA.d "M 50 50 L 5 41 L 5 23 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 14
-        , S.path [ SA.d "M 50 50 L 5 23 L 5 5 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] [] -- 9
-        , S.path [ SA.d "M 50 60 L 60 50 L 50 40 L 40 50 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] [] -- Bull
-        , S.path [ SA.d "M 50 55 L 55 50 L 50 45 L 45 50 Z", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "red" ] [] -- Double Bull
-        ]
+        S.svg [SA.width "100%", SA.height "100%", SA.viewBox "0 0 100 100"] render_board
       ]
     ]
+
+render_board =
+  let
+    panels : List ((Float, Float), Int, String)
+    panels = List.indexedMap (\i v -> ((Basics.degrees (toFloat <| (-) 9 <| i * 18), Basics.degrees (toFloat <| (-) 9 <| (i + 1) * 18)), v, String.fromInt v)) [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5]
+    double_slice : ((Float, Float), Int, String) -> S.Svg msg
+    double_slice (d, v, t) = S.path [ SA.d (d_from_deg d 45), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] []
+    outer_single_slice : ((Float, Float), Int, String) -> S.Svg msg
+    outer_single_slice (d, v, t) = S.path [ SA.d (d_from_deg d 38), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] []
+    triple_slice : ((Float, Float), Int, String) -> S.Svg msg
+    triple_slice (d, v, t) = S.path [ SA.d (d_from_deg d 28), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] []
+    inner_single_slice : ((Float, Float), Int, String) -> S.Svg msg
+    inner_single_slice (d, v, t) = S.path [ SA.d (d_from_deg d 20), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] []
+    bull : S.Svg msg
+    bull = S.circle [ SA.cx "50", SA.cy "50", SA.r "10", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] []
+    double_bull : S.Svg msg
+    double_bull = S.circle [ SA.cx "50", SA.cy "50", SA.r "5", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "red" ] []
+    start_end_points : (Float, Float) -> Float -> ((Float, Float), (Float, Float))
+    start_end_points (s, e) r = ((r * sin s, r * cos s), (r * sin e, r * cos e))
+
+    d_from_deg : (Float, Float) -> Float -> String
+    d_from_deg d r = "M 50 50 " ++ (l_from <| start_end_points d r) ++ " Z"
+
+    l_from : ((Float, Float), (Float, Float)) -> String
+    l_from ((x0, y0), (x1, y1)) = "L " ++ (String.fromFloat <| 50 + x0) ++ " " ++ (String.fromFloat <| 50 + y0) ++ " L " ++ (String.fromFloat <| 50 + x1) ++ " " ++ (String.fromFloat <| 50 + y1)
+  in
+    (List.map double_slice panels) ++
+    (List.map outer_single_slice panels) ++
+    (List.map triple_slice panels) ++
+    (List.map inner_single_slice panels) ++
+    [ bull, double_bull ]
+
+
+
 
 render_select_game : GameMode -> List (Html Action)
 render_select_game mode =
