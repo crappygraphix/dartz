@@ -80,6 +80,271 @@ function A9(fun, a, b, c, d, e, f, g, h, i) {
 
 
 
+// EQUALITY
+
+function _Utils_eq(x, y)
+{
+	for (
+		var pair, stack = [], isEqual = _Utils_eqHelp(x, y, 0, stack);
+		isEqual && (pair = stack.pop());
+		isEqual = _Utils_eqHelp(pair.a, pair.b, 0, stack)
+		)
+	{}
+
+	return isEqual;
+}
+
+function _Utils_eqHelp(x, y, depth, stack)
+{
+	if (x === y)
+	{
+		return true;
+	}
+
+	if (typeof x !== 'object' || x === null || y === null)
+	{
+		typeof x === 'function' && _Debug_crash(5);
+		return false;
+	}
+
+	if (depth > 100)
+	{
+		stack.push(_Utils_Tuple2(x,y));
+		return true;
+	}
+
+	/**_UNUSED/
+	if (x.$ === 'Set_elm_builtin')
+	{
+		x = $elm$core$Set$toList(x);
+		y = $elm$core$Set$toList(y);
+	}
+	if (x.$ === 'RBNode_elm_builtin' || x.$ === 'RBEmpty_elm_builtin')
+	{
+		x = $elm$core$Dict$toList(x);
+		y = $elm$core$Dict$toList(y);
+	}
+	//*/
+
+	/**/
+	if (x.$ < 0)
+	{
+		x = $elm$core$Dict$toList(x);
+		y = $elm$core$Dict$toList(y);
+	}
+	//*/
+
+	for (var key in x)
+	{
+		if (!_Utils_eqHelp(x[key], y[key], depth + 1, stack))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+var _Utils_equal = F2(_Utils_eq);
+var _Utils_notEqual = F2(function(a, b) { return !_Utils_eq(a,b); });
+
+
+
+// COMPARISONS
+
+// Code in Generate/JavaScript.hs, Basics.js, and List.js depends on
+// the particular integer values assigned to LT, EQ, and GT.
+
+function _Utils_cmp(x, y, ord)
+{
+	if (typeof x !== 'object')
+	{
+		return x === y ? /*EQ*/ 0 : x < y ? /*LT*/ -1 : /*GT*/ 1;
+	}
+
+	/**_UNUSED/
+	if (x instanceof String)
+	{
+		var a = x.valueOf();
+		var b = y.valueOf();
+		return a === b ? 0 : a < b ? -1 : 1;
+	}
+	//*/
+
+	/**/
+	if (typeof x.$ === 'undefined')
+	//*/
+	/**_UNUSED/
+	if (x.$[0] === '#')
+	//*/
+	{
+		return (ord = _Utils_cmp(x.a, y.a))
+			? ord
+			: (ord = _Utils_cmp(x.b, y.b))
+				? ord
+				: _Utils_cmp(x.c, y.c);
+	}
+
+	// traverse conses until end of a list or a mismatch
+	for (; x.b && y.b && !(ord = _Utils_cmp(x.a, y.a)); x = x.b, y = y.b) {} // WHILE_CONSES
+	return ord || (x.b ? /*GT*/ 1 : y.b ? /*LT*/ -1 : /*EQ*/ 0);
+}
+
+var _Utils_lt = F2(function(a, b) { return _Utils_cmp(a, b) < 0; });
+var _Utils_le = F2(function(a, b) { return _Utils_cmp(a, b) < 1; });
+var _Utils_gt = F2(function(a, b) { return _Utils_cmp(a, b) > 0; });
+var _Utils_ge = F2(function(a, b) { return _Utils_cmp(a, b) >= 0; });
+
+var _Utils_compare = F2(function(x, y)
+{
+	var n = _Utils_cmp(x, y);
+	return n < 0 ? $elm$core$Basics$LT : n ? $elm$core$Basics$GT : $elm$core$Basics$EQ;
+});
+
+
+// COMMON VALUES
+
+var _Utils_Tuple0 = 0;
+var _Utils_Tuple0_UNUSED = { $: '#0' };
+
+function _Utils_Tuple2(a, b) { return { a: a, b: b }; }
+function _Utils_Tuple2_UNUSED(a, b) { return { $: '#2', a: a, b: b }; }
+
+function _Utils_Tuple3(a, b, c) { return { a: a, b: b, c: c }; }
+function _Utils_Tuple3_UNUSED(a, b, c) { return { $: '#3', a: a, b: b, c: c }; }
+
+function _Utils_chr(c) { return c; }
+function _Utils_chr_UNUSED(c) { return new String(c); }
+
+
+// RECORDS
+
+function _Utils_update(oldRecord, updatedFields)
+{
+	var newRecord = {};
+
+	for (var key in oldRecord)
+	{
+		newRecord[key] = oldRecord[key];
+	}
+
+	for (var key in updatedFields)
+	{
+		newRecord[key] = updatedFields[key];
+	}
+
+	return newRecord;
+}
+
+
+// APPEND
+
+var _Utils_append = F2(_Utils_ap);
+
+function _Utils_ap(xs, ys)
+{
+	// append Strings
+	if (typeof xs === 'string')
+	{
+		return xs + ys;
+	}
+
+	// append Lists
+	if (!xs.b)
+	{
+		return ys;
+	}
+	var root = _List_Cons(xs.a, ys);
+	xs = xs.b
+	for (var curr = root; xs.b; xs = xs.b) // WHILE_CONS
+	{
+		curr = curr.b = _List_Cons(xs.a, ys);
+	}
+	return root;
+}
+
+
+
+var _List_Nil = { $: 0 };
+var _List_Nil_UNUSED = { $: '[]' };
+
+function _List_Cons(hd, tl) { return { $: 1, a: hd, b: tl }; }
+function _List_Cons_UNUSED(hd, tl) { return { $: '::', a: hd, b: tl }; }
+
+
+var _List_cons = F2(_List_Cons);
+
+function _List_fromArray(arr)
+{
+	var out = _List_Nil;
+	for (var i = arr.length; i--; )
+	{
+		out = _List_Cons(arr[i], out);
+	}
+	return out;
+}
+
+function _List_toArray(xs)
+{
+	for (var out = []; xs.b; xs = xs.b) // WHILE_CONS
+	{
+		out.push(xs.a);
+	}
+	return out;
+}
+
+var _List_map2 = F3(function(f, xs, ys)
+{
+	for (var arr = []; xs.b && ys.b; xs = xs.b, ys = ys.b) // WHILE_CONSES
+	{
+		arr.push(A2(f, xs.a, ys.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map3 = F4(function(f, xs, ys, zs)
+{
+	for (var arr = []; xs.b && ys.b && zs.b; xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A3(f, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map4 = F5(function(f, ws, xs, ys, zs)
+{
+	for (var arr = []; ws.b && xs.b && ys.b && zs.b; ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A4(f, ws.a, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map5 = F6(function(f, vs, ws, xs, ys, zs)
+{
+	for (var arr = []; vs.b && ws.b && xs.b && ys.b && zs.b; vs = vs.b, ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A5(f, vs.a, ws.a, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_sortBy = F2(function(f, xs)
+{
+	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
+		return _Utils_cmp(f(a), f(b));
+	}));
+});
+
+var _List_sortWith = F2(function(f, xs)
+{
+	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
+		var ord = A2(f, a, b);
+		return ord === $elm$core$Basics$EQ ? 0 : ord === $elm$core$Basics$LT ? -1 : 1;
+	}));
+});
+
+
+
 var _JsArray_empty = [];
 
 function _JsArray_singleton(value)
@@ -519,277 +784,12 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.N.D === region.T.D)
+	if (region.R.D === region.W.D)
 	{
-		return 'on line ' + region.N.D;
+		return 'on line ' + region.R.D;
 	}
-	return 'on lines ' + region.N.D + ' through ' + region.T.D;
+	return 'on lines ' + region.R.D + ' through ' + region.W.D;
 }
-
-
-
-// EQUALITY
-
-function _Utils_eq(x, y)
-{
-	for (
-		var pair, stack = [], isEqual = _Utils_eqHelp(x, y, 0, stack);
-		isEqual && (pair = stack.pop());
-		isEqual = _Utils_eqHelp(pair.a, pair.b, 0, stack)
-		)
-	{}
-
-	return isEqual;
-}
-
-function _Utils_eqHelp(x, y, depth, stack)
-{
-	if (x === y)
-	{
-		return true;
-	}
-
-	if (typeof x !== 'object' || x === null || y === null)
-	{
-		typeof x === 'function' && _Debug_crash(5);
-		return false;
-	}
-
-	if (depth > 100)
-	{
-		stack.push(_Utils_Tuple2(x,y));
-		return true;
-	}
-
-	/**_UNUSED/
-	if (x.$ === 'Set_elm_builtin')
-	{
-		x = $elm$core$Set$toList(x);
-		y = $elm$core$Set$toList(y);
-	}
-	if (x.$ === 'RBNode_elm_builtin' || x.$ === 'RBEmpty_elm_builtin')
-	{
-		x = $elm$core$Dict$toList(x);
-		y = $elm$core$Dict$toList(y);
-	}
-	//*/
-
-	/**/
-	if (x.$ < 0)
-	{
-		x = $elm$core$Dict$toList(x);
-		y = $elm$core$Dict$toList(y);
-	}
-	//*/
-
-	for (var key in x)
-	{
-		if (!_Utils_eqHelp(x[key], y[key], depth + 1, stack))
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-var _Utils_equal = F2(_Utils_eq);
-var _Utils_notEqual = F2(function(a, b) { return !_Utils_eq(a,b); });
-
-
-
-// COMPARISONS
-
-// Code in Generate/JavaScript.hs, Basics.js, and List.js depends on
-// the particular integer values assigned to LT, EQ, and GT.
-
-function _Utils_cmp(x, y, ord)
-{
-	if (typeof x !== 'object')
-	{
-		return x === y ? /*EQ*/ 0 : x < y ? /*LT*/ -1 : /*GT*/ 1;
-	}
-
-	/**_UNUSED/
-	if (x instanceof String)
-	{
-		var a = x.valueOf();
-		var b = y.valueOf();
-		return a === b ? 0 : a < b ? -1 : 1;
-	}
-	//*/
-
-	/**/
-	if (typeof x.$ === 'undefined')
-	//*/
-	/**_UNUSED/
-	if (x.$[0] === '#')
-	//*/
-	{
-		return (ord = _Utils_cmp(x.a, y.a))
-			? ord
-			: (ord = _Utils_cmp(x.b, y.b))
-				? ord
-				: _Utils_cmp(x.c, y.c);
-	}
-
-	// traverse conses until end of a list or a mismatch
-	for (; x.b && y.b && !(ord = _Utils_cmp(x.a, y.a)); x = x.b, y = y.b) {} // WHILE_CONSES
-	return ord || (x.b ? /*GT*/ 1 : y.b ? /*LT*/ -1 : /*EQ*/ 0);
-}
-
-var _Utils_lt = F2(function(a, b) { return _Utils_cmp(a, b) < 0; });
-var _Utils_le = F2(function(a, b) { return _Utils_cmp(a, b) < 1; });
-var _Utils_gt = F2(function(a, b) { return _Utils_cmp(a, b) > 0; });
-var _Utils_ge = F2(function(a, b) { return _Utils_cmp(a, b) >= 0; });
-
-var _Utils_compare = F2(function(x, y)
-{
-	var n = _Utils_cmp(x, y);
-	return n < 0 ? $elm$core$Basics$LT : n ? $elm$core$Basics$GT : $elm$core$Basics$EQ;
-});
-
-
-// COMMON VALUES
-
-var _Utils_Tuple0 = 0;
-var _Utils_Tuple0_UNUSED = { $: '#0' };
-
-function _Utils_Tuple2(a, b) { return { a: a, b: b }; }
-function _Utils_Tuple2_UNUSED(a, b) { return { $: '#2', a: a, b: b }; }
-
-function _Utils_Tuple3(a, b, c) { return { a: a, b: b, c: c }; }
-function _Utils_Tuple3_UNUSED(a, b, c) { return { $: '#3', a: a, b: b, c: c }; }
-
-function _Utils_chr(c) { return c; }
-function _Utils_chr_UNUSED(c) { return new String(c); }
-
-
-// RECORDS
-
-function _Utils_update(oldRecord, updatedFields)
-{
-	var newRecord = {};
-
-	for (var key in oldRecord)
-	{
-		newRecord[key] = oldRecord[key];
-	}
-
-	for (var key in updatedFields)
-	{
-		newRecord[key] = updatedFields[key];
-	}
-
-	return newRecord;
-}
-
-
-// APPEND
-
-var _Utils_append = F2(_Utils_ap);
-
-function _Utils_ap(xs, ys)
-{
-	// append Strings
-	if (typeof xs === 'string')
-	{
-		return xs + ys;
-	}
-
-	// append Lists
-	if (!xs.b)
-	{
-		return ys;
-	}
-	var root = _List_Cons(xs.a, ys);
-	xs = xs.b
-	for (var curr = root; xs.b; xs = xs.b) // WHILE_CONS
-	{
-		curr = curr.b = _List_Cons(xs.a, ys);
-	}
-	return root;
-}
-
-
-
-var _List_Nil = { $: 0 };
-var _List_Nil_UNUSED = { $: '[]' };
-
-function _List_Cons(hd, tl) { return { $: 1, a: hd, b: tl }; }
-function _List_Cons_UNUSED(hd, tl) { return { $: '::', a: hd, b: tl }; }
-
-
-var _List_cons = F2(_List_Cons);
-
-function _List_fromArray(arr)
-{
-	var out = _List_Nil;
-	for (var i = arr.length; i--; )
-	{
-		out = _List_Cons(arr[i], out);
-	}
-	return out;
-}
-
-function _List_toArray(xs)
-{
-	for (var out = []; xs.b; xs = xs.b) // WHILE_CONS
-	{
-		out.push(xs.a);
-	}
-	return out;
-}
-
-var _List_map2 = F3(function(f, xs, ys)
-{
-	for (var arr = []; xs.b && ys.b; xs = xs.b, ys = ys.b) // WHILE_CONSES
-	{
-		arr.push(A2(f, xs.a, ys.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map3 = F4(function(f, xs, ys, zs)
-{
-	for (var arr = []; xs.b && ys.b && zs.b; xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A3(f, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map4 = F5(function(f, ws, xs, ys, zs)
-{
-	for (var arr = []; ws.b && xs.b && ys.b && zs.b; ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A4(f, ws.a, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map5 = F6(function(f, vs, ws, xs, ys, zs)
-{
-	for (var arr = []; vs.b && ws.b && xs.b && ys.b && zs.b; vs = vs.b, ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A5(f, vs.a, ws.a, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_sortBy = F2(function(f, xs)
-{
-	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
-		return _Utils_cmp(f(a), f(b));
-	}));
-});
-
-var _List_sortWith = F2(function(f, xs)
-{
-	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
-		var ord = A2(f, a, b);
-		return ord === $elm$core$Basics$EQ ? 0 : ord === $elm$core$Basics$LT ? -1 : 1;
-	}));
-});
 
 
 
@@ -2704,9 +2704,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		p: func(record.p),
-		O: record.O,
-		L: record.L
+		q: func(record.q),
+		S: record.S,
+		O: record.O
 	}
 });
 
@@ -2974,11 +2974,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.p;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.O;
+		var message = !tag ? value : tag < 3 ? value.a : value.q;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.S;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.L) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.O) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3968,7 +3968,7 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 		impl.aJ,
 		impl.aH,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.M && impl.M(sendToApp)
+			var divertHrefToApp = impl.Q && impl.Q(sendToApp)
 			var view = impl.aK;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
@@ -4043,7 +4043,7 @@ function _Browser_application(impl)
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		M: function(sendToApp)
+		Q: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4059,9 +4059,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.ah === next.ah
-							&& curr.Y === next.Y
-							&& curr.ae.a === next.ae.a
+							&& curr.ai === next.ai
+							&& curr._ === next._
+							&& curr.af.a === next.af.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4232,12 +4232,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		al: _Browser_getScene(),
+		am: _Browser_getScene(),
 		ap: {
 			ar: _Browser_window.pageXOffset,
 			as: _Browser_window.pageYOffset,
 			aq: _Browser_doc.documentElement.clientWidth,
-			W: _Browser_doc.documentElement.clientHeight
+			Z: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4248,7 +4248,7 @@ function _Browser_getScene()
 	var elem = _Browser_doc.documentElement;
 	return {
 		aq: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		W: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		Z: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4271,15 +4271,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			al: {
+			am: {
 				aq: node.scrollWidth,
-				W: node.scrollHeight
+				Z: node.scrollHeight
 			},
 			ap: {
 				ar: node.scrollLeft,
 				as: node.scrollTop,
 				aq: node.clientWidth,
-				W: node.clientHeight
+				Z: node.clientHeight
 			}
 		};
 	});
@@ -4309,18 +4309,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			al: _Browser_getScene(),
+			am: _Browser_getScene(),
 			ap: {
 				ar: x,
 				as: y,
 				aq: _Browser_doc.documentElement.clientWidth,
-				W: _Browser_doc.documentElement.clientHeight
+				Z: _Browser_doc.documentElement.clientHeight
 			},
 			ay: {
 				ar: x + rect.left,
 				as: y + rect.top,
 				aq: rect.width,
-				W: rect.height
+				Z: rect.height
 			}
 		};
 	});
@@ -4355,31 +4355,10 @@ function _Browser_load(url)
 		}
 	}));
 }
+var $elm$core$Basics$EQ = 1;
+var $elm$core$Basics$GT = 2;
+var $elm$core$Basics$LT = 0;
 var $elm$core$List$cons = _List_cons;
-var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
-var $elm$core$Array$foldr = F3(
-	function (func, baseCase, _v0) {
-		var tree = _v0.c;
-		var tail = _v0.d;
-		var helper = F2(
-			function (node, acc) {
-				if (!node.$) {
-					var subTree = node.a;
-					return A3($elm$core$Elm$JsArray$foldr, helper, acc, subTree);
-				} else {
-					var values = node.a;
-					return A3($elm$core$Elm$JsArray$foldr, func, acc, values);
-				}
-			});
-		return A3(
-			$elm$core$Elm$JsArray$foldr,
-			helper,
-			A3($elm$core$Elm$JsArray$foldr, func, baseCase, tail),
-			tree);
-	});
-var $elm$core$Array$toList = function (array) {
-	return A3($elm$core$Array$foldr, $elm$core$List$cons, _List_Nil, array);
-};
 var $elm$core$Dict$foldr = F3(
 	function (func, acc, t) {
 		foldr:
@@ -4432,12 +4411,30 @@ var $elm$core$Set$toList = function (_v0) {
 	var dict = _v0;
 	return $elm$core$Dict$keys(dict);
 };
-var $elm$core$Basics$EQ = 1;
-var $elm$core$Basics$GT = 2;
-var $elm$core$Basics$LT = 0;
-var $author$project$Main$Home = {$: 0};
-var $author$project$Main$NoGame = {$: 0};
-var $author$project$Main$init = {R: 0, C: _List_Nil, y: $author$project$Main$NoGame, q: _List_Nil, m: $author$project$Main$Home};
+var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
+var $elm$core$Array$foldr = F3(
+	function (func, baseCase, _v0) {
+		var tree = _v0.c;
+		var tail = _v0.d;
+		var helper = F2(
+			function (node, acc) {
+				if (!node.$) {
+					var subTree = node.a;
+					return A3($elm$core$Elm$JsArray$foldr, helper, acc, subTree);
+				} else {
+					var values = node.a;
+					return A3($elm$core$Elm$JsArray$foldr, func, acc, values);
+				}
+			});
+		return A3(
+			$elm$core$Elm$JsArray$foldr,
+			helper,
+			A3($elm$core$Elm$JsArray$foldr, func, baseCase, tail),
+			tree);
+	});
+var $elm$core$Array$toList = function (array) {
+	return A3($elm$core$Array$foldr, $elm$core$List$cons, _List_Nil, array);
+};
 var $elm$core$Result$Err = function (a) {
 	return {$: 1, a: a};
 };
@@ -4862,7 +4859,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {V: fragment, Y: host, ac: path, ae: port_, ah: protocol, ai: query};
+		return {Y: fragment, _: host, ad: path, af: port_, ai: protocol, aj: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5140,42 +5137,601 @@ var $elm$core$Task$perform = F2(
 		return $elm$core$Task$command(
 			A2($elm$core$Task$map, toMessage, task));
 	});
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $elm$browser$Browser$sandbox = function (impl) {
-	return _Browser_element(
-		{
-			aC: function (_v0) {
-				return _Utils_Tuple2(impl.aC, $elm$core$Platform$Cmd$none);
-			},
-			aH: function (_v1) {
-				return $elm$core$Platform$Sub$none;
-			},
-			aJ: F2(
-				function (msg, model) {
-					return _Utils_Tuple2(
-						A2(impl.aJ, msg, model),
-						$elm$core$Platform$Cmd$none);
-				}),
-			aK: impl.aK
-		});
+var $elm$browser$Browser$element = _Browser_element;
+var $author$project$Main$AnyBullOut = 1;
+var $author$project$Main$AppState = F5(
+	function (playerData, game, screen, currentPlayer, currentTurn) {
+		return {J: currentPlayer, y: currentTurn, u: game, n: playerData, l: screen};
+	});
+var $author$project$Main$AroundTheClock = function (a) {
+	return {$: 4, a: a};
 };
+var $author$project$Main$AroundTheClock180 = function (a) {
+	return {$: 5, a: a};
+};
+var $author$project$Main$AroundTheClock180Score = function (a) {
+	return {$: 3, a: a};
+};
+var $author$project$Main$AroundTheClockScore = function (a) {
+	return {$: 2, a: a};
+};
+var $author$project$Main$Baseball = function (a) {
+	return {$: 6, a: a};
+};
+var $author$project$Main$BaseballScore = function (a) {
+	return {$: 4, a: a};
+};
+var $author$project$Main$BasicBaseball = 0;
+var $author$project$Main$BasicCricket = 0;
+var $author$project$Main$BasicDragon = 0;
+var $author$project$Main$BasicIn = 0;
+var $author$project$Main$BasicOut = 0;
+var $author$project$Main$ChaseTheDragon = function (a) {
+	return {$: 7, a: a};
+};
+var $author$project$Main$ChaseTheDragonScore = function (a) {
+	return {$: 5, a: a};
+};
+var $author$project$Main$Cricket = function (a) {
+	return {$: 8, a: a};
+};
+var $author$project$Main$CricketScore = function (a) {
+	return {$: 6, a: a};
+};
+var $author$project$Main$DoubleBonus = 0;
+var $author$project$Main$DoubleHit = 1;
+var $author$project$Main$DoubleIn = 1;
+var $author$project$Main$DoubleOut = 1;
 var $author$project$Main$EditPlayers = function (a) {
 	return {$: 1, a: a};
 };
+var $author$project$Main$GolfCricket = 1;
+var $author$project$Main$Hit1 = function (a) {
+	return {$: 1, a: a};
+};
+var $author$project$Main$Hit10 = function (a) {
+	return {$: 10, a: a};
+};
+var $author$project$Main$Hit11 = function (a) {
+	return {$: 11, a: a};
+};
+var $author$project$Main$Hit12 = function (a) {
+	return {$: 12, a: a};
+};
+var $author$project$Main$Hit13 = function (a) {
+	return {$: 13, a: a};
+};
+var $author$project$Main$Hit14 = function (a) {
+	return {$: 14, a: a};
+};
+var $author$project$Main$Hit15 = function (a) {
+	return {$: 15, a: a};
+};
+var $author$project$Main$Hit16 = function (a) {
+	return {$: 16, a: a};
+};
+var $author$project$Main$Hit17 = function (a) {
+	return {$: 17, a: a};
+};
+var $author$project$Main$Hit18 = function (a) {
+	return {$: 18, a: a};
+};
+var $author$project$Main$Hit19 = function (a) {
+	return {$: 19, a: a};
+};
+var $author$project$Main$Hit2 = function (a) {
+	return {$: 2, a: a};
+};
+var $author$project$Main$Hit20 = function (a) {
+	return {$: 20, a: a};
+};
+var $author$project$Main$Hit3 = function (a) {
+	return {$: 3, a: a};
+};
+var $author$project$Main$Hit4 = function (a) {
+	return {$: 4, a: a};
+};
+var $author$project$Main$Hit5 = function (a) {
+	return {$: 5, a: a};
+};
+var $author$project$Main$Hit6 = function (a) {
+	return {$: 6, a: a};
+};
+var $author$project$Main$Hit7 = function (a) {
+	return {$: 7, a: a};
+};
+var $author$project$Main$Hit8 = function (a) {
+	return {$: 8, a: a};
+};
+var $author$project$Main$Hit9 = function (a) {
+	return {$: 9, a: a};
+};
+var $author$project$Main$HitBullseye = {$: 21};
+var $author$project$Main$HitDoubleBullseye = {$: 22};
+var $author$project$Main$HitMissed = {$: 0};
+var $author$project$Main$Home = {$: 0};
+var $author$project$Main$Inning = $elm$core$Basics$identity;
 var $author$project$Main$NewPlayerName = $elm$core$Basics$identity;
-var $author$project$Main$PlayGame = {$: 3};
-var $author$project$Main$SelectGame = {$: 2};
-var $author$project$Main$PlayerIndex = $elm$core$Basics$identity;
+var $author$project$Main$NoBullOut = 0;
+var $author$project$Main$NoGame = {$: 0};
 var $author$project$Main$NoScore = {$: 0};
+var $author$project$Main$Numbers301 = F2(
+	function (a, b) {
+		return {$: 3, a: a, b: b};
+	});
+var $author$project$Main$Numbers501 = F2(
+	function (a, b) {
+		return {$: 2, a: a, b: b};
+	});
+var $author$project$Main$Numbers701 = F2(
+	function (a, b) {
+		return {$: 1, a: a, b: b};
+	});
+var $author$project$Main$NumbersScore = function (a) {
+	return {$: 1, a: a};
+};
+var $author$project$Main$PlayGame = {$: 3};
+var $author$project$Main$Player = F4(
+	function (name, hits, score, index) {
+		return {K: hits, L: index, I: name, P: score};
+	});
 var $author$project$Main$PlayerHits = $elm$core$Basics$identity;
+var $author$project$Main$PlayerIndex = $elm$core$Basics$identity;
 var $author$project$Main$PlayerName = $elm$core$Basics$identity;
+var $author$project$Main$Score = $elm$core$Basics$identity;
+var $author$project$Main$SelectGame = {$: 2};
+var $author$project$Main$SeventhInningCatch = 1;
+var $author$project$Main$SingleHit = 0;
+var $author$project$Main$SplitBullOut = 2;
+var $author$project$Main$TripleBonus = 1;
+var $author$project$Main$TripleHeadedDragon = 1;
+var $author$project$Main$TripleHit = 2;
+var $author$project$Main$TripleIn = 2;
+var $author$project$Main$TripleOut = 2;
+var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $elm$json$Json$Decode$fail = _Json_fail;
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$json$Json$Decode$list = _Json_decodeList;
+var $elm$json$Json$Decode$map4 = _Json_map4;
+var $elm$json$Json$Decode$map5 = _Json_map5;
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$Main$app_state_decoder = function () {
+	var string_to_num_var_o = function (v) {
+		switch (v) {
+			case 'TO':
+				return 2;
+			case 'DO':
+				return 1;
+			default:
+				return 0;
+		}
+	};
+	var string_to_num_var_i = function (v) {
+		switch (v) {
+			case 'TI':
+				return 2;
+			case 'DI':
+				return 1;
+			default:
+				return 0;
+		}
+	};
+	var string_to_ctd_var = function (v) {
+		if (v === 'TD') {
+			return 1;
+		} else {
+			return 0;
+		}
+	};
+	var string_to_ckt_var = function (v) {
+		if (v === 'G') {
+			return 1;
+		} else {
+			return 0;
+		}
+	};
+	var string_to_bbl_var = function (v) {
+		if (v === 'SIC') {
+			return 1;
+		} else {
+			return 0;
+		}
+	};
+	var string_to_atc_var = function (v) {
+		switch (v) {
+			case 'BO':
+				return 1;
+			case 'SO':
+				return 2;
+			default:
+				return 0;
+		}
+	};
+	var string_to_atc_180_var = function (v) {
+		if (v === 'TPL') {
+			return 1;
+		} else {
+			return 0;
+		}
+	};
+	var decode_screen = A2(
+		$elm$json$Json$Decode$map,
+		function (s) {
+			switch (s) {
+				case 'EDITPLAYERS':
+					return $author$project$Main$EditPlayers('');
+				case 'SELECTGAME':
+					return $author$project$Main$SelectGame;
+				case 'PLAYGAME':
+					return $author$project$Main$PlayGame;
+				default:
+					return $author$project$Main$Home;
+			}
+		},
+		$elm$json$Json$Decode$string);
+	var decode_player_name = A2($elm$json$Json$Decode$map, $elm$core$Basics$identity, $elm$json$Json$Decode$string);
+	var decode_player_index = A2($elm$json$Json$Decode$map, $elm$core$Basics$identity, $elm$json$Json$Decode$int);
+	var decode_inning_score = A3(
+		$elm$json$Json$Decode$map2,
+		F2(
+			function (i, s) {
+				return _Utils_Tuple2(i, s);
+			}),
+		A2($elm$json$Json$Decode$field, 'inning', $elm$json$Json$Decode$int),
+		A2($elm$json$Json$Decode$field, 'score', $elm$json$Json$Decode$int));
+	var decode_hit = A2(
+		$elm$json$Json$Decode$map,
+		function (h) {
+			switch (h) {
+				case 'M':
+					return $author$project$Main$HitMissed;
+				case 'S1':
+					return $author$project$Main$Hit1(0);
+				case 'D1':
+					return $author$project$Main$Hit1(1);
+				case 'T1':
+					return $author$project$Main$Hit1(2);
+				case 'S2':
+					return $author$project$Main$Hit2(0);
+				case 'D2':
+					return $author$project$Main$Hit2(1);
+				case 'T2':
+					return $author$project$Main$Hit2(2);
+				case 'S3':
+					return $author$project$Main$Hit3(0);
+				case 'D3':
+					return $author$project$Main$Hit3(1);
+				case 'T3':
+					return $author$project$Main$Hit3(2);
+				case 'S4':
+					return $author$project$Main$Hit4(0);
+				case 'D4':
+					return $author$project$Main$Hit4(1);
+				case 'T4':
+					return $author$project$Main$Hit4(2);
+				case 'S5':
+					return $author$project$Main$Hit5(0);
+				case 'D5':
+					return $author$project$Main$Hit5(1);
+				case 'T5':
+					return $author$project$Main$Hit5(2);
+				case 'S6':
+					return $author$project$Main$Hit6(0);
+				case 'D6':
+					return $author$project$Main$Hit6(1);
+				case 'T6':
+					return $author$project$Main$Hit6(2);
+				case 'S7':
+					return $author$project$Main$Hit7(0);
+				case 'D7':
+					return $author$project$Main$Hit7(1);
+				case 'T7':
+					return $author$project$Main$Hit7(2);
+				case 'S8':
+					return $author$project$Main$Hit8(0);
+				case 'D8':
+					return $author$project$Main$Hit8(1);
+				case 'T8':
+					return $author$project$Main$Hit8(2);
+				case 'S9':
+					return $author$project$Main$Hit9(0);
+				case 'D9':
+					return $author$project$Main$Hit9(1);
+				case 'T9':
+					return $author$project$Main$Hit9(2);
+				case 'S10':
+					return $author$project$Main$Hit10(0);
+				case 'D10':
+					return $author$project$Main$Hit10(1);
+				case 'T10':
+					return $author$project$Main$Hit10(2);
+				case 'S11':
+					return $author$project$Main$Hit11(0);
+				case 'D11':
+					return $author$project$Main$Hit11(1);
+				case 'T11':
+					return $author$project$Main$Hit11(2);
+				case 'S12':
+					return $author$project$Main$Hit12(0);
+				case 'D12':
+					return $author$project$Main$Hit12(1);
+				case 'T12':
+					return $author$project$Main$Hit12(2);
+				case 'S13':
+					return $author$project$Main$Hit13(0);
+				case 'D13':
+					return $author$project$Main$Hit13(1);
+				case 'T13':
+					return $author$project$Main$Hit13(2);
+				case 'S14':
+					return $author$project$Main$Hit14(0);
+				case 'D14':
+					return $author$project$Main$Hit14(1);
+				case 'T14':
+					return $author$project$Main$Hit14(2);
+				case 'S15':
+					return $author$project$Main$Hit15(0);
+				case 'D15':
+					return $author$project$Main$Hit15(1);
+				case 'T15':
+					return $author$project$Main$Hit15(2);
+				case 'S16':
+					return $author$project$Main$Hit16(0);
+				case 'D16':
+					return $author$project$Main$Hit16(1);
+				case 'T16':
+					return $author$project$Main$Hit16(2);
+				case 'S17':
+					return $author$project$Main$Hit17(0);
+				case 'D17':
+					return $author$project$Main$Hit17(1);
+				case 'T17':
+					return $author$project$Main$Hit17(2);
+				case 'S18':
+					return $author$project$Main$Hit18(0);
+				case 'D18':
+					return $author$project$Main$Hit18(1);
+				case 'T18':
+					return $author$project$Main$Hit18(2);
+				case 'S19':
+					return $author$project$Main$Hit19(0);
+				case 'D19':
+					return $author$project$Main$Hit19(1);
+				case 'T19':
+					return $author$project$Main$Hit19(2);
+				case 'S20':
+					return $author$project$Main$Hit20(0);
+				case 'D20':
+					return $author$project$Main$Hit20(1);
+				case 'T20':
+					return $author$project$Main$Hit20(2);
+				case 'Bull':
+					return $author$project$Main$HitBullseye;
+				case 'DBull':
+					return $author$project$Main$HitDoubleBullseye;
+				default:
+					return $author$project$Main$HitMissed;
+			}
+		},
+		$elm$json$Json$Decode$string);
+	var decode_hit_score = A3(
+		$elm$json$Json$Decode$map2,
+		F2(
+			function (h, s) {
+				return _Utils_Tuple2(h, s);
+			}),
+		A2($elm$json$Json$Decode$field, 'hit', decode_hit),
+		A2($elm$json$Json$Decode$field, 'score', $elm$json$Json$Decode$int));
+	var decode_player_hits = A2(
+		$elm$json$Json$Decode$map,
+		$elm$core$Basics$identity,
+		$elm$json$Json$Decode$list(decode_hit));
+	var decode_score_hits = A3(
+		$elm$json$Json$Decode$map2,
+		F2(
+			function (s, l) {
+				return _Utils_Tuple2(s, l);
+			}),
+		A2($elm$json$Json$Decode$field, 'score', $elm$json$Json$Decode$int),
+		A2(
+			$elm$json$Json$Decode$field,
+			'hits',
+			$elm$json$Json$Decode$list(decode_hit)));
+	var decode_game = A2(
+		$elm$json$Json$Decode$map,
+		function (s) {
+			var _v2 = A2($elm$core$String$split, ':', s);
+			_v2$9:
+			while (true) {
+				if (_v2.b) {
+					if (!_v2.b.b) {
+						if (_v2.a === 'NoGame') {
+							return $author$project$Main$NoGame;
+						} else {
+							break _v2$9;
+						}
+					} else {
+						if (_v2.b.b.b) {
+							if (!_v2.b.b.b.b) {
+								switch (_v2.a) {
+									case '701':
+										var _v3 = _v2.b;
+										var i = _v3.a;
+										var _v4 = _v3.b;
+										var o = _v4.a;
+										return A2(
+											$author$project$Main$Numbers701,
+											string_to_num_var_i(i),
+											string_to_num_var_o(o));
+									case '501':
+										var _v5 = _v2.b;
+										var i = _v5.a;
+										var _v6 = _v5.b;
+										var o = _v6.a;
+										return A2(
+											$author$project$Main$Numbers501,
+											string_to_num_var_i(i),
+											string_to_num_var_o(o));
+									case '301':
+										var _v7 = _v2.b;
+										var i = _v7.a;
+										var _v8 = _v7.b;
+										var o = _v8.a;
+										return A2(
+											$author$project$Main$Numbers301,
+											string_to_num_var_i(i),
+											string_to_num_var_o(o));
+									default:
+										break _v2$9;
+								}
+							} else {
+								break _v2$9;
+							}
+						} else {
+							switch (_v2.a) {
+								case 'ATC':
+									var _v9 = _v2.b;
+									var v = _v9.a;
+									return $author$project$Main$AroundTheClock(
+										string_to_atc_var(v));
+								case 'ATC180':
+									var _v10 = _v2.b;
+									var v = _v10.a;
+									return $author$project$Main$AroundTheClock180(
+										string_to_atc_180_var(v));
+								case 'BBL':
+									var _v11 = _v2.b;
+									var v = _v11.a;
+									return $author$project$Main$Baseball(
+										string_to_bbl_var(v));
+								case 'CTD':
+									var _v12 = _v2.b;
+									var v = _v12.a;
+									return $author$project$Main$ChaseTheDragon(
+										string_to_ctd_var(v));
+								case 'CKT':
+									var _v13 = _v2.b;
+									var v = _v13.a;
+									return $author$project$Main$Cricket(
+										string_to_ckt_var(v));
+								default:
+									break _v2$9;
+							}
+						}
+					}
+				} else {
+					break _v2$9;
+				}
+			}
+			return $author$project$Main$NoGame;
+		},
+		$elm$json$Json$Decode$string);
+	var decode_ctds_score = A2(
+		$elm$json$Json$Decode$map,
+		$author$project$Main$ChaseTheDragonScore,
+		A2(
+			$elm$json$Json$Decode$field,
+			'value',
+			$elm$json$Json$Decode$list(decode_hit)));
+	var decode_cs_score = A2(
+		$elm$json$Json$Decode$map,
+		$author$project$Main$CricketScore,
+		A2($elm$json$Json$Decode$field, 'value', decode_score_hits));
+	var decode_bbls_score = A2(
+		$elm$json$Json$Decode$map,
+		$author$project$Main$BaseballScore,
+		A2(
+			$elm$json$Json$Decode$field,
+			'value',
+			$elm$json$Json$Decode$list(decode_inning_score)));
+	var decode_atcs_score = A2(
+		$elm$json$Json$Decode$map,
+		$author$project$Main$AroundTheClockScore,
+		A2(
+			$elm$json$Json$Decode$field,
+			'value',
+			$elm$json$Json$Decode$list(decode_hit)));
+	var decode_atcs180_score = A2(
+		$elm$json$Json$Decode$map,
+		$author$project$Main$AroundTheClock180Score,
+		A2(
+			$elm$json$Json$Decode$field,
+			'value',
+			$elm$json$Json$Decode$list(decode_hit_score)));
+	var decode_game_score_from_game = function (g) {
+		switch (g) {
+			case 'NoScore':
+				return A2(
+					$elm$json$Json$Decode$map,
+					function (_v1) {
+						return $author$project$Main$NoScore;
+					},
+					A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$int));
+			case 'NUMS':
+				return A2(
+					$elm$json$Json$Decode$map,
+					function (s) {
+						return $author$project$Main$NumbersScore(s);
+					},
+					A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$int));
+			case 'ATCS':
+				return decode_atcs_score;
+			case 'ATCS180S':
+				return decode_atcs180_score;
+			case 'BBLS':
+				return decode_bbls_score;
+			case 'CTDS':
+				return decode_ctds_score;
+			case 'CS':
+				return decode_cs_score;
+			default:
+				return $elm$json$Json$Decode$fail('Invalid game type: ' + g);
+		}
+	};
+	var decode_game_score = A2(
+		$elm$json$Json$Decode$andThen,
+		decode_game_score_from_game,
+		A2($elm$json$Json$Decode$field, 'type', $elm$json$Json$Decode$string));
+	var decode_player = A5(
+		$elm$json$Json$Decode$map4,
+		$author$project$Main$Player,
+		A2($elm$json$Json$Decode$field, 'name', decode_player_name),
+		A2($elm$json$Json$Decode$field, 'hits', decode_player_hits),
+		A2($elm$json$Json$Decode$field, 'score', decode_game_score),
+		A2($elm$json$Json$Decode$field, 'index', decode_player_index));
+	var decode_list_player = $elm$json$Json$Decode$list(decode_player);
+	return A6(
+		$elm$json$Json$Decode$map5,
+		$author$project$Main$AppState,
+		A2($elm$json$Json$Decode$field, 'playerData', decode_list_player),
+		A2($elm$json$Json$Decode$field, 'game', decode_game),
+		A2($elm$json$Json$Decode$field, 'screen', decode_screen),
+		A2($elm$json$Json$Decode$field, 'currentPlayer', $elm$json$Json$Decode$int),
+		A2(
+			$elm$json$Json$Decode$field,
+			'currentTurn',
+			$elm$json$Json$Decode$list(decode_hit)));
+}();
+var $author$project$Main$clean_state = {J: 0, y: _List_Nil, u: $author$project$Main$NoGame, n: _List_Nil, l: $author$project$Main$Home};
+var $elm$json$Json$Decode$decodeValue = _Json_run;
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Main$init = function (s) {
+	var _v0 = A2($elm$json$Json$Decode$decodeValue, $author$project$Main$app_state_decoder, s);
+	if (_v0.$ === 1) {
+		return _Utils_Tuple2($author$project$Main$clean_state, $elm$core$Platform$Cmd$none);
+	} else {
+		var state = _v0.a;
+		return _Utils_Tuple2(state, $elm$core$Platform$Cmd$none);
+	}
+};
+var $elm$core$Platform$Sub$batch = _Platform_batch;
+var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Main$new_player = F2(
 	function (i, _v0) {
 		var n = _v0;
-		return {X: _List_Nil, Z: i, J: n, am: $author$project$Main$NoScore};
+		return {K: _List_Nil, L: i, I: n, P: $author$project$Main$NoScore};
 	});
 var $elm$core$String$trim = _String_trim;
 var $author$project$Main$add_player = F2(
@@ -5192,6 +5748,11 @@ var $author$project$Main$add_player = F2(
 				1 + $elm$core$List$length(l),
 				n),
 			l);
+	});
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
 	});
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
@@ -5214,6 +5775,415 @@ var $author$project$Main$delete_player = F2(
 			},
 			l);
 	});
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(0),
+				entries));
+	});
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(0),
+			pairs));
+};
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $author$project$Main$encode_app_state = function (state) {
+	var encode_sub_hit = function (s) {
+		switch (s) {
+			case 0:
+				return 'S';
+			case 1:
+				return 'D';
+			default:
+				return 'T';
+		}
+	};
+	var encode_screen = function (s) {
+		switch (s.$) {
+			case 0:
+				return $elm$json$Json$Encode$string('HOME');
+			case 1:
+				return $elm$json$Json$Encode$string('EDITPLAYERS');
+			case 2:
+				return $elm$json$Json$Encode$string('SELECTGAME');
+			default:
+				return $elm$json$Json$Encode$string('PLAYGAME');
+		}
+	};
+	var encode_player_name = function (_v16) {
+		var name = _v16;
+		return $elm$json$Json$Encode$string(name);
+	};
+	var encode_player_index = function (_v15) {
+		var i = _v15;
+		return $elm$json$Json$Encode$int(i);
+	};
+	var encode_num_var_o = function (v) {
+		switch (v) {
+			case 0:
+				return 'BO';
+			case 1:
+				return 'DO';
+			default:
+				return 'TO';
+		}
+	};
+	var encode_num_var_i = function (v) {
+		switch (v) {
+			case 0:
+				return 'BI';
+			case 1:
+				return 'DI';
+			default:
+				return 'TI';
+		}
+	};
+	var encode_inning_score = function (_v12) {
+		var i = _v12.a;
+		var s = _v12.b;
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'inning',
+					$elm$json$Json$Encode$int(i)),
+					_Utils_Tuple2(
+					'score',
+					$elm$json$Json$Encode$int(i))
+				]));
+	};
+	var encode_hit = function (h) {
+		return $elm$json$Json$Encode$string(
+			function () {
+				switch (h.$) {
+					case 0:
+						return 'M';
+					case 1:
+						var s = h.a;
+						return encode_sub_hit(s) + '1';
+					case 2:
+						var s = h.a;
+						return encode_sub_hit(s) + '2';
+					case 3:
+						var s = h.a;
+						return encode_sub_hit(s) + '3';
+					case 4:
+						var s = h.a;
+						return encode_sub_hit(s) + '4';
+					case 5:
+						var s = h.a;
+						return encode_sub_hit(s) + '5';
+					case 6:
+						var s = h.a;
+						return encode_sub_hit(s) + '6';
+					case 7:
+						var s = h.a;
+						return encode_sub_hit(s) + '7';
+					case 8:
+						var s = h.a;
+						return encode_sub_hit(s) + '8';
+					case 9:
+						var s = h.a;
+						return encode_sub_hit(s) + '9';
+					case 10:
+						var s = h.a;
+						return encode_sub_hit(s) + '10';
+					case 11:
+						var s = h.a;
+						return encode_sub_hit(s) + '11';
+					case 12:
+						var s = h.a;
+						return encode_sub_hit(s) + '12';
+					case 13:
+						var s = h.a;
+						return encode_sub_hit(s) + '13';
+					case 14:
+						var s = h.a;
+						return encode_sub_hit(s) + '14';
+					case 15:
+						var s = h.a;
+						return encode_sub_hit(s) + '15';
+					case 16:
+						var s = h.a;
+						return encode_sub_hit(s) + '16';
+					case 17:
+						var s = h.a;
+						return encode_sub_hit(s) + '17';
+					case 18:
+						var s = h.a;
+						return encode_sub_hit(s) + '18';
+					case 19:
+						var s = h.a;
+						return encode_sub_hit(s) + '19';
+					case 20:
+						var s = h.a;
+						return encode_sub_hit(s) + '20';
+					case 21:
+						return 'Bull';
+					default:
+						return 'DBull';
+				}
+			}());
+	};
+	var encode_hit_score = function (_v10) {
+		var h = _v10.a;
+		var s = _v10.b;
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'hit',
+					encode_hit(h)),
+					_Utils_Tuple2(
+					'score',
+					$elm$json$Json$Encode$int(s))
+				]));
+	};
+	var encode_hits = function (l) {
+		return A2($elm$json$Json$Encode$list, encode_hit, l);
+	};
+	var encode_player_hits = function (_v9) {
+		var l = _v9;
+		return encode_hits(l);
+	};
+	var encode_score_hits = function (_v8) {
+		var s = _v8.a;
+		var l = _v8.b;
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'score',
+					$elm$json$Json$Encode$int(s)),
+					_Utils_Tuple2(
+					'hits',
+					encode_hits(l))
+				]));
+	};
+	var encode_score = function (s) {
+		switch (s.$) {
+			case 0:
+				return $elm$json$Json$Encode$object(
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							'type',
+							$elm$json$Json$Encode$string('NoScore')),
+							_Utils_Tuple2(
+							'value',
+							$elm$json$Json$Encode$int(0))
+						]));
+			case 1:
+				var ns = s.a;
+				return $elm$json$Json$Encode$object(
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							'type',
+							$elm$json$Json$Encode$string('NUMS')),
+							_Utils_Tuple2(
+							'value',
+							$elm$json$Json$Encode$int(ns))
+						]));
+			case 2:
+				var h = s.a;
+				return $elm$json$Json$Encode$object(
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							'type',
+							$elm$json$Json$Encode$string('ATCS')),
+							_Utils_Tuple2(
+							'value',
+							encode_hits(h))
+						]));
+			case 3:
+				var hs = s.a;
+				return $elm$json$Json$Encode$object(
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							'type',
+							$elm$json$Json$Encode$string('ATCS180S')),
+							_Utils_Tuple2(
+							'value',
+							A2($elm$json$Json$Encode$list, encode_hit_score, hs))
+						]));
+			case 4:
+				var is = s.a;
+				return $elm$json$Json$Encode$object(
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							'type',
+							$elm$json$Json$Encode$string('BBLS')),
+							_Utils_Tuple2(
+							'value',
+							A2($elm$json$Json$Encode$list, encode_inning_score, is))
+						]));
+			case 5:
+				var h = s.a;
+				return $elm$json$Json$Encode$object(
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							'type',
+							$elm$json$Json$Encode$string('CTDS')),
+							_Utils_Tuple2(
+							'value',
+							encode_hits(h))
+						]));
+			default:
+				var sh = s.a;
+				return $elm$json$Json$Encode$object(
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							'type',
+							$elm$json$Json$Encode$string('CS')),
+							_Utils_Tuple2(
+							'value',
+							encode_score_hits(sh))
+						]));
+		}
+	};
+	var encode_player = function (_v6) {
+		var name = _v6.I;
+		var hits = _v6.K;
+		var score = _v6.P;
+		var index = _v6.L;
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'name',
+					encode_player_name(name)),
+					_Utils_Tuple2(
+					'hits',
+					encode_player_hits(hits)),
+					_Utils_Tuple2(
+					'score',
+					encode_score(score)),
+					_Utils_Tuple2(
+					'index',
+					encode_player_index(index))
+				]));
+	};
+	var encode_list_player = function (l) {
+		return A2($elm$json$Json$Encode$list, encode_player, l);
+	};
+	var encode_ctd_var = function (v) {
+		if (!v) {
+			return 'SC';
+		} else {
+			return 'TD';
+		}
+	};
+	var encode_ckt_var = function (v) {
+		if (!v) {
+			return 'B';
+		} else {
+			return 'G';
+		}
+	};
+	var encode_bbl_var = function (v) {
+		if (!v) {
+			return 'BSC';
+		} else {
+			return 'SIC';
+		}
+	};
+	var encode_atc_var = function (v) {
+		switch (v) {
+			case 0:
+				return 'ST';
+			case 1:
+				return 'BO';
+			default:
+				return 'SO';
+		}
+	};
+	var encode_atc_180_var = function (v) {
+		if (!v) {
+			return 'DBL';
+		} else {
+			return 'TPL';
+		}
+	};
+	var encode_game_mode = function (mode) {
+		switch (mode.$) {
+			case 0:
+				return $elm$json$Json$Encode$string('NoGame');
+			case 1:
+				var i = mode.a;
+				var o = mode.b;
+				return $elm$json$Json$Encode$string(
+					'701:' + (encode_num_var_i(i) + (':' + encode_num_var_o(o))));
+			case 2:
+				var i = mode.a;
+				var o = mode.b;
+				return $elm$json$Json$Encode$string(
+					'501:' + (encode_num_var_i(i) + (':' + encode_num_var_o(o))));
+			case 3:
+				var i = mode.a;
+				var o = mode.b;
+				return $elm$json$Json$Encode$string(
+					'301:' + (encode_num_var_i(i) + (':' + encode_num_var_o(o))));
+			case 4:
+				var v = mode.a;
+				return $elm$json$Json$Encode$string(
+					'ATC:' + encode_atc_var(v));
+			case 5:
+				var v = mode.a;
+				return $elm$json$Json$Encode$string(
+					'ATC180:' + encode_atc_180_var(v));
+			case 6:
+				var v = mode.a;
+				return $elm$json$Json$Encode$string(
+					'BBL:' + encode_bbl_var(v));
+			case 7:
+				var v = mode.a;
+				return $elm$json$Json$Encode$string(
+					'CTD:' + encode_ctd_var(v));
+			default:
+				var v = mode.a;
+				return $elm$json$Json$Encode$string(
+					'CKT:' + encode_ckt_var(v));
+		}
+	};
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'playerData',
+				encode_list_player(state.n)),
+				_Utils_Tuple2(
+				'game',
+				encode_game_mode(state.u)),
+				_Utils_Tuple2(
+				'screen',
+				encode_screen(state.l)),
+				_Utils_Tuple2(
+				'currentPlayer',
+				$elm$json$Json$Encode$int(state.J)),
+				_Utils_Tuple2(
+				'currentTurn',
+				encode_hits(state.y))
+			]));
+};
+var $author$project$Ports$store_state = _Platform_outgoingPort('store_state', $elm$json$Json$Encode$string);
 var $elm$core$List$takeReverse = F3(
 	function (n, list, kept) {
 		takeReverse:
@@ -5342,64 +6312,73 @@ var $elm$core$List$take = F2(
 	});
 var $author$project$Main$update = F2(
 	function (action, state) {
-		switch (action.$) {
-			case 0:
-				return _Utils_update(
-					state,
-					{m: $author$project$Main$Home});
-			case 1:
-				return _Utils_update(
-					state,
-					{
-						m: $author$project$Main$EditPlayers('')
-					});
-			case 2:
-				return _Utils_update(
-					state,
-					{m: $author$project$Main$SelectGame});
-			case 3:
-				return _Utils_update(
-					state,
-					{m: $author$project$Main$PlayGame});
-			case 4:
-				var mode = action.a;
-				return _Utils_update(
-					state,
-					{y: mode});
-			case 5:
-				var p = action.a;
-				return _Utils_update(
-					state,
-					{
-						m: $author$project$Main$EditPlayers(p)
-					});
-			case 6:
-				var p = action.a;
-				return _Utils_update(
-					state,
-					{
-						q: A2($author$project$Main$add_player, state.q, p),
-						m: $author$project$Main$EditPlayers('')
-					});
-			case 7:
-				var p = action.a;
-				return _Utils_update(
-					state,
-					{
-						q: A2($author$project$Main$delete_player, state.q, p)
-					});
-			default:
-				var h = action.a;
-				return _Utils_update(
-					state,
-					{
-						C: A2(
-							$elm$core$List$take,
-							3,
-							A2($elm$core$List$cons, h, state.C))
-					});
-		}
+		var new_state = function () {
+			switch (action.$) {
+				case 0:
+					return _Utils_update(
+						state,
+						{l: $author$project$Main$Home});
+				case 1:
+					return _Utils_update(
+						state,
+						{
+							l: $author$project$Main$EditPlayers('')
+						});
+				case 2:
+					return _Utils_update(
+						state,
+						{l: $author$project$Main$SelectGame});
+				case 3:
+					return _Utils_update(
+						state,
+						{l: $author$project$Main$PlayGame});
+				case 4:
+					var mode = action.a;
+					return _Utils_update(
+						state,
+						{u: mode});
+				case 5:
+					var p = action.a;
+					return _Utils_update(
+						state,
+						{
+							l: $author$project$Main$EditPlayers(p)
+						});
+				case 6:
+					var p = action.a;
+					return _Utils_update(
+						state,
+						{
+							n: A2($author$project$Main$add_player, state.n, p),
+							l: $author$project$Main$EditPlayers('')
+						});
+				case 7:
+					var p = action.a;
+					return _Utils_update(
+						state,
+						{
+							n: A2($author$project$Main$delete_player, state.n, p)
+						});
+				default:
+					var h = action.a;
+					return _Utils_update(
+						state,
+						{
+							y: A2(
+								$elm$core$List$take,
+								3,
+								A2($elm$core$List$cons, h, state.y))
+						});
+			}
+		}();
+		var save_state = A3(
+			$elm$core$Basics$composeL,
+			$author$project$Ports$store_state,
+			$elm$json$Json$Encode$encode(0),
+			$author$project$Main$encode_app_state(new_state));
+		return _Utils_Tuple2(new_state, save_state);
 	});
+var $elm$json$Json$Decode$value = _Json_decodeValue;
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$Main$GoHome = {$: 0};
 var $author$project$Main$GoSelectGame = {$: 2};
@@ -5410,11 +6389,6 @@ var $author$project$Main$NewPlayerInput = function (a) {
 	return {$: 5, a: a};
 };
 var $elm$html$Html$button = _VirtualDom_node('button');
-var $elm$core$Basics$composeL = F3(
-	function (g, f, x) {
-		return g(
-			f(x));
-	});
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 0, a: a};
@@ -5446,12 +6420,10 @@ var $elm$html$Html$Events$stopPropagationOn = F2(
 			event,
 			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
 	});
-var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$at = F2(
 	function (fields, decoder) {
 		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
 	});
-var $elm$json$Json$Decode$string = _Json_decodeString;
 var $elm$html$Html$Events$targetValue = A2(
 	$elm$json$Json$Decode$at,
 	_List_fromArray(
@@ -5466,7 +6438,6 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			$elm$html$Html$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
-var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -5547,7 +6518,7 @@ var $author$project$Main$list_players = function (l) {
 					_List_fromArray(
 						[
 							$elm$html$Html$text(
-							$author$project$Main$player_name_string(player.J))
+							$author$project$Main$player_name_string(player.I))
 						])),
 					A2(
 					$elm$html$Html$td,
@@ -5625,75 +6596,9 @@ var $author$project$Main$render_edit_players = F2(
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
-var $author$project$Main$DoubleHit = 1;
-var $author$project$Main$Hit1 = function (a) {
-	return {$: 1, a: a};
-};
-var $author$project$Main$Hit10 = function (a) {
-	return {$: 10, a: a};
-};
-var $author$project$Main$Hit11 = function (a) {
-	return {$: 11, a: a};
-};
-var $author$project$Main$Hit12 = function (a) {
-	return {$: 12, a: a};
-};
-var $author$project$Main$Hit13 = function (a) {
-	return {$: 13, a: a};
-};
-var $author$project$Main$Hit14 = function (a) {
-	return {$: 14, a: a};
-};
-var $author$project$Main$Hit15 = function (a) {
-	return {$: 15, a: a};
-};
-var $author$project$Main$Hit16 = function (a) {
-	return {$: 16, a: a};
-};
-var $author$project$Main$Hit17 = function (a) {
-	return {$: 17, a: a};
-};
-var $author$project$Main$Hit18 = function (a) {
-	return {$: 18, a: a};
-};
-var $author$project$Main$Hit19 = function (a) {
-	return {$: 19, a: a};
-};
-var $author$project$Main$Hit2 = function (a) {
-	return {$: 2, a: a};
-};
-var $author$project$Main$Hit20 = function (a) {
-	return {$: 20, a: a};
-};
-var $author$project$Main$Hit3 = function (a) {
-	return {$: 3, a: a};
-};
-var $author$project$Main$Hit4 = function (a) {
-	return {$: 4, a: a};
-};
-var $author$project$Main$Hit5 = function (a) {
-	return {$: 5, a: a};
-};
-var $author$project$Main$Hit6 = function (a) {
-	return {$: 6, a: a};
-};
-var $author$project$Main$Hit7 = function (a) {
-	return {$: 7, a: a};
-};
-var $author$project$Main$Hit8 = function (a) {
-	return {$: 8, a: a};
-};
-var $author$project$Main$Hit9 = function (a) {
-	return {$: 9, a: a};
-};
-var $author$project$Main$HitBullseye = {$: 21};
-var $author$project$Main$HitDoubleBullseye = {$: 22};
-var $author$project$Main$HitMissed = {$: 0};
-var $author$project$Main$SingleHit = 0;
 var $author$project$Main$Toss = function (a) {
 	return {$: 8, a: a};
 };
-var $author$project$Main$TripleHit = 2;
 var $elm$svg$Svg$Attributes$alignmentBaseline = _VirtualDom_attribute('alignment-baseline');
 var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
 var $elm$svg$Svg$circle = $elm$svg$Svg$trustedNode('circle');
@@ -6150,7 +7055,7 @@ var $author$project$Main$render_game = function (state) {
 						]),
 					$author$project$Main$render_board)
 				])),
-			$author$project$Main$render_hits(state.C)
+			$author$project$Main$render_hits(state.y)
 		]);
 };
 var $author$project$Main$GoEditPlayers = {$: 1};
@@ -6327,7 +7232,7 @@ var $author$project$Main$game_name = function (mode) {
 	}
 };
 var $author$project$Main$render_home = function (state) {
-	var start_game = (($elm$core$List$length(state.q) > 0) && (!_Utils_eq(state.y, $author$project$Main$NoGame))) ? _List_fromArray(
+	var start_game = (($elm$core$List$length(state.n) > 0) && (!_Utils_eq(state.u, $author$project$Main$NoGame))) ? _List_fromArray(
 		[
 			A2(
 			$elm$html$Html$button,
@@ -6376,7 +7281,7 @@ var $author$project$Main$render_home = function (state) {
 			_List_fromArray(
 				[
 					$elm$html$Html$text('Selected Game: '),
-					$author$project$Main$game_name(state.y)
+					$author$project$Main$game_name(state.u)
 				]))
 		]);
 };
@@ -6515,40 +7420,6 @@ var $author$project$Main$game_description = function (mode) {
 var $author$project$Main$GameSelected = function (a) {
 	return {$: 4, a: a};
 };
-var $author$project$Main$AroundTheClock = function (a) {
-	return {$: 4, a: a};
-};
-var $author$project$Main$AroundTheClock180 = function (a) {
-	return {$: 5, a: a};
-};
-var $author$project$Main$Baseball = function (a) {
-	return {$: 6, a: a};
-};
-var $author$project$Main$BasicBaseball = 0;
-var $author$project$Main$BasicCricket = 0;
-var $author$project$Main$BasicDragon = 0;
-var $author$project$Main$BasicIn = 0;
-var $author$project$Main$BasicOut = 0;
-var $author$project$Main$ChaseTheDragon = function (a) {
-	return {$: 7, a: a};
-};
-var $author$project$Main$Cricket = function (a) {
-	return {$: 8, a: a};
-};
-var $author$project$Main$DoubleBonus = 0;
-var $author$project$Main$NoBullOut = 0;
-var $author$project$Main$Numbers301 = F2(
-	function (a, b) {
-		return {$: 3, a: a, b: b};
-	});
-var $author$project$Main$Numbers501 = F2(
-	function (a, b) {
-		return {$: 2, a: a, b: b};
-	});
-var $author$project$Main$Numbers701 = F2(
-	function (a, b) {
-		return {$: 1, a: a, b: b};
-	});
 var $author$project$Main$game_list = _List_fromArray(
 	[
 		$author$project$Main$NoGame,
@@ -6729,13 +7600,13 @@ var $author$project$Main$game_to_id = function (mode) {
 			switch (mode.a) {
 				case 0:
 					var _v59 = mode.a;
-					return 'AOC_NBO';
+					return 'ATC_NBO';
 				case 1:
 					var _v60 = mode.a;
-					return 'AOC_ABO';
+					return 'ATC_ABO';
 				default:
 					var _v61 = mode.a;
-					return 'AOC_SBO';
+					return 'ATC_SBO';
 			}
 		case 5:
 			if (!mode.a) {
@@ -6756,128 +7627,150 @@ var $author$project$Main$game_to_id = function (mode) {
 	}
 };
 var $elm$html$Html$option = _VirtualDom_node('option');
-var $author$project$Main$game_to_option = function (mode) {
-	switch (mode.$) {
-		case 0:
-			return A2(
-				$elm$html$Html$option,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$value(
-						$author$project$Main$game_to_id(mode))
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Select a Game')
-					]));
-		case 1:
-			return A2(
-				$elm$html$Html$option,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$value(
-						$author$project$Main$game_to_id(mode))
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('701')
-					]));
-		case 2:
-			return A2(
-				$elm$html$Html$option,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$value(
-						$author$project$Main$game_to_id(mode))
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('501')
-					]));
-		case 3:
-			return A2(
-				$elm$html$Html$option,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$value(
-						$author$project$Main$game_to_id(mode))
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('301')
-					]));
-		case 4:
-			return A2(
-				$elm$html$Html$option,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$value(
-						$author$project$Main$game_to_id(mode))
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Around the Clock')
-					]));
-		case 5:
-			return A2(
-				$elm$html$Html$option,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$value(
-						$author$project$Main$game_to_id(mode))
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Around the Clock 180')
-					]));
-		case 6:
-			return A2(
-				$elm$html$Html$option,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$value(
-						$author$project$Main$game_to_id(mode))
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Baseball')
-					]));
-		case 7:
-			return A2(
-				$elm$html$Html$option,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$value(
-						$author$project$Main$game_to_id(mode))
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Chase the Dragon')
-					]));
-		default:
-			return A2(
-				$elm$html$Html$option,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$value(
-						$author$project$Main$game_to_id(mode))
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Cricket')
-					]));
-	}
-};
-var $author$project$Main$AnyBullOut = 1;
-var $author$project$Main$DoubleIn = 1;
-var $author$project$Main$DoubleOut = 1;
-var $author$project$Main$GolfCricket = 1;
-var $author$project$Main$SeventhInningCatch = 1;
-var $author$project$Main$SplitBullOut = 2;
-var $author$project$Main$TripleBonus = 1;
-var $author$project$Main$TripleHeadedDragon = 1;
-var $author$project$Main$TripleIn = 2;
-var $author$project$Main$TripleOut = 2;
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$html$Html$Attributes$boolProperty = F2(
+	function (key, bool) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$bool(bool));
+	});
+var $elm$html$Html$Attributes$selected = $elm$html$Html$Attributes$boolProperty('selected');
+var $author$project$Main$game_to_option = F2(
+	function (current, mode) {
+		var is_selected = _Utils_eq(current, mode) ? _List_fromArray(
+			[
+				$elm$html$Html$Attributes$selected(true)
+			]) : _List_Nil;
+		switch (mode.$) {
+			case 0:
+				return A2(
+					$elm$html$Html$option,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$value(
+								$author$project$Main$game_to_id(mode))
+							]),
+						is_selected),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Select a Game')
+						]));
+			case 1:
+				return A2(
+					$elm$html$Html$option,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$value(
+								$author$project$Main$game_to_id(mode))
+							]),
+						is_selected),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('701')
+						]));
+			case 2:
+				return A2(
+					$elm$html$Html$option,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$value(
+								$author$project$Main$game_to_id(mode))
+							]),
+						is_selected),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('501')
+						]));
+			case 3:
+				return A2(
+					$elm$html$Html$option,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$value(
+								$author$project$Main$game_to_id(mode))
+							]),
+						is_selected),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('301')
+						]));
+			case 4:
+				return A2(
+					$elm$html$Html$option,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$value(
+								$author$project$Main$game_to_id(mode))
+							]),
+						is_selected),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Around the Clock')
+						]));
+			case 5:
+				return A2(
+					$elm$html$Html$option,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$value(
+								$author$project$Main$game_to_id(mode))
+							]),
+						is_selected),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Around the Clock 180')
+						]));
+			case 6:
+				return A2(
+					$elm$html$Html$option,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$value(
+								$author$project$Main$game_to_id(mode))
+							]),
+						is_selected),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Baseball')
+						]));
+			case 7:
+				return A2(
+					$elm$html$Html$option,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$value(
+								$author$project$Main$game_to_id(mode))
+							]),
+						is_selected),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Chase the Dragon')
+						]));
+			default:
+				return A2(
+					$elm$html$Html$option,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$value(
+								$author$project$Main$game_to_id(mode))
+							]),
+						is_selected),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Cricket')
+						]));
+		}
+	});
 var $author$project$Main$id_to_game = function (s) {
 	switch (s) {
 		case '301_BI_BO':
@@ -6942,11 +7835,11 @@ var $author$project$Main$id_to_game = function (s) {
 			return $author$project$Main$Baseball(0);
 		case 'BBL_S':
 			return $author$project$Main$Baseball(1);
-		case 'AOC_NBO':
+		case 'ATC_NBO':
 			return $author$project$Main$AroundTheClock(0);
-		case 'AOC_ABO':
+		case 'ATC_ABO':
 			return $author$project$Main$AroundTheClock(1);
-		case 'AOC_SBO':
+		case 'ATC_SBO':
 			return $author$project$Main$AroundTheClock(2);
 		case '180_DB':
 			return $author$project$Main$AroundTheClock180(0);
@@ -6961,7 +7854,7 @@ var $author$project$Main$id_to_game = function (s) {
 	}
 };
 var $elm$html$Html$select = _VirtualDom_node('select');
-var $author$project$Main$mode_selector = function (_v0) {
+var $author$project$Main$mode_selector = function (mode) {
 	return _List_fromArray(
 		[
 			A2(
@@ -6976,19 +7869,13 @@ var $author$project$Main$mode_selector = function (_v0) {
 							$elm$html$Html$Events$onInput(
 							A2($elm$core$Basics$composeL, $author$project$Main$GameSelected, $author$project$Main$id_to_game))
 						]),
-					A2($elm$core$List$map, $author$project$Main$game_to_option, $author$project$Main$game_list))
+					A2(
+						$elm$core$List$map,
+						$author$project$Main$game_to_option(mode),
+						$author$project$Main$game_list))
 				]))
 		]);
 };
-var $elm$json$Json$Encode$bool = _Json_wrap;
-var $elm$html$Html$Attributes$boolProperty = F2(
-	function (key, bool) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$bool(bool));
-	});
-var $elm$html$Html$Attributes$selected = $elm$html$Html$Attributes$boolProperty('selected');
 var $author$project$Main$variant_selector = function (mode) {
 	var is_selected = F2(
 		function (a, b) {
@@ -7723,22 +8610,28 @@ var $author$project$Main$render_select_game = function (mode) {
 };
 var $author$project$Main$view = function (state) {
 	var render = function () {
-		var _v0 = state.m;
+		var _v0 = state.l;
 		switch (_v0.$) {
 			case 0:
 				return $author$project$Main$render_home(state);
 			case 1:
 				var np = _v0.a;
-				return A2($author$project$Main$render_edit_players, state.q, np);
+				return A2($author$project$Main$render_edit_players, state.n, np);
 			case 2:
-				return $author$project$Main$render_select_game(state.y);
+				return $author$project$Main$render_select_game(state.u);
 			default:
 				return $author$project$Main$render_game(state);
 		}
 	}();
 	return A2($elm$html$Html$div, _List_Nil, render);
 };
-var $author$project$Main$main = $elm$browser$Browser$sandbox(
-	{aC: $author$project$Main$init, aJ: $author$project$Main$update, aK: $author$project$Main$view});
-_Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
+var $author$project$Main$main = $elm$browser$Browser$element(
+	{
+		aC: $author$project$Main$init,
+		aH: function (_v0) {
+			return $elm$core$Platform$Sub$none;
+		},
+		aJ: $author$project$Main$update,
+		aK: $author$project$Main$view
+	});
+_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$value)(0)}});}(this));
