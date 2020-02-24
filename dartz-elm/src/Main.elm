@@ -1,16 +1,24 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Attribute, Html, div, span, text, option, button, select, input, tr, td, table)
+import Html exposing (Html, div, span, text, option, button, select, input, tr, td, table)
 import Html.Attributes exposing (class, placeholder, selected, value)
-import Html.Events exposing (onClick, onInput, preventDefaultOn)
-import Json.Decode as Json
+import Html.Events exposing (onClick, onInput)
+import Json.Decode as JD
+import Json.Encode as JE
 import Svg as S
 import Svg.Attributes as SA
 import Svg.Events as SE
 
-main : Program () AppState Action
-main = Browser.sandbox { init = init, update = update, view = view }
+import Ports exposing (store_state)
+
+main : Program JE.Value AppState Action
+main = Browser.element 
+  { init = init
+  , update = update
+  , view = view 
+  , subscriptions = \_ -> Sub.none
+  }
 
 type SubHit = SingleHit | DoubleHit | TripleHit
 
@@ -105,6 +113,359 @@ type alias AppState =
   , currentTurn : List Hit
   }
 
+app_state_decoder = 
+  let    
+    decode_hit : JD.Decoder Hit
+    decode_hit = 
+      JD.map (\h -> case h of
+        "M" -> HitMissed
+        "S1" -> Hit1 SingleHit
+        "D1" -> Hit1 DoubleHit
+        "T1" -> Hit1 TripleHit
+        "S2" -> Hit2 SingleHit
+        "D2" -> Hit2 DoubleHit
+        "T2" -> Hit2 TripleHit
+        "S3" -> Hit3 SingleHit
+        "D3" -> Hit3 DoubleHit
+        "T3" -> Hit3 TripleHit
+        "S4" -> Hit4 SingleHit
+        "D4" -> Hit4 DoubleHit
+        "T4" -> Hit4 TripleHit
+        "S5" -> Hit5 SingleHit
+        "D5" -> Hit5 DoubleHit
+        "T5" -> Hit5 TripleHit
+        "S6" -> Hit6 SingleHit
+        "D6" -> Hit6 DoubleHit
+        "T6" -> Hit6 TripleHit
+        "S7" -> Hit7 SingleHit
+        "D7" -> Hit7 DoubleHit
+        "T7" -> Hit7 TripleHit
+        "S8" -> Hit8 SingleHit
+        "D8" -> Hit8 DoubleHit
+        "T8" -> Hit8 TripleHit
+        "S9" -> Hit9 SingleHit
+        "D9" -> Hit9 DoubleHit
+        "T9" -> Hit9 TripleHit
+        "S10" -> Hit10 SingleHit
+        "D10" -> Hit10 DoubleHit
+        "T10" -> Hit10 TripleHit
+        "S11" -> Hit11 SingleHit
+        "D11" -> Hit11 DoubleHit
+        "T11" -> Hit11 TripleHit
+        "S12" -> Hit12 SingleHit
+        "D12" -> Hit12 DoubleHit
+        "T12" -> Hit12 TripleHit
+        "S13" -> Hit13 SingleHit
+        "D13" -> Hit13 DoubleHit
+        "T13" -> Hit13 TripleHit
+        "S14" -> Hit14 SingleHit        
+        "D14" -> Hit14 DoubleHit
+        "T14" -> Hit14 TripleHit
+        "S15" -> Hit15 SingleHit
+        "D15" -> Hit15 DoubleHit
+        "T15" -> Hit15 TripleHit
+        "S16" -> Hit16 SingleHit
+        "D16" -> Hit16 DoubleHit
+        "T16" -> Hit16 TripleHit
+        "S17" -> Hit17 SingleHit
+        "D17" -> Hit17 DoubleHit
+        "T17" -> Hit17 TripleHit
+        "S18" -> Hit18 SingleHit
+        "D18" -> Hit18 DoubleHit
+        "T18" -> Hit18 TripleHit
+        "S19" -> Hit19 SingleHit
+        "D19" -> Hit19 DoubleHit
+        "T19" -> Hit19 TripleHit
+        "S20" -> Hit20 SingleHit
+        "D20" -> Hit20 DoubleHit
+        "T20" -> Hit20 TripleHit
+        "Bull" -> HitBullseye
+        "DBull" -> HitDoubleBullseye        
+        _ -> HitMissed
+      ) JD.string
+
+    decode_score_hits : JD.Decoder (Score, List Hit)
+    decode_score_hits =
+      JD.map2 
+      (\s l -> (Score s, l))
+      (JD.field "score" JD.int)
+      (JD.field "hits" <| JD.list decode_hit)
+      
+    decode_inning_score : JD.Decoder (Inning, Score)
+    decode_inning_score =
+      JD.map2
+      (\i s -> (Inning i, Score s))
+      (JD.field "inning" JD.int)
+      (JD.field "score" JD.int)
+
+    decode_hit_score : JD.Decoder (Hit, Score)
+    decode_hit_score =
+      JD.map2
+      (\h s -> (h, Score s))
+      (JD.field "hit" decode_hit)
+      (JD.field "score" JD.int)
+
+    decode_atcs_score : JD.Decoder GameScore
+    decode_atcs_score =
+      JD.map AroundTheClockScore (JD.field "value" <| JD.list decode_hit)
+
+    decode_atcs180_score : JD.Decoder GameScore
+    decode_atcs180_score =
+      JD.map AroundTheClock180Score (JD.field "value" <| JD.list decode_hit_score)
+
+    decode_bbls_score : JD.Decoder GameScore
+    decode_bbls_score =
+      JD.map BaseballScore (JD.field "value" <| JD.list decode_inning_score)
+
+    decode_ctds_score : JD.Decoder GameScore
+    decode_ctds_score =
+      JD.map ChaseTheDragonScore (JD.field "value" <| JD.list decode_hit)
+
+    decode_cs_score : JD.Decoder GameScore
+    decode_cs_score =
+      JD.map CricketScore (JD.field "value" <| decode_score_hits)
+
+    decode_game_score_from_game : String -> JD.Decoder GameScore
+    decode_game_score_from_game g =
+      case g of
+        "NoScore" -> JD.map (\_ -> NoScore) (JD.field "value" JD.int)
+        "NUMS" -> JD.map (\s -> NumbersScore (Score s)) (JD.field "value" JD.int)
+        "ATCS" -> decode_atcs_score
+        "ATCS180S" -> decode_atcs180_score
+        "BBLS" -> decode_bbls_score
+        "CTDS" -> decode_ctds_score
+        "CS" -> decode_cs_score
+        _ -> JD.fail ("Invalid game type: " ++ g)
+
+    decode_game_score : JD.Decoder GameScore
+    decode_game_score = 
+      JD.field "type" JD.string |> JD.andThen decode_game_score_from_game
+      
+    decode_player_name : JD.Decoder PlayerName
+    decode_player_name = JD.map PlayerName JD.string
+
+    decode_player_index : JD.Decoder PlayerIndex
+    decode_player_index = JD.map PlayerIndex JD.int
+
+    decode_player_hits : JD.Decoder PlayerHits
+    decode_player_hits = JD.map PlayerHits <| JD.list decode_hit
+    
+    decode_player : JD.Decoder Player
+    decode_player = JD.map4 Player
+      (JD.field "name" decode_player_name)
+      (JD.field "hits" decode_player_hits)
+      (JD.field "score" decode_game_score)
+      (JD.field "index" decode_player_index)
+    
+    decode_list_player : JD.Decoder (List Player)
+    decode_list_player = JD.list decode_player
+
+    string_to_num_var_i v = case v of
+      "TI" -> TripleIn
+      "DI" -> DoubleIn
+      _ -> BasicIn
+
+    string_to_num_var_o v = case v of
+      "TO" -> TripleOut
+      "DO" -> DoubleOut
+      _ -> BasicOut
+    
+    string_to_atc_var v = case v of
+      "BO" -> AnyBullOut
+      "SO" -> SplitBullOut
+      _ -> NoBullOut
+
+    string_to_atc_180_var v = case v of
+      "TPL" -> TripleBonus
+      _ -> DoubleBonus
+
+    string_to_bbl_var v = case v of
+      "SIC" -> SeventhInningCatch
+      _ -> BasicBaseball
+
+    string_to_ctd_var v = case v of
+      "TD" -> TripleHeadedDragon
+      _ -> BasicDragon
+
+    string_to_ckt_var v = case v of
+      "G" -> GolfCricket
+      _ -> BasicCricket
+
+    decode_game : JD.Decoder GameMode
+    decode_game = JD.map (\s -> case String.split ":" s of
+      ["NoGame"] -> NoGame
+      ["701", i, o] -> Numbers701 (string_to_num_var_i i) (string_to_num_var_o o)
+      ["501", i, o] -> Numbers501 (string_to_num_var_i i) (string_to_num_var_o o)
+      ["301", i, o] -> Numbers301 (string_to_num_var_i i) (string_to_num_var_o o)
+      ["ATC", v] -> AroundTheClock (string_to_atc_var v)
+      ["ATC180", v] -> AroundTheClock180 (string_to_atc_180_var v)
+      ["BBL", v] -> Baseball (string_to_bbl_var v)
+      ["CTD", v] -> ChaseTheDragon (string_to_ctd_var v)
+      ["CKT", v] -> Cricket (string_to_ckt_var v)
+      _ -> NoGame
+      ) JD.string
+
+    decode_screen : JD.Decoder Screen
+    decode_screen = JD.map (\s -> case s of
+      "EDITPLAYERS" -> EditPlayers (NewPlayerName "")
+      "SELECTGAME" -> SelectGame
+      "PLAYGAME" -> PlayGame
+      _ -> Home
+      ) JD.string
+  in
+    JD.map5 AppState
+    (JD.field "playerData" decode_list_player)
+    (JD.field "game" decode_game)
+    (JD.field "screen" decode_screen)
+    (JD.field "currentPlayer" JD.int)
+    (JD.field "currentTurn" <| JD.list decode_hit)
+    
+encode_app_state : AppState -> JE.Value
+encode_app_state state = 
+  let
+    encode_score_hits ((Score s), l) = JE.object
+      [ ("score", JE.int s)
+      , ("hits", encode_hits l)
+      ]
+    encode_inning_score (Inning i, (Score s)) = JE.object
+      [ ("inning", JE.int i)
+      , ("score", JE.int i)
+      ]
+    encode_hit_score (h, (Score s)) = JE.object
+      [ ("hit", encode_hit h)
+      , ("score", JE.int s)
+      ]
+    encode_score s = case s of
+      NoScore -> JE.object 
+        [ ("type", JE.string "NoScore")
+        , ("value", JE.int 0)
+        ]
+      NumbersScore (Score ns) -> JE.object
+        [ ("type", JE.string "NUMS")
+        , ("value", JE.int ns)]
+      AroundTheClockScore h -> JE.object
+        [ ("type", JE.string ("ATCS"))
+        , ("value", encode_hits h)]
+      AroundTheClock180Score hs -> JE.object
+        [ ("type", JE.string ("ATCS180S"))
+        , ("value", JE.list encode_hit_score hs)
+        ]
+      BaseballScore is -> JE.object
+        [ ("type", JE.string ("BBLS"))
+        , ("value", JE.list encode_inning_score is)
+        ]
+      ChaseTheDragonScore h -> JE.object
+        [ ("type", JE.string ("CTDS"))
+        , ("value", encode_hits h)
+        ]
+      CricketScore sh -> JE.object
+        [ ("type", JE.string ("CS"))
+        , ("value", encode_score_hits sh)
+        ]
+
+    encode_sub_hit s = case s of
+      SingleHit -> "S"
+      DoubleHit -> "D"
+      TripleHit -> "T"
+
+    encode_hit h = JE.string <| case h of
+      HitMissed -> "M"
+      Hit1 s -> encode_sub_hit s ++ "1"
+      Hit2 s -> encode_sub_hit s ++ "2"
+      Hit3 s -> encode_sub_hit s ++ "3"
+      Hit4 s -> encode_sub_hit s ++ "4"
+      Hit5 s -> encode_sub_hit s ++ "5"
+      Hit6 s -> encode_sub_hit s ++ "6"
+      Hit7 s -> encode_sub_hit s ++ "7"
+      Hit8 s -> encode_sub_hit s ++ "8"
+      Hit9 s -> encode_sub_hit s ++ "9"
+      Hit10 s -> encode_sub_hit s ++ "10"
+      Hit11 s -> encode_sub_hit s ++ "11"
+      Hit12 s -> encode_sub_hit s ++ "12"
+      Hit13 s -> encode_sub_hit s ++ "13"
+      Hit14 s -> encode_sub_hit s ++ "14"
+      Hit15 s -> encode_sub_hit s ++ "15"
+      Hit16 s -> encode_sub_hit s ++ "16"
+      Hit17 s -> encode_sub_hit s ++ "17"
+      Hit18 s -> encode_sub_hit s ++ "18"
+      Hit19 s -> encode_sub_hit s ++ "19"
+      Hit20 s -> encode_sub_hit s ++ "20"
+      HitBullseye -> "Bull"
+      HitDoubleBullseye -> "DBull"
+       
+    encode_hits l = JE.list encode_hit l
+
+    encode_player_name (PlayerName name) = JE.string name
+
+    encode_player_index (PlayerIndex i) = JE.int i
+
+    encode_player_hits (PlayerHits l) = encode_hits l
+    
+    encode_player { name, hits, score, index } = JE.object 
+      [ ("name", encode_player_name name)
+      , ("hits", encode_player_hits hits )
+      , ("score", encode_score score )
+      , ("index", encode_player_index index )
+      ]
+    encode_list_player l = JE.list encode_player l
+
+    encode_num_var_i v = case v of
+      BasicIn -> "BI"
+      DoubleIn -> "DI"
+      TripleIn -> "TI"
+
+    encode_num_var_o v = case v of
+      BasicOut -> "BO"
+      DoubleOut -> "DO"
+      TripleOut -> "TO"
+    
+    encode_atc_var v = case v of
+      NoBullOut -> "ST"
+      AnyBullOut -> "BO"
+      SplitBullOut -> "SO"
+
+    encode_atc_180_var v = case v of
+      DoubleBonus -> "DBL"
+      TripleBonus -> "TPL"
+
+    encode_bbl_var v = case v of
+      BasicBaseball -> "BSC"
+      SeventhInningCatch -> "SIC"
+
+    encode_ctd_var v = case v of
+      BasicDragon -> "SC"
+      TripleHeadedDragon -> "TD"
+
+    encode_ckt_var v = case v of
+      BasicCricket -> "B"
+      GolfCricket -> "G"
+
+    encode_game_mode mode = case mode of
+      NoGame -> JE.string "NoGame"
+      Numbers701 i o -> JE.string <| "701:" ++ encode_num_var_i i ++ ":" ++ encode_num_var_o o
+      Numbers501 i o -> JE.string <| "501:" ++ encode_num_var_i i ++ ":" ++ encode_num_var_o o
+      Numbers301 i o -> JE.string <| "301:" ++ encode_num_var_i i ++ ":" ++ encode_num_var_o o
+      AroundTheClock v -> JE.string <| "ATC:" ++ encode_atc_var v
+      AroundTheClock180 v -> JE.string <| "ATC180:" ++ encode_atc_180_var v
+      Baseball v -> JE.string <| "BBL:" ++ encode_bbl_var v
+      ChaseTheDragon v -> JE.string <| "CTD:" ++ encode_ctd_var v
+      Cricket v -> JE.string <| "CKT:" ++ encode_ckt_var v
+
+    encode_screen s = case s of
+      Home -> JE.string "HOME"
+      EditPlayers _ -> JE.string "EDITPLAYERS"
+      SelectGame -> JE.string "SELECTGAME"
+      PlayGame -> JE.string "PLAYGAME"
+
+  in
+    JE.object
+    [ ("playerData", encode_list_player state.playerData)
+    , ("game", encode_game_mode state.game)
+    , ("screen", encode_screen state.screen)
+    , ("currentPlayer", JE.int state.currentPlayer)
+    , ("currentTurn", encode_hits state.currentTurn)
+    ]
+
 type Screen
   = Home
   | EditPlayers NewPlayerName
@@ -167,18 +528,20 @@ game_name mode =
     ChaseTheDragon v -> span [] [ text "Chase the Dragon : ", text (dragon_variation_text v)]
     Cricket v -> span [] [ text "Cricket : ", text (cricket_variation_text v)]
 
-game_to_option : GameMode -> Html msg
-game_to_option mode =
-  case mode of
-    NoGame -> option [ value <| game_to_id mode ] [ text "Select a Game" ]
-    Numbers701 _ _ -> option [ value <| game_to_id mode ] [ text "701" ]
-    Numbers501 _ _ -> option [ value <| game_to_id mode ] [ text "501" ]
-    Numbers301 _ _ -> option [ value <| game_to_id mode ] [ text "301" ]
-    AroundTheClock _ -> option [ value <| game_to_id mode ] [ text "Around the Clock" ]
-    AroundTheClock180 _ -> option [ value <| game_to_id mode ] [ text "Around the Clock 180" ]
-    Baseball _ -> option [ value <| game_to_id mode ] [ text "Baseball" ]
-    ChaseTheDragon _ -> option [ value <| game_to_id mode ] [ text "Chase the Dragon" ]
-    Cricket _ -> option [ value <| game_to_id mode ] [ text "Cricket" ]
+game_to_option : GameMode -> GameMode -> Html msg
+game_to_option current mode =
+  let is_selected = if current == mode then [ selected True ] else []
+  in
+    case mode of
+      NoGame -> option ([ value <| game_to_id mode ] ++ is_selected) [ text "Select a Game" ]
+      Numbers701 _ _ -> option ([ value <| game_to_id mode ] ++ is_selected) [ text "701" ]
+      Numbers501 _ _ -> option ([ value <| game_to_id mode ] ++ is_selected) [ text "501" ]
+      Numbers301 _ _ -> option ([ value <| game_to_id mode ] ++ is_selected) [ text "301" ]
+      AroundTheClock _ -> option ([ value <| game_to_id mode ] ++ is_selected) [ text "Around the Clock" ]
+      AroundTheClock180 _ -> option ([ value <| game_to_id mode ] ++ is_selected) [ text "Around the Clock 180" ]
+      Baseball _ -> option ([ value <| game_to_id mode ] ++ is_selected) [ text "Baseball" ]
+      ChaseTheDragon _ -> option ([ value <| game_to_id mode ] ++ is_selected) [ text "Chase the Dragon" ]
+      Cricket _ -> option ([ value <| game_to_id mode ] ++ is_selected) [ text "Cricket" ]
 
 game_list : List GameMode
 game_list = 
@@ -230,9 +593,9 @@ id_to_game s = case s of
   "BBL_B" -> Baseball BasicBaseball
   "BBL_S" -> Baseball SeventhInningCatch
 
-  "AOC_NBO" -> AroundTheClock NoBullOut
-  "AOC_ABO" -> AroundTheClock AnyBullOut
-  "AOC_SBO" -> AroundTheClock SplitBullOut
+  "ATC_NBO" -> AroundTheClock NoBullOut
+  "ATC_ABO" -> AroundTheClock AnyBullOut
+  "ATC_SBO" -> AroundTheClock SplitBullOut
 
   "180_DB" -> AroundTheClock180 DoubleBonus
   "180_TB" -> AroundTheClock180 TripleBonus
@@ -282,9 +645,9 @@ game_to_id mode = case mode of
   Baseball BasicBaseball -> "BBL_B"
   Baseball SeventhInningCatch -> "BBL_S"
 
-  AroundTheClock NoBullOut -> "AOC_NBO"
-  AroundTheClock AnyBullOut -> "AOC_ABO"
-  AroundTheClock SplitBullOut -> "AOC_SBO"
+  AroundTheClock NoBullOut -> "ATC_NBO"
+  AroundTheClock AnyBullOut -> "ATC_ABO"
+  AroundTheClock SplitBullOut -> "ATC_SBO"
 
   AroundTheClock180 DoubleBonus -> "180_DB"
   AroundTheClock180 TripleBonus -> "180_TB"
@@ -394,27 +757,36 @@ type Action
   | DeletePlayer Player
   | Toss Hit
 
-init : AppState
-init =
+clean_state : AppState
+clean_state = 
   { playerData = []
   , game = NoGame
+  , screen = Home
   , currentPlayer = 0
   , currentTurn = []
-  , screen = Home
   }
 
-update : Action -> AppState -> AppState
-update action state =
-  case action of
-    GoHome -> { state | screen = Home }
-    GoEditPlayers -> { state | screen = EditPlayers (NewPlayerName "") }
-    GoSelectGame -> { state | screen = SelectGame }
-    GoPlayGame -> { state | screen = PlayGame }
-    GameSelected mode -> { state | game = mode }
-    NewPlayerInput p -> { state | screen = EditPlayers p }
-    NewPlayerCommit p -> { state | playerData = add_player state.playerData p, screen = EditPlayers (NewPlayerName "") }
-    DeletePlayer p -> { state | playerData = delete_player state.playerData p }
-    Toss h -> { state | currentTurn = List.take 3 <| h :: state.currentTurn }
+init : JE.Value -> (AppState, Cmd Action)
+init s = case JD.decodeValue app_state_decoder s of
+  Err _ -> (clean_state, Cmd.none) -- TODO: Surface Error
+  Ok state -> (state, Cmd.none)
+  
+update : Action -> AppState -> (AppState, Cmd Action)
+update action state = 
+  let
+    new_state = 
+      case action of
+        GoHome -> { state | screen = Home }
+        GoEditPlayers -> { state | screen = EditPlayers (NewPlayerName "") }
+        GoSelectGame -> { state | screen = SelectGame }
+        GoPlayGame -> { state | screen = PlayGame }
+        GameSelected mode -> { state | game = mode }
+        NewPlayerInput p -> { state | screen = EditPlayers p }
+        NewPlayerCommit p -> { state | playerData = add_player state.playerData p, screen = EditPlayers (NewPlayerName "") }
+        DeletePlayer p -> { state | playerData = delete_player state.playerData p }
+        Toss h -> { state | currentTurn = List.take 3 <| h :: state.currentTurn }
+    save_state = store_state << JE.encode 0 <| encode_app_state new_state
+  in (new_state, save_state)
 
 
 view : AppState -> Html Action
@@ -465,10 +837,10 @@ render_select_game mode =
   [ div [] [game_description mode] ]
 
 mode_selector : GameMode -> List (Html Action)
-mode_selector _ = 
+mode_selector mode = 
   [ div [] 
-    [ select [onInput (GameSelected << id_to_game)] 
-      (List.map game_to_option game_list) 
+    [ select [ onInput (GameSelected << id_to_game) ] 
+      (List.map (game_to_option mode) game_list) 
     ]
   ]
 

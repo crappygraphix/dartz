@@ -29,3 +29,14 @@ Say you look around and decide you need elm/http and elm/json to make some HTTP 
 `elm install elm/json`
 
 This adds these dependencies into your elm.json file, making these packages available in your project. That will let you say import Http and use functions like Http.get in your programs.
+
+# Opinions
+
+1. I miss instances of show, typeclasses and deriving instances would make things easier, but also open the door to "option overflow". Elm's architecture is to limit the number of ways to solve problems as it improves consistency. I'm okay with this, but as I'm writing `show` for everything... it is annoying. To be fair, it's only annoying once.
+
+2. Elm's foreign function interface into Javascript land and it's idea of segregation of responsibilities is a pleasure to work with.
+
+3. Compile times and interactive debugging tools are top notch.
+
+4. Writing JSON encoder/decoders by hand for all the things super sucks... Missing Aeson's template haskell generator functions. Somewhat related to 1.
+
