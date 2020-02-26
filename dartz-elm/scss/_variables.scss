@@ -22,6 +22,7 @@ $gray-700: #495057 !default;
 $gray-800: #343a40 !default;
 $gray-900: #212529 !default;
 $black:    #000 !default;
+$transparent: #0000 !default;
 
 $grays: () !default;
 $grays: map-merge((
@@ -477,7 +478,7 @@ $custom-radio-indicator-icon-checked:           str-replace(url("data:image/svg+
 
 $custom-select-padding-y:           .375rem !default;
 $custom-select-padding-x:          .75rem !default;
-$custom-select-height:              $input-height !default;
+$custom-select-height:              3rem !default;
 $custom-select-indicator-padding:   1rem !default; // Extra padding to account for the presence of the background-image based indicator
 $custom-select-line-height:         $input-btn-line-height !default;
 $custom-select-color:               $input-color !default;
@@ -485,7 +486,7 @@ $custom-select-disabled-color:      $gray-600 !default;
 $custom-select-bg:                  $white !default;
 $custom-select-disabled-bg:         $gray-200 !default;
 $custom-select-bg-size:             8px 10px !default; // In pixels because image dimensions
-$custom-select-indicator-color:     $gray-800 !default;
+$custom-select-indicator-color:     $transparent !default; // $gray-800 !default;
 $custom-select-indicator:           str-replace(url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='#{$custom-select-indicator-color}' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E"), "#", "%23") !default;
 $custom-select-border-width:        $input-btn-border-width !default;
 $custom-select-border-color:        $input-border-color !default;
@@ -495,10 +496,16 @@ $custom-select-focus-border-color:  $input-focus-border-color !default;
 $custom-select-focus-box-shadow:    inset 0 1px 2px rgba($black, .075), 0 0 5px rgba($custom-select-focus-border-color, .5) !default;
 
 $custom-select-font-size-sm:        75% !default;
-$custom-select-height-sm:           $input-height-sm !default;
+$custom-select-height-sm:           1.8rem !default;
+$custom-select-padding-top-sm:        0rem !default;
+$custom-select-padding-bottom-sm:        0rem !default;
+$custom-select-padding-x-sm:        .75rem !default;
 
 $custom-select-font-size-lg:        125% !default;
-$custom-select-height-lg:           $input-height-lg !default;
+$custom-select-height-lg:           3.5rem !default;
+$custom-select-padding-top-lg:        0rem !default;
+$custom-select-padding-bottom-lg:     .2rem !default;
+$custom-select-padding-x-lg:        .75rem !default;
 
 $custom-file-height:                $input-height !default;
 $custom-file-focus-border-color:    $input-focus-border-color !default;
