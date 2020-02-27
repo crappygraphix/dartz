@@ -6552,6 +6552,7 @@ var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$Types$GoHome = {$: 0};
 var $author$project$Types$GoSelectGame = {$: 2};
+var $elm$html$Html$a = _VirtualDom_node('a');
 var $author$project$Types$NewPlayerCommit = function (a) {
 	return {$: 8, a: a};
 };
@@ -6658,6 +6659,7 @@ var $author$project$Main$add_player_form = function (_v0) {
 				]))
 		]);
 };
+var $elm$html$Html$li = _VirtualDom_node('li');
 var $author$project$Types$DeletePlayer = function (a) {
 	return {$: 11, a: a};
 };
@@ -6756,41 +6758,59 @@ var $author$project$Main$list_editable_players = function (l) {
 			A2($elm$core$List$map, player_edit_row, l))
 		]);
 };
-var $elm$html$Html$nav = _VirtualDom_node('nav');
+var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $author$project$Main$render_edit_players = F2(
 	function (players, np) {
 		return _Utils_ap(
 			_List_fromArray(
 				[
 					A2(
-					$elm$html$Html$nav,
+					$elm$html$Html$ul,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('navbar navbar-dark bg-primary')
+							$elm$html$Html$Attributes$class('nav bg-primary text-white')
 						]),
 					_List_fromArray(
 						[
 							A2(
-							$elm$html$Html$button,
+							$elm$html$Html$li,
 							_List_fromArray(
 								[
-									$elm$html$Html$Events$onClick($author$project$Types$GoHome),
-									$elm$html$Html$Attributes$class('btn btn-primary')
+									$elm$html$Html$Attributes$class('nav-item')
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('Home')
+									A2(
+									$elm$html$Html$a,
+									_List_fromArray(
+										[
+											$elm$html$Html$Events$onClick($author$project$Types$GoHome),
+											$elm$html$Html$Attributes$class('nav-link')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Home')
+										]))
 								])),
 							A2(
-							$elm$html$Html$button,
+							$elm$html$Html$li,
 							_List_fromArray(
 								[
-									$elm$html$Html$Events$onClick($author$project$Types$GoSelectGame),
-									$elm$html$Html$Attributes$class('btn btn-primary')
+									$elm$html$Html$Attributes$class('nav-item')
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('Select Game')
+									A2(
+									$elm$html$Html$a,
+									_List_fromArray(
+										[
+											$elm$html$Html$Events$onClick($author$project$Types$GoSelectGame),
+											$elm$html$Html$Attributes$class('nav-link')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Select Game')
+										]))
 								]))
 						]))
 				]),
@@ -7396,56 +7416,168 @@ var $author$project$Main$render_modal = function (modal) {
 													return _List_fromArray(
 														[
 															A2(
-															$elm$html$Html$button,
+															$elm$html$Html$div,
 															_List_fromArray(
 																[
-																	$elm$html$Html$Attributes$class('btn btn-primary'),
-																	$elm$html$Html$Events$onClick(
-																	$author$project$Types$TossModalSelect($author$project$Types$HitBullseye))
+																	$elm$html$Html$Attributes$class('row text-center')
 																]),
 															_List_fromArray(
 																[
-																	$elm$html$Html$text('Single')
+																	A2(
+																	$elm$html$Html$div,
+																	_List_fromArray(
+																		[
+																			$elm$html$Html$Attributes$class('col')
+																		]),
+																	_List_fromArray(
+																		[
+																			A2(
+																			$elm$html$Html$button,
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$Attributes$class('btn btn-primary'),
+																					$elm$html$Html$Events$onClick(
+																					$author$project$Types$TossModalSelect($author$project$Types$HitBullseye))
+																				]),
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$text('Single')
+																				]))
+																		])),
+																	A2(
+																	$elm$html$Html$div,
+																	_List_fromArray(
+																		[
+																			$elm$html$Html$Attributes$class('col')
+																		]),
+																	_List_fromArray(
+																		[
+																			A2(
+																			$elm$html$Html$button,
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$Attributes$class('btn btn-danger'),
+																					$elm$html$Html$Events$onClick(
+																					$author$project$Types$TossModalSelect($author$project$Types$HitDoubleBullseye))
+																				]),
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$text('Double')
+																				]))
+																		]))
 																])),
 															A2(
-															$elm$html$Html$button,
+															$elm$html$Html$div,
 															_List_fromArray(
 																[
-																	$elm$html$Html$Attributes$class('btn btn-danger'),
-																	$elm$html$Html$Events$onClick(
-																	$author$project$Types$TossModalSelect($author$project$Types$HitDoubleBullseye))
+																	$elm$html$Html$Attributes$class('row text-center')
 																]),
 															_List_fromArray(
 																[
-																	$elm$html$Html$text('Double')
+																	A2(
+																	$elm$html$Html$div,
+																	_List_fromArray(
+																		[
+																			$elm$html$Html$Attributes$class('col')
+																		]),
+																	_List_fromArray(
+																		[
+																			A2(
+																			$elm$html$Html$button,
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$Attributes$class('btn btn-warning'),
+																					$elm$html$Html$Events$onClick($author$project$Types$TossModalCancel)
+																				]),
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$text('Cancel')
+																				]))
+																		]))
 																]))
 														]);
 												case 22:
 													return _List_fromArray(
 														[
 															A2(
-															$elm$html$Html$button,
+															$elm$html$Html$div,
 															_List_fromArray(
 																[
-																	$elm$html$Html$Attributes$class('btn btn-primary'),
-																	$elm$html$Html$Events$onClick(
-																	$author$project$Types$TossModalSelect($author$project$Types$HitBullseye))
+																	$elm$html$Html$Attributes$class('row text-center')
 																]),
 															_List_fromArray(
 																[
-																	$elm$html$Html$text('Single')
+																	A2(
+																	$elm$html$Html$div,
+																	_List_fromArray(
+																		[
+																			$elm$html$Html$Attributes$class('col')
+																		]),
+																	_List_fromArray(
+																		[
+																			A2(
+																			$elm$html$Html$button,
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$Attributes$class('btn btn-primary'),
+																					$elm$html$Html$Events$onClick(
+																					$author$project$Types$TossModalSelect($author$project$Types$HitBullseye))
+																				]),
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$text('Single')
+																				]))
+																		])),
+																	A2(
+																	$elm$html$Html$div,
+																	_List_fromArray(
+																		[
+																			$elm$html$Html$Attributes$class('col')
+																		]),
+																	_List_fromArray(
+																		[
+																			A2(
+																			$elm$html$Html$button,
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$Attributes$class('btn btn-danger'),
+																					$elm$html$Html$Events$onClick(
+																					$author$project$Types$TossModalSelect($author$project$Types$HitDoubleBullseye))
+																				]),
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$text('Double')
+																				]))
+																		]))
 																])),
 															A2(
-															$elm$html$Html$button,
+															$elm$html$Html$div,
 															_List_fromArray(
 																[
-																	$elm$html$Html$Attributes$class('btn btn-danger'),
-																	$elm$html$Html$Events$onClick(
-																	$author$project$Types$TossModalSelect($author$project$Types$HitDoubleBullseye))
+																	$elm$html$Html$Attributes$class('row text-center')
 																]),
 															_List_fromArray(
 																[
-																	$elm$html$Html$text('Double')
+																	A2(
+																	$elm$html$Html$div,
+																	_List_fromArray(
+																		[
+																			$elm$html$Html$Attributes$class('col')
+																		]),
+																	_List_fromArray(
+																		[
+																			A2(
+																			$elm$html$Html$button,
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$Attributes$class('btn btn-warning'),
+																					$elm$html$Html$Events$onClick($author$project$Types$TossModalCancel)
+																				]),
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$text('Cancel')
+																				]))
+																		]))
 																]))
 														]);
 												case 1:
@@ -7569,7 +7701,59 @@ var $author$project$Main$render_modal = function (modal) {
 														$author$project$Types$Hit20(1),
 														$author$project$Types$Hit20(2));
 												default:
-													return _List_Nil;
+													return _List_fromArray(
+														[
+															A2(
+															$elm$html$Html$div,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('row text-center')
+																]),
+															_List_fromArray(
+																[
+																	A2(
+																	$elm$html$Html$div,
+																	_List_fromArray(
+																		[
+																			$elm$html$Html$Attributes$class('col')
+																		]),
+																	_List_fromArray(
+																		[
+																			A2(
+																			$elm$html$Html$button,
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$Attributes$class('btn btn-primary'),
+																					$elm$html$Html$Events$onClick(
+																					$author$project$Types$TossModalSelect($author$project$Types$HitBullseye))
+																				]),
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$text('Missed')
+																				]))
+																		])),
+																	A2(
+																	$elm$html$Html$div,
+																	_List_fromArray(
+																		[
+																			$elm$html$Html$Attributes$class('col')
+																		]),
+																	_List_fromArray(
+																		[
+																			A2(
+																			$elm$html$Html$button,
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$Attributes$class('btn btn-warning'),
+																					$elm$html$Html$Events$onClick($author$project$Types$TossModalCancel)
+																				]),
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$text('Cancel')
+																				]))
+																		]))
+																]))
+														]);
 											}
 										}())
 									]))
@@ -7593,34 +7777,52 @@ var $author$project$Main$render_game = F2(
 			_List_fromArray(
 				[
 					A2(
-					$elm$html$Html$nav,
+					$elm$html$Html$ul,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('navbar navbar-dark bg-primary')
+							$elm$html$Html$Attributes$class('nav bg-primary text-white')
 						]),
 					_List_fromArray(
 						[
 							A2(
-							$elm$html$Html$button,
+							$elm$html$Html$li,
 							_List_fromArray(
 								[
-									$elm$html$Html$Events$onClick($author$project$Types$GoHome),
-									$elm$html$Html$Attributes$class('btn btn-primary')
+									$elm$html$Html$Attributes$class('nav-item')
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('Home')
+									A2(
+									$elm$html$Html$a,
+									_List_fromArray(
+										[
+											$elm$html$Html$Events$onClick($author$project$Types$GoHome),
+											$elm$html$Html$Attributes$class('nav-link')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Home')
+										]))
 								])),
 							A2(
-							$elm$html$Html$button,
+							$elm$html$Html$li,
 							_List_fromArray(
 								[
-									$elm$html$Html$Events$onClick($author$project$Types$EndGame),
-									$elm$html$Html$Attributes$class('btn btn-primary')
+									$elm$html$Html$Attributes$class('nav-item')
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('End Game')
+									A2(
+									$elm$html$Html$a,
+									_List_fromArray(
+										[
+											$elm$html$Html$Events$onClick($author$project$Types$EndGame),
+											$elm$html$Html$Attributes$class('nav-link')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('End Game')
+										]))
 								]))
 						])),
 					A2(
@@ -7823,38 +8025,56 @@ var $author$project$Main$render_home = function (state) {
 	var start_game = (($elm$core$List$length(state.e) > 0) && ((!_Utils_eq(state.q, $author$project$Types$NoGame)) && (!state.F))) ? _List_fromArray(
 		[
 			A2(
-			$elm$html$Html$button,
+			$elm$html$Html$li,
 			_List_fromArray(
 				[
-					$elm$html$Html$Events$onClick($author$project$Types$StartGame),
-					$elm$html$Html$Attributes$class('btn btn-primary')
+					$elm$html$Html$Attributes$class('nav-item')
 				]),
 			_List_fromArray(
 				[
-					$elm$html$Html$text('Start Game')
+					A2(
+					$elm$html$Html$a,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick($author$project$Types$StartGame),
+							$elm$html$Html$Attributes$class('nav-link')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Start Game')
+						]))
 				]))
 		]) : _List_Nil;
 	var resume_game = (($elm$core$List$length(state.e) > 0) && ((!_Utils_eq(state.q, $author$project$Types$NoGame)) && state.F)) ? _List_fromArray(
 		[
 			A2(
-			$elm$html$Html$button,
+			$elm$html$Html$li,
 			_List_fromArray(
 				[
-					$elm$html$Html$Events$onClick($author$project$Types$ResumeGame),
-					$elm$html$Html$Attributes$class('btn btn-primary')
+					$elm$html$Html$Attributes$class('nav-item')
 				]),
 			_List_fromArray(
 				[
-					$elm$html$Html$text('Resume Game')
+					A2(
+					$elm$html$Html$a,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick($author$project$Types$ResumeGame),
+							$elm$html$Html$Attributes$class('nav-link')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Resume Game')
+						]))
 				]))
 		]) : _List_Nil;
 	return _List_fromArray(
 		[
 			A2(
-			$elm$html$Html$nav,
+			$elm$html$Html$ul,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('navbar navbar-dark bg-primary')
+					$elm$html$Html$Attributes$class('nav bg-primary text-white')
 				]),
 			_Utils_ap(
 				start_game,
@@ -7863,26 +8083,44 @@ var $author$project$Main$render_home = function (state) {
 					_List_fromArray(
 						[
 							A2(
-							$elm$html$Html$button,
+							$elm$html$Html$li,
 							_List_fromArray(
 								[
-									$elm$html$Html$Events$onClick($author$project$Types$GoEditPlayers),
-									$elm$html$Html$Attributes$class('btn btn-primary')
+									$elm$html$Html$Attributes$class('nav-item')
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('Edit Players')
+									A2(
+									$elm$html$Html$a,
+									_List_fromArray(
+										[
+											$elm$html$Html$Events$onClick($author$project$Types$GoEditPlayers),
+											$elm$html$Html$Attributes$class('nav-link')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Edit Players')
+										]))
 								])),
 							A2(
-							$elm$html$Html$button,
+							$elm$html$Html$li,
 							_List_fromArray(
 								[
-									$elm$html$Html$Events$onClick($author$project$Types$GoSelectGame),
-									$elm$html$Html$Attributes$class('btn btn-primary')
+									$elm$html$Html$Attributes$class('nav-item')
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('Select Game')
+									A2(
+									$elm$html$Html$a,
+									_List_fromArray(
+										[
+											$elm$html$Html$Events$onClick($author$project$Types$GoSelectGame),
+											$elm$html$Html$Attributes$class('nav-link')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Select Game')
+										]))
 								]))
 						])))),
 			A2(
@@ -9687,34 +9925,52 @@ var $author$project$Main$render_select_game = function (mode) {
 		_List_fromArray(
 			[
 				A2(
-				$elm$html$Html$nav,
+				$elm$html$Html$ul,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('navbar navbar-dark bg-primary')
+						$elm$html$Html$Attributes$class('nav bg-primary text-white')
 					]),
 				_List_fromArray(
 					[
 						A2(
-						$elm$html$Html$button,
+						$elm$html$Html$li,
 						_List_fromArray(
 							[
-								$elm$html$Html$Events$onClick($author$project$Types$GoHome),
-								$elm$html$Html$Attributes$class('btn btn-primary')
+								$elm$html$Html$Attributes$class('nav-item')
 							]),
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Home')
+								A2(
+								$elm$html$Html$a,
+								_List_fromArray(
+									[
+										$elm$html$Html$Events$onClick($author$project$Types$GoHome),
+										$elm$html$Html$Attributes$class('nav-link')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Home')
+									]))
 							])),
 						A2(
-						$elm$html$Html$button,
+						$elm$html$Html$li,
 						_List_fromArray(
 							[
-								$elm$html$Html$Events$onClick($author$project$Types$GoEditPlayers),
-								$elm$html$Html$Attributes$class('btn btn-primary')
+								$elm$html$Html$Attributes$class('nav-item')
 							]),
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Edit Players')
+								A2(
+								$elm$html$Html$a,
+								_List_fromArray(
+									[
+										$elm$html$Html$Events$onClick($author$project$Types$GoEditPlayers),
+										$elm$html$Html$Attributes$class('nav-link')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Edit Players')
+									]))
 							]))
 					])),
 				A2(

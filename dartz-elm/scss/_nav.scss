@@ -13,6 +13,7 @@
 
 .nav-link {
   display: block;
+  cursor: pointer;
   padding: $nav-link-padding-y $nav-link-padding-x;
 
   @include hover-focus {

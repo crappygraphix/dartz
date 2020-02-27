@@ -1,8 +1,8 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, div, label, nav, span, text, option, button, select, input, tr, td, table)
-import Html.Attributes exposing (class, placeholder, style, selected, value)
+import Html exposing (Html, a, div, label, ul, li, span, text, option, button, select, input, tr, td, table)
+import Html.Attributes exposing (class, placeholder, style, selected, value, href)
 import Html.Events exposing (onClick, onInput)
 import Json.Decode as JD
 import Json.Encode as JE
@@ -145,18 +145,18 @@ render_home state =
   let
     start_game =  
       if List.length state.playerData > 0 && state.game /= NoGame && state.playing == False
-      then [ button [ onClick StartGame, class "btn btn-primary" ] [ text "Start Game" ] ]
+      then [ li [ class "nav-item" ] [ a [ onClick StartGame, class "nav-link" ] [ text "Start Game" ] ] ]
       else []
     resume_game =  
       if List.length state.playerData > 0 && state.game /= NoGame && state.playing == True
-      then [ button [ onClick ResumeGame, class "btn btn-primary" ] [ text "Resume Game" ] ]
+      then [ li [ class "nav-item" ] [ a [ onClick ResumeGame, class "nav-link" ] [ text "Resume Game" ] ] ]
       else []
   in
-    [ nav [ class "navbar navbar-dark bg-primary" ] <|
+    [ ul [ class "nav bg-primary text-white" ] <|
       start_game ++
       resume_game ++
-      [ button [ onClick GoEditPlayers, class "btn btn-primary" ] [ text "Edit Players" ]
-      , button [ onClick GoSelectGame, class "btn btn-primary" ] [ text "Select Game" ]
+      [ li [ class "nav-item" ] [ a [ onClick GoEditPlayers, class "nav-link" ] [ text "Edit Players" ] ]
+      , li [ class "nav-item" ] [ a [ onClick GoSelectGame, class "nav-link" ] [ text "Select Game" ] ]
       ]
     , div [] 
       [ text "Selected Game: "
@@ -166,9 +166,9 @@ render_home state =
 
 render_select_game : GameMode -> List (Html Action)
 render_select_game mode =
-  [ nav [ class "navbar navbar-dark bg-primary" ]
-    [ button [ onClick GoHome, class "btn btn-primary" ] [ text "Home" ]
-    , button [ onClick GoEditPlayers, class "btn btn-primary" ] [ text "Edit Players" ]            
+  [ ul [ class "nav bg-primary text-white" ]
+    [ li [ class "nav-item" ] [ a [ onClick GoHome, class "nav-link" ] [ text "Home" ] ]
+    , li [ class "nav-item" ] [ a [ onClick GoEditPlayers, class "nav-link" ] [ text "Edit Players" ] ]
     ]
   , div [] 
     [ text "Selected Game: "
@@ -295,9 +295,9 @@ variant_selector mode =
 
 render_edit_players : List Player -> NewPlayerName -> List (Html Action)
 render_edit_players players np =
-  [ nav [ class "navbar navbar-dark bg-primary" ]
-    [ button [ onClick GoHome, class "btn btn-primary" ] [ text "Home" ]
-    , button [ onClick GoSelectGame, class "btn btn-primary" ] [ text "Select Game" ]
+  [ ul [ class "nav bg-primary text-white" ]
+    [ li [ class "nav-item" ] [ a [ onClick GoHome, class "nav-link" ] [ text "Home" ] ]
+    , li [ class "nav-item" ] [ a [ onClick GoSelectGame, class "nav-link" ] [ text "Select Game" ] ]
     ]
   ] ++
   (add_player_form np) ++
@@ -333,9 +333,9 @@ list_editable_players l =
 
 render_game : AppState -> Maybe Modal -> List (Html Action)
 render_game state modal =
-  [ nav [ class "navbar navbar-dark bg-primary" ]
-    [ button [ onClick GoHome, class "btn btn-primary" ] [ text "Home" ]
-    , button [ onClick EndGame, class "btn btn-primary" ] [ text "End Game" ]
+  [ ul [ class "nav bg-primary text-white" ]
+    [ li [ class "nav-item" ] [ a [ onClick GoHome, class "nav-link" ] [ text "Home" ] ]
+    , li [ class "nav-item" ] [ a [ onClick EndGame, class "nav-link" ] [ text "End Game" ] ]
     ]
   , div [ class "board" ] 
     [ S.svg [SA.width "100%", SA.height "100%", SA.viewBox "0 0 100 100"] render_board
@@ -366,12 +366,20 @@ render_modal modal =
             , div [ class "modal-body"] <|
               case h of
                 HitBullseye -> 
-                  [ button [ class "btn btn-primary", onClick <| TossModalSelect HitBullseye ] [ text "Single" ]
-                  , button [ class "btn btn-danger", onClick <| TossModalSelect HitDoubleBullseye ] [ text "Double" ]
+                  [ div [ class "row text-center" ]
+                    [ div [ class "col" ] [ button [ class "btn btn-primary", onClick <| TossModalSelect HitBullseye ] [ text "Single" ] ]
+                    , div [ class "col" ] [ button [ class "btn btn-danger", onClick <| TossModalSelect HitDoubleBullseye ] [ text "Double" ] ]
+                    ]
+                  , div [ class "row text-center" ]
+                    [ div [ class "col" ] [ button [ class "btn btn-warning", onClick <| TossModalCancel ] [ text "Cancel" ] ] ]
                   ]
                 HitDoubleBullseye -> 
-                  [ button [ class "btn btn-primary", onClick <| TossModalSelect HitBullseye ] [ text "Single" ]
-                  , button [ class "btn btn-danger", onClick <| TossModalSelect HitDoubleBullseye ] [ text "Double" ]
+                  [ div [ class "row text-center" ]
+                    [ div [ class "col" ] [ button [ class "btn btn-primary", onClick <| TossModalSelect HitBullseye ] [ text "Single" ] ]
+                    , div [ class "col" ] [ button [ class "btn btn-danger", onClick <| TossModalSelect HitDoubleBullseye ] [ text "Double" ] ]
+                    ]
+                  , div [ class "row text-center" ]
+                    [ div [ class "col" ] [ button [ class "btn btn-warning", onClick <| TossModalCancel ] [ text "Cancel" ] ] ]
                   ]
                 Hit1 _ -> number_hit_buttons (Hit1 SingleHit) (Hit1 DoubleHit) (Hit1 TripleHit)
                 Hit2 _ -> number_hit_buttons (Hit2 SingleHit) (Hit2 DoubleHit) (Hit2 TripleHit)
@@ -393,7 +401,12 @@ render_modal modal =
                 Hit18 _ -> number_hit_buttons (Hit18 SingleHit) (Hit18 DoubleHit) (Hit18 TripleHit)
                 Hit19 _ -> number_hit_buttons (Hit19 SingleHit) (Hit19 DoubleHit) (Hit19 TripleHit)
                 Hit20 _ -> number_hit_buttons (Hit20 SingleHit) (Hit20 DoubleHit) (Hit20 TripleHit)
-                HitMissed -> []
+                HitMissed ->
+                  [ div [ class "row text-center" ]
+                    [ div [ class "col" ] [ button [ class "btn btn-primary", onClick <| TossModalSelect HitBullseye ] [ text "Missed" ] ] 
+                    , div [ class "col" ] [ button [ class "btn btn-warning", onClick <| TossModalCancel ] [ text "Cancel" ] ] 
+                    ]
+                  ]
             ]        
           ]
         ]
