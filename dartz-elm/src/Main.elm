@@ -403,7 +403,7 @@ render_modal modal =
                 Hit20 _ -> number_hit_buttons (Hit20 SingleHit) (Hit20 DoubleHit) (Hit20 TripleHit)
                 HitMissed ->
                   [ div [ class "row text-center" ]
-                    [ div [ class "col" ] [ button [ class "btn btn-primary", onClick <| TossModalSelect HitBullseye ] [ text "Missed" ] ] 
+                    [ div [ class "col" ] [ button [ class "btn btn-primary", onClick <| TossModalSelect HitMissed ] [ text "Missed" ] ] 
                     , div [ class "col" ] [ button [ class "btn btn-warning", onClick <| TossModalCancel ] [ text "Cancel" ] ] 
                     ]
                   ]
