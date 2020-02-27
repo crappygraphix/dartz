@@ -10,6 +10,32 @@ sub_hit_text s = case s of
    DoubleHit -> "Double"
    TripleHit -> "Triple"
 
+short_hit_text : Hit -> String
+short_hit_text h = case h of
+   HitMissed -> "Miss"
+   Hit1 _ -> "1"
+   Hit2 _ -> "2"
+   Hit3 _ -> "3"
+   Hit4 _ -> "4"
+   Hit5 _ -> "5"
+   Hit6 _ -> "6"
+   Hit7 _ -> "7"
+   Hit8 _ -> "8"
+   Hit9 _ -> "9"
+   Hit10 _ -> "10"
+   Hit11 _ -> "11"
+   Hit12 _ -> "12"
+   Hit13 _ -> "13"
+   Hit14 _ -> "14"
+   Hit15 _ -> "15"
+   Hit16 _ -> "16"
+   Hit17 _ -> "17"
+   Hit18 _ -> "18"
+   Hit19 _ -> "19"
+   Hit20 _ -> "20"
+   HitBullseye -> "Bull"
+   HitDoubleBullseye -> "Double Bull"
+
 hit_text : Hit -> String
 hit_text h = case h of
    HitMissed -> "Miss"

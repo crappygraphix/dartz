@@ -5141,7 +5141,7 @@ var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Types$AnyBullOut = 1;
 var $author$project$Types$AppState = F6(
 	function (playerData, game, screen, playing, currentPlayer, currentTurn) {
-		return {K: currentPlayer, y: currentTurn, q: game, e: playerData, F: playing, m: screen};
+		return {K: currentPlayer, y: currentTurn, q: game, e: playerData, F: playing, h: screen};
 	});
 var $author$project$Types$AroundTheClock = function (a) {
 	return {$: 4, a: a};
@@ -5270,7 +5270,9 @@ var $author$project$Types$Numbers701 = F2(
 var $author$project$Types$NumbersScore = function (a) {
 	return {$: 1, a: a};
 };
-var $author$project$Types$PlayGame = {$: 3};
+var $author$project$Types$PlayGame = function (a) {
+	return {$: 3, a: a};
+};
 var $author$project$Types$Player = F4(
 	function (name, hits, score, index) {
 		return {aB: hits, A: index, aa: name, am: score};
@@ -5365,7 +5367,7 @@ var $author$project$Types$Decode$app_state_decoder = function () {
 				case 'SELECTGAME':
 					return $author$project$Types$SelectGame;
 				case 'PLAYGAME':
-					return $author$project$Types$PlayGame;
+					return $author$project$Types$PlayGame($elm$core$Maybe$Nothing);
 				default:
 					return $author$project$Types$Home;
 			}
@@ -5715,7 +5717,7 @@ var $author$project$Types$Decode$app_state_decoder = function () {
 			'currentTurn',
 			$elm$json$Json$Decode$list(decode_hit)));
 }();
-var $author$project$Main$clean_state = {K: 0, y: _List_Nil, q: $author$project$Types$NoGame, e: _List_Nil, F: false, m: $author$project$Types$Home};
+var $author$project$Main$clean_state = {K: 0, y: _List_Nil, q: $author$project$Types$NoGame, e: _List_Nil, F: false, h: $author$project$Types$Home};
 var $elm$json$Json$Decode$decodeValue = _Json_run;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -5730,6 +5732,7 @@ var $author$project$Main$init = function (s) {
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $author$project$Types$SelectSubHit = $elm$core$Basics$identity;
 var $elm$core$Basics$composeL = F3(
 	function (g, f, x) {
 		return g(
@@ -6177,7 +6180,7 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 				encode_game_mode(state.q)),
 				_Utils_Tuple2(
 				'screen',
-				encode_screen(state.m)),
+				encode_screen(state.h)),
 				_Utils_Tuple2(
 				'playing',
 				$elm$json$Json$Encode$bool(state.F)),
@@ -6425,17 +6428,17 @@ var $author$project$Main$update = F2(
 				case 0:
 					return _Utils_update(
 						state,
-						{m: $author$project$Types$Home});
+						{h: $author$project$Types$Home});
 				case 1:
 					return _Utils_update(
 						state,
 						{
-							m: $author$project$Types$EditPlayers('')
+							h: $author$project$Types$EditPlayers('')
 						});
 				case 2:
 					return _Utils_update(
 						state,
-						{m: $author$project$Types$SelectGame});
+						{h: $author$project$Types$SelectGame});
 				case 3:
 					return _Utils_update(
 						state,
@@ -6444,12 +6447,14 @@ var $author$project$Main$update = F2(
 							y: _List_Nil,
 							e: A2(reset_scores, state.q, state.e),
 							F: true,
-							m: $author$project$Types$PlayGame
+							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 4:
 					return _Utils_update(
 						state,
-						{m: $author$project$Types$PlayGame});
+						{
+							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+						});
 				case 5:
 					return _Utils_update(
 						state,
@@ -6458,7 +6463,7 @@ var $author$project$Main$update = F2(
 							y: _List_Nil,
 							e: A2(reset_scores, state.q, state.e),
 							F: false,
-							m: $author$project$Types$Home
+							h: $author$project$Types$Home
 						});
 				case 6:
 					var mode = action.a;
@@ -6470,7 +6475,7 @@ var $author$project$Main$update = F2(
 					return _Utils_update(
 						state,
 						{
-							m: $author$project$Types$EditPlayers(p)
+							h: $author$project$Types$EditPlayers(p)
 						});
 				case 8:
 					var p = action.a;
@@ -6478,7 +6483,7 @@ var $author$project$Main$update = F2(
 						state,
 						{
 							e: A2(add_player, state.e, p),
-							m: $author$project$Types$EditPlayers('')
+							h: $author$project$Types$EditPlayers('')
 						});
 				case 11:
 					var i = action.a;
@@ -6492,10 +6497,25 @@ var $author$project$Main$update = F2(
 					return _Utils_update(
 						state,
 						{
+							h: $author$project$Types$PlayGame(
+								$elm$core$Maybe$Just(h))
+						});
+				case 13:
+					var h = action.a;
+					return _Utils_update(
+						state,
+						{
 							y: A2(
 								$elm$core$List$take,
 								3,
-								A2($elm$core$List$cons, h, state.y))
+								A2($elm$core$List$cons, h, state.y)),
+							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+						});
+				case 14:
+					return _Utils_update(
+						state,
+						{
+							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 9:
 					var i = action.a;
@@ -6521,6 +6541,14 @@ var $author$project$Main$update = F2(
 		return _Utils_Tuple2(new_state, save_state);
 	});
 var $elm$json$Json$Decode$value = _Json_decodeValue;
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
+var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$Types$GoHome = {$: 0};
 var $author$project$Types$GoSelectGame = {$: 2};
@@ -6531,14 +6559,6 @@ var $author$project$Types$NewPlayerInput = function (a) {
 	return {$: 7, a: a};
 };
 var $elm$html$Html$button = _VirtualDom_node('button');
-var $elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$string(string));
-	});
-var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$label = _VirtualDom_node('label');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
@@ -6825,9 +6845,9 @@ var $elm$svg$Svg$Attributes$x = _VirtualDom_attribute('x');
 var $elm$svg$Svg$Attributes$y = _VirtualDom_attribute('y');
 var $author$project$Main$render_board = function () {
 	var start_end_points = F2(
-		function (_v10, r) {
-			var s = _v10.a;
-			var e = _v10.b;
+		function (_v7, r) {
+			var s = _v7.a;
+			var e = _v7.b;
 			return _Utils_Tuple2(
 				_Utils_Tuple2(
 					r * $elm$core$Basics$sin(s),
@@ -6865,15 +6885,15 @@ var $author$project$Main$render_board = function () {
 				}),
 			_List_fromArray(
 				[20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5]));
-		var draw_num = function (_v9) {
-			var d = _v9.a;
-			var v = _v9.b;
+		var draw_num = function (_v6) {
+			var d = _v6.a;
+			var v = _v6.b;
 			return A2(
 				$elm$svg$Svg$text_,
 				_Utils_ap(
-					function (_v8) {
-						var x = _v8.a;
-						var y = _v8.b;
+					function (_v5) {
+						var x = _v5.a;
+						var y = _v5.b;
 						return _List_fromArray(
 							[
 								$elm$svg$Svg$Attributes$x(
@@ -6931,13 +6951,13 @@ var $author$project$Main$render_board = function () {
 					$elm$html$Html$text('MISS')
 				]))
 		]);
-	var l_from = function (_v5) {
-		var _v6 = _v5.a;
-		var x0 = _v6.a;
-		var y0 = _v6.b;
-		var _v7 = _v5.b;
-		var x1 = _v7.a;
-		var y1 = _v7.b;
+	var l_from = function (_v2) {
+		var _v3 = _v2.a;
+		var x0 = _v3.a;
+		var y0 = _v3.b;
+		var _v4 = _v2.b;
+		var x1 = _v4.a;
+		var y1 = _v4.b;
 		return 'L ' + ($elm$core$String$fromFloat(50 + x0) + (' ' + ($elm$core$String$fromFloat(50 + y0) + (' L ' + ($elm$core$String$fromFloat(50 + x1) + (' ' + $elm$core$String$fromFloat(50 + y1)))))));
 	};
 	var index_to_hit = F2(
@@ -6987,80 +7007,12 @@ var $author$project$Main$render_board = function () {
 					return $author$project$Types$HitMissed;
 			}
 		});
-	var double_bull = A2(
-		$elm$svg$Svg$circle,
-		_List_fromArray(
-			[
-				$elm$svg$Svg$Events$onClick(
-				$author$project$Types$Toss($author$project$Types$HitDoubleBullseye)),
-				$elm$svg$Svg$Attributes$cx('50'),
-				$elm$svg$Svg$Attributes$cy('50'),
-				$elm$svg$Svg$Attributes$r('5'),
-				$elm$svg$Svg$Attributes$stroke('white'),
-				$elm$svg$Svg$Attributes$strokeWidth('0.25'),
-				$elm$svg$Svg$Attributes$fill('red')
-			]),
-		_List_Nil);
 	var d_from_deg = F2(
 		function (d, r) {
 			return 'M 50 50 ' + (l_from(
 				A2(start_end_points, d, r)) + ' Z');
 		});
-	var double_slice = function (_v3) {
-		var d = _v3.a;
-		var v = _v3.b;
-		return A2(
-			$elm$svg$Svg$path,
-			_List_fromArray(
-				[
-					$elm$svg$Svg$Events$onClick(
-					$author$project$Types$Toss(
-						A2(index_to_hit, v, 1))),
-					$elm$svg$Svg$Attributes$d(
-					A2(d_from_deg, d, 45)),
-					$elm$svg$Svg$Attributes$stroke('white'),
-					$elm$svg$Svg$Attributes$strokeWidth('0.25'),
-					$elm$svg$Svg$Attributes$fill('green')
-				]),
-			_List_Nil);
-	};
-	var inner_single_slice = function (_v2) {
-		var d = _v2.a;
-		var v = _v2.b;
-		return A2(
-			$elm$svg$Svg$path,
-			_List_fromArray(
-				[
-					$elm$svg$Svg$Events$onClick(
-					$author$project$Types$Toss(
-						A2(index_to_hit, v, 0))),
-					$elm$svg$Svg$Attributes$d(
-					A2(d_from_deg, d, 21)),
-					$elm$svg$Svg$Attributes$stroke('white'),
-					$elm$svg$Svg$Attributes$strokeWidth('0.25'),
-					$elm$svg$Svg$Attributes$fill('black')
-				]),
-			_List_Nil);
-	};
-	var outer_single_slice = function (_v1) {
-		var d = _v1.a;
-		var v = _v1.b;
-		return A2(
-			$elm$svg$Svg$path,
-			_List_fromArray(
-				[
-					$elm$svg$Svg$Events$onClick(
-					$author$project$Types$Toss(
-						A2(index_to_hit, v, 0))),
-					$elm$svg$Svg$Attributes$d(
-					A2(d_from_deg, d, 38)),
-					$elm$svg$Svg$Attributes$stroke('white'),
-					$elm$svg$Svg$Attributes$strokeWidth('0.25'),
-					$elm$svg$Svg$Attributes$fill('black')
-				]),
-			_List_Nil);
-	};
-	var triple_slice = function (_v0) {
+	var slice = function (_v0) {
 		var d = _v0.a;
 		var v = _v0.b;
 		return A2(
@@ -7069,12 +7021,12 @@ var $author$project$Main$render_board = function () {
 				[
 					$elm$svg$Svg$Events$onClick(
 					$author$project$Types$Toss(
-						A2(index_to_hit, v, 2))),
+						A2(index_to_hit, v, 0))),
 					$elm$svg$Svg$Attributes$d(
-					A2(d_from_deg, d, 29)),
+					A2(d_from_deg, d, 45)),
 					$elm$svg$Svg$Attributes$stroke('white'),
 					$elm$svg$Svg$Attributes$strokeWidth('0.25'),
-					$elm$svg$Svg$Attributes$fill('green')
+					$elm$svg$Svg$Attributes$fill('black')
 				]),
 			_List_Nil);
 	};
@@ -7089,21 +7041,15 @@ var $author$project$Main$render_board = function () {
 				$elm$svg$Svg$Attributes$r('10'),
 				$elm$svg$Svg$Attributes$stroke('white'),
 				$elm$svg$Svg$Attributes$strokeWidth('0.25'),
-				$elm$svg$Svg$Attributes$fill('green')
+				$elm$svg$Svg$Attributes$fill('black')
 			]),
 		_List_Nil);
 	return _Utils_ap(
-		A2($elm$core$List$map, double_slice, panels),
+		A2($elm$core$List$map, slice, panels),
 		_Utils_ap(
-			A2($elm$core$List$map, outer_single_slice, panels),
-			_Utils_ap(
-				A2($elm$core$List$map, triple_slice, panels),
-				_Utils_ap(
-					A2($elm$core$List$map, inner_single_slice, panels),
-					_Utils_ap(
-						_List_fromArray(
-							[bull, double_bull]),
-						_Utils_ap(miss, number_ring))))));
+			_List_fromArray(
+				[bull]),
+			_Utils_ap(miss, number_ring)));
 }();
 var $author$project$Types$Text$sub_hit_text = function (s) {
 	switch (s) {
@@ -7210,64 +7156,495 @@ var $author$project$Main$render_hits = function (hits) {
 			hit_div,
 			$elm$core$List$reverse(hits)));
 };
+var $author$project$Types$TossModalCancel = {$: 14};
+var $author$project$Types$TossModalSelect = function (a) {
+	return {$: 13, a: a};
+};
+var $author$project$Types$Text$short_hit_text = function (h) {
+	switch (h.$) {
+		case 0:
+			return 'Miss';
+		case 1:
+			return '1';
+		case 2:
+			return '2';
+		case 3:
+			return '3';
+		case 4:
+			return '4';
+		case 5:
+			return '5';
+		case 6:
+			return '6';
+		case 7:
+			return '7';
+		case 8:
+			return '8';
+		case 9:
+			return '9';
+		case 10:
+			return '10';
+		case 11:
+			return '11';
+		case 12:
+			return '12';
+		case 13:
+			return '13';
+		case 14:
+			return '14';
+		case 15:
+			return '15';
+		case 16:
+			return '16';
+		case 17:
+			return '17';
+		case 18:
+			return '18';
+		case 19:
+			return '19';
+		case 20:
+			return '20';
+		case 21:
+			return 'Bull';
+		default:
+			return 'Double Bull';
+	}
+};
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $author$project$Main$render_modal = function (modal) {
+	var number_hit_buttons = F3(
+		function (s, d, t) {
+			return _List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('row text-center')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('col')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$button,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('btn btn-secondary'),
+											$elm$html$Html$Events$onClick(
+											$author$project$Types$TossModalSelect(s))
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Single')
+										]))
+								]))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('row text-center')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('col')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$button,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('btn btn-success'),
+											$elm$html$Html$Events$onClick(
+											$author$project$Types$TossModalSelect(d))
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Double')
+										]))
+								])),
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('col')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$button,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('btn btn-danger'),
+											$elm$html$Html$Events$onClick(
+											$author$project$Types$TossModalSelect(d))
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Triple')
+										]))
+								]))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('row text-center')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('col')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$button,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('btn btn-warning'),
+											$elm$html$Html$Events$onClick($author$project$Types$TossModalCancel)
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Cancel')
+										]))
+								]))
+						]))
+				]);
+		});
+	var subhit_modal = function (h) {
+		return _List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('modal-backdrop show')
+					]),
+				_List_Nil),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('modal'),
+						A2($elm$html$Html$Attributes$style, 'display', 'block')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('modal-dialog-centered')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('modal-content')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('modal-header text-center')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$div,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('modal-title w-100')
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text(
+														$author$project$Types$Text$short_hit_text(h))
+													]))
+											])),
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('modal-body')
+											]),
+										function () {
+											switch (h.$) {
+												case 21:
+													return _List_fromArray(
+														[
+															A2(
+															$elm$html$Html$button,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('btn btn-primary'),
+																	$elm$html$Html$Events$onClick(
+																	$author$project$Types$TossModalSelect($author$project$Types$HitBullseye))
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('Single')
+																])),
+															A2(
+															$elm$html$Html$button,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('btn btn-danger'),
+																	$elm$html$Html$Events$onClick(
+																	$author$project$Types$TossModalSelect($author$project$Types$HitDoubleBullseye))
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('Double')
+																]))
+														]);
+												case 22:
+													return _List_fromArray(
+														[
+															A2(
+															$elm$html$Html$button,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('btn btn-primary'),
+																	$elm$html$Html$Events$onClick(
+																	$author$project$Types$TossModalSelect($author$project$Types$HitBullseye))
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('Single')
+																])),
+															A2(
+															$elm$html$Html$button,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('btn btn-danger'),
+																	$elm$html$Html$Events$onClick(
+																	$author$project$Types$TossModalSelect($author$project$Types$HitDoubleBullseye))
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('Double')
+																]))
+														]);
+												case 1:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit1(0),
+														$author$project$Types$Hit1(1),
+														$author$project$Types$Hit1(2));
+												case 2:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit2(0),
+														$author$project$Types$Hit2(1),
+														$author$project$Types$Hit2(2));
+												case 3:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit3(0),
+														$author$project$Types$Hit3(1),
+														$author$project$Types$Hit3(2));
+												case 4:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit4(0),
+														$author$project$Types$Hit4(1),
+														$author$project$Types$Hit4(2));
+												case 5:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit5(0),
+														$author$project$Types$Hit5(1),
+														$author$project$Types$Hit5(2));
+												case 6:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit6(0),
+														$author$project$Types$Hit6(1),
+														$author$project$Types$Hit6(2));
+												case 7:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit7(0),
+														$author$project$Types$Hit7(1),
+														$author$project$Types$Hit7(2));
+												case 8:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit8(0),
+														$author$project$Types$Hit8(1),
+														$author$project$Types$Hit8(2));
+												case 9:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit9(0),
+														$author$project$Types$Hit9(1),
+														$author$project$Types$Hit9(2));
+												case 10:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit10(0),
+														$author$project$Types$Hit10(1),
+														$author$project$Types$Hit10(2));
+												case 11:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit11(0),
+														$author$project$Types$Hit11(1),
+														$author$project$Types$Hit11(2));
+												case 12:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit12(0),
+														$author$project$Types$Hit12(1),
+														$author$project$Types$Hit12(2));
+												case 13:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit13(0),
+														$author$project$Types$Hit13(1),
+														$author$project$Types$Hit13(2));
+												case 14:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit14(0),
+														$author$project$Types$Hit14(1),
+														$author$project$Types$Hit14(2));
+												case 15:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit15(0),
+														$author$project$Types$Hit15(1),
+														$author$project$Types$Hit15(2));
+												case 16:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit16(0),
+														$author$project$Types$Hit16(1),
+														$author$project$Types$Hit16(2));
+												case 17:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit17(0),
+														$author$project$Types$Hit17(1),
+														$author$project$Types$Hit17(2));
+												case 18:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit18(0),
+														$author$project$Types$Hit18(1),
+														$author$project$Types$Hit18(2));
+												case 19:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit19(0),
+														$author$project$Types$Hit19(1),
+														$author$project$Types$Hit19(2));
+												case 20:
+													return A3(
+														number_hit_buttons,
+														$author$project$Types$Hit20(0),
+														$author$project$Types$Hit20(1),
+														$author$project$Types$Hit20(2));
+												default:
+													return _List_Nil;
+											}
+										}())
+									]))
+							]))
+					]))
+			]);
+	};
+	if (!modal.$) {
+		var h = modal.a;
+		return subhit_modal(h);
+	} else {
+		return _List_Nil;
+	}
+};
 var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
 var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
 var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
-var $author$project$Main$render_game = function (state) {
-	return _List_fromArray(
-		[
-			A2(
-			$elm$html$Html$nav,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('navbar navbar-dark bg-primary')
-				]),
+var $author$project$Main$render_game = F2(
+	function (state, modal) {
+		return _Utils_ap(
 			_List_fromArray(
 				[
 					A2(
-					$elm$html$Html$button,
+					$elm$html$Html$nav,
 					_List_fromArray(
 						[
-							$elm$html$Html$Events$onClick($author$project$Types$GoHome),
-							$elm$html$Html$Attributes$class('btn btn-primary')
+							$elm$html$Html$Attributes$class('navbar navbar-dark bg-primary')
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text('Home')
+							A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Events$onClick($author$project$Types$GoHome),
+									$elm$html$Html$Attributes$class('btn btn-primary')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text('Home')
+								])),
+							A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Events$onClick($author$project$Types$EndGame),
+									$elm$html$Html$Attributes$class('btn btn-primary')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text('End Game')
+								]))
 						])),
 					A2(
-					$elm$html$Html$button,
+					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Events$onClick($author$project$Types$EndGame),
-							$elm$html$Html$Attributes$class('btn btn-primary')
+							$elm$html$Html$Attributes$class('board')
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text('End Game')
-						]))
-				])),
-			A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('board')
+							A2(
+							$elm$svg$Svg$svg,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$width('100%'),
+									$elm$svg$Svg$Attributes$height('100%'),
+									$elm$svg$Svg$Attributes$viewBox('0 0 100 100')
+								]),
+							$author$project$Main$render_board)
+						])),
+					$author$project$Main$render_hits(state.y)
 				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$svg$Svg$svg,
-					_List_fromArray(
-						[
-							$elm$svg$Svg$Attributes$width('100%'),
-							$elm$svg$Svg$Attributes$height('100%'),
-							$elm$svg$Svg$Attributes$viewBox('0 0 100 100')
-						]),
-					$author$project$Main$render_board)
-				])),
-			$author$project$Main$render_hits(state.y)
-		]);
-};
+			$author$project$Main$render_modal(modal));
+	});
 var $author$project$Types$GoEditPlayers = {$: 1};
 var $author$project$Types$ResumeGame = {$: 4};
 var $author$project$Types$StartGame = {$: 3};
@@ -7518,6 +7895,7 @@ var $author$project$Main$render_home = function (state) {
 				]))
 		]);
 };
+var $elm$html$Html$p = _VirtualDom_node('p');
 var $author$project$Types$Dom$game_description = function (mode) {
 	switch (mode.$) {
 		case 0:
@@ -7528,14 +7906,62 @@ var $author$project$Types$Dom$game_description = function (mode) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Total score of a 3 dart turn is deducted from the player\'s starting number of 701.'),
-						$elm$html$Html$text('Inner bull is 50, outter bull is 25.'),
-						$elm$html$Html$text('Winner must reach EXACTLY 0 points.'),
-						$elm$html$Html$text('If 0 is reached before finishing a turn, the turn is over, it is a win.'),
-						$elm$html$Html$text('If the turn results in a less than 0 score, called a Bust, no points are deducted for that turn.'),
-						$elm$html$Html$text('Variations:'),
-						$elm$html$Html$text('Double In / Triple In : Requires double or triple hits during a turn in order to begin point deduction.'),
-						$elm$html$Html$text('Double Out / Triple Out : Requires double or triple hits during a turn in order to end the game. Busts happen at 2 or 3 respectively, instead of 0.')
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Total score of a 3 dart turn is deducted from the player\'s starting number of 701.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Inner bull is 50, outter bull is 25.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Winner must reach EXACTLY 0 points.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('If 0 is reached before finishing a turn, the turn is over, it is a win.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('If the turn results in a less than 0 score, called a Bust, no points are deducted for that turn.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Variations:')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Double In / Triple In : Requires double or triple hits during a turn in order to begin point deduction.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Double Out / Triple Out : Requires double or triple hits during a turn in order to end the game. Busts happen on a turn score of 1 or 2 respectively.')
+							]))
 					]));
 		case 2:
 			return A2(
@@ -7543,14 +7969,62 @@ var $author$project$Types$Dom$game_description = function (mode) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Total score of a 3 dart turn is deducted from the player\'s starting number of 501.'),
-						$elm$html$Html$text('Inner bull is 50, outter bull is 25.'),
-						$elm$html$Html$text('Winner must reach EXACTLY 0 points.'),
-						$elm$html$Html$text('If 0 is reached before finishing a turn, the turn is over, it is a win.'),
-						$elm$html$Html$text('If the turn results in a less than 0 score, called a Bust, no points are deducted for that turn.'),
-						$elm$html$Html$text('Variations:'),
-						$elm$html$Html$text('Double In / Triple In : Requires double or triple hits during a turn in order to begin point deduction.'),
-						$elm$html$Html$text('Double Out / Triple Out : Requires double or triple hits during a turn in order to end the game. Busts happen at 2 or 3 respectively, instead of 0.')
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Total score of a 3 dart turn is deducted from the player\'s starting number of 501.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Inner bull is 50, outter bull is 25.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Winner must reach EXACTLY 0 points.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('If 0 is reached before finishing a turn, the turn is over, it is a win.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('If the turn results in a less than 0 score, called a Bust, no points are deducted for that turn.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Variations:')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Double In / Triple In : Requires double or triple hits during a turn in order to begin point deduction.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Double Out / Triple Out : Requires double or triple hits during a turn in order to end the game. Busts happen on a turn score of 1 or 2 respectively.')
+							]))
 					]));
 		case 3:
 			return A2(
@@ -7558,14 +8032,62 @@ var $author$project$Types$Dom$game_description = function (mode) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Total score of a 3 dart turn is deducted from the player\'s starting number of 301.'),
-						$elm$html$Html$text('Inner bull is 50, outter bull is 25.'),
-						$elm$html$Html$text('Winner must reach EXACTLY 0 points.'),
-						$elm$html$Html$text('If 0 is reached before finishing a turn, the turn is over, it is a win.'),
-						$elm$html$Html$text('If the turn results in a less than 0 score, called a Bust, no points are deducted for that turn.'),
-						$elm$html$Html$text('Variations:'),
-						$elm$html$Html$text('Double In / Triple In : Requires double or triple hits during a turn in order to begin point deduction.'),
-						$elm$html$Html$text('Double Out / Triple Out : Requires double or triple hits during a turn in order to end the game. Busts happen at 2 or 3 respectively, instead of 0.')
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Total score of a 3 dart turn is deducted from the player\'s starting number of 301.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Inner bull is 50, outter bull is 25.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Winner must reach EXACTLY 0 points.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('If 0 is reached before finishing a turn, the turn is over, it is a win.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('If the turn results in a less than 0 score, called a Bust, no points are deducted for that turn.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Variations:')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Double In / Triple In : Requires double or triple hits during a turn in order to begin point deduction.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Double Out / Triple Out : Requires double or triple hits during a turn in order to end the game. Busts happen on a turn score of 1 or 2 respectively.')
+							]))
 					]));
 		case 4:
 			return A2(
@@ -7573,15 +8095,69 @@ var $author$project$Types$Dom$game_description = function (mode) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Each player takes a 3 dart turn.'),
-						$elm$html$Html$text('Objective is to hit 1 to 20 in order.'),
-						$elm$html$Html$text('The player can not move on to the next number until the target number is hit, starting at 1.'),
-						$elm$html$Html$text('The target number increments after a successful hit on the current target number, so at most a player can advance 3 numbers in a turn.'),
-						$elm$html$Html$text('The first player to hit 20 wins.'),
-						$elm$html$Html$text('Doubles and triples count as a normal hit.'),
-						$elm$html$Html$text('Variations:'),
-						$elm$html$Html$text('Bull Out : After 20, player must hit double or single bullseye to win.'),
-						$elm$html$Html$text('Split Bull Out : After 20, player must hit the outter bullseye, then the inner bullseye to win.')
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Each player takes a 3 dart turn.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Objective is to hit 1 to 20 in order.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('The player can not move on to the next number until the target number is hit, starting at 1.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('The target number increments after a successful hit on the current target number, so at most a player can advance 3 numbers in a turn.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('The first player to hit 20 wins.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Doubles and triples count as a normal hit.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Variations:')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Bull Out : After 20, player must hit double or single bullseye to win.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Split Bull Out : After 20, player must hit the outter bullseye, then the inner bullseye to win.')
+							]))
 					]));
 		case 5:
 			return A2(
@@ -7589,15 +8165,69 @@ var $author$project$Types$Dom$game_description = function (mode) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('For the game, choose if triples or doubles will reward bonus points.'),
-						$elm$html$Html$text('Each player takes a 3 dart turn.'),
-						$elm$html$Html$text('Objective is to hit 1 to 20 in order.'),
-						$elm$html$Html$text('The player can not move on to the next number until the target number is hit, starting at 1.'),
-						$elm$html$Html$text('The target number increments after a successful hit on the current target number, so at most a player can advance 3 numbers in a turn.'),
-						$elm$html$Html$text('Points are only issued on hits to the target number. Hits to old or future numbers do not issue points.'),
-						$elm$html$Html$text('A normal hit is worth 1 point. A hit to a double or triple (depending on what was chosen for the game) is worth 3 points.'),
-						$elm$html$Html$text('Players who hit 20 are done with their turns.'),
-						$elm$html$Html$text('When all players finish, the one with the most points wins.')
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('For the game, choose if triples or doubles will reward bonus points.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Each player takes a 3 dart turn.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Objective is to hit 1 to 20 in order.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('The player can not move on to the next number until the target number is hit, starting at 1.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('The target number increments after a successful hit on the current target number, so at most a player can advance 3 numbers in a turn.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Points are only issued on hits to the target number. Hits to old or future numbers do not issue points.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('A normal hit is worth 1 point. A hit to a double or triple (depending on what was chosen for the game) is worth 3 points.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Players who hit 20 are done with their turns.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('When all players finish, the one with the most points wins.')
+							]))
 					]));
 		case 6:
 			return A2(
@@ -7605,14 +8235,62 @@ var $author$project$Types$Dom$game_description = function (mode) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Each player takes a 3 dart turn.'),
-						$elm$html$Html$text('There are 9 innings and the inning increments each round.'),
-						$elm$html$Html$text('Players target the number based on the inning, so board positions 1 to 9 will be used.'),
-						$elm$html$Html$text('Hitting the target number gives 1 run. Doubles and triples give 2 and 3 runs respectively.'),
-						$elm$html$Html$text('Ties at the end of the 9th inning are broken by adding additional innings where the bullseye is the target.'),
-						$elm$html$Html$text('Player with the most points wins.'),
-						$elm$html$Html$text('Variations: '),
-						$elm$html$Html$text('Seventh Inning Catch : No hits in the 7th inning results in the player\'s score being cut in half, rounded up.')
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Each player takes a 3 dart turn.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('There are 9 innings and the inning increments each round.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Players target the number based on the inning, so board positions 1 to 9 will be used.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Hitting the target number gives 1 run. Doubles and triples give 2 and 3 runs respectively.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Ties at the end of the 9th inning are broken by adding additional innings where the bullseye is the target.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Player with the most points wins.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Variations: ')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Seventh Inning Catch : No hits in the 7th inning results in the player\'s score being cut in half, rounded up.')
+							]))
 					]));
 		case 7:
 			return A2(
@@ -7620,13 +8298,55 @@ var $author$project$Types$Dom$game_description = function (mode) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Each player takes a 3 dart turn.'),
-						$elm$html$Html$text('Objective is to hit triples of 10 to 20 in order, followed by the outter then inner bullseye.'),
-						$elm$html$Html$text('The player can not move on to the next number until the target number triple is hit, starting at 10.'),
-						$elm$html$Html$text('The target number increments after a successful hit on the current target number, so at most a player can advance 3 numbers in a turn.'),
-						$elm$html$Html$text('The first player to hit the inner bullseye wins.'),
-						$elm$html$Html$text('Variations:'),
-						$elm$html$Html$text('Three Headed Dragon : Player must complete the 10 to 20, outter bullseye, inner bullseye pattern 3 times to win.')
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Each player takes a 3 dart turn.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Objective is to hit triples of 10 to 20 in order, followed by the outter then inner bullseye.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('The player can not move on to the next number until the target number triple is hit, starting at 10.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('The target number increments after a successful hit on the current target number, so at most a player can advance 3 numbers in a turn.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('The first player to hit the inner bullseye wins.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Variations:')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Three Headed Dragon : Player must complete the 10 to 20, outter bullseye, inner bullseye pattern 3 times to win.')
+							]))
 					]));
 		default:
 			return A2(
@@ -7634,19 +8354,97 @@ var $author$project$Types$Dom$game_description = function (mode) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Each player takes a 3 dart turn.'),
-						$elm$html$Html$text('The targets are 15 to 20 and the inner and outter bullseye.'),
-						$elm$html$Html$text('A player can attempt to hit any target in any order during their turn.'),
-						$elm$html$Html$text('Objective is for a player to open all targets and earn the most points.'),
-						$elm$html$Html$text('Each player must open their own targets, one player opening a target does not open it for all other players.'),
-						$elm$html$Html$text('A player marks unopened targets with dart hits. A regular hit is 1 mark, a double hit is 2 marks, and a triple hit is 3 marks.'),
-						$elm$html$Html$text('A target is open when it has 3 marks.'),
-						$elm$html$Html$text('If all players have opened a target, it becomes closed for all players.'),
-						$elm$html$Html$text('A player can earn points by hitting their open targets. Points are rewarded based on the number of the target, double and triple multipliers apply.'),
-						$elm$html$Html$text('No points are rewarded for hits to closed targets.'),
-						$elm$html$Html$text('The game ends when all targets have been closed. The player with the most points wins.'),
-						$elm$html$Html$text('Variations:'),
-						$elm$html$Html$text('Golf : Gameplay is the same, but any points a player earns during a turn are given to all other players who have not yet opened the target. Once all targets are closed the player with the least points wins.')
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Each player takes a 3 dart turn.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('The targets are 15 to 20 and the inner and outter bullseye.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('A player can attempt to hit any target in any order during their turn.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Objective is for a player to open all targets and earn the most points.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Each player must open their own targets, one player opening a target does not open it for all other players.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('A player marks unopened targets with dart hits. A regular hit is 1 mark, a double hit is 2 marks, and a triple hit is 3 marks.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('A target is open when it has 3 marks.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('If all players have opened a target, it becomes closed for all players.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('A player can earn points by hitting their open targets. Points are rewarded based on the number of the target, double and triple multipliers apply.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('No points are rewarded for hits to closed targets.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('The game ends when all targets have been closed. The player with the most points wins.')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Variations:')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Golf : Gameplay is the same, but any points a player earns during a turn are given to all other players who have not yet opened the target. Once all targets are closed the player with the least points wins.')
+							]))
 					]));
 	}
 };
@@ -8944,21 +9742,45 @@ var $author$project$Main$render_select_game = function (mode) {
 					]))));
 };
 var $author$project$Main$view = function (state) {
+	var block_scroll = function (modal) {
+		if (!modal.$) {
+			return $elm$html$Html$div(
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('modal-open')
+					]));
+		} else {
+			return $elm$html$Html$div(_List_Nil);
+		}
+	};
 	var render = function () {
-		var _v0 = state.m;
+		var _v0 = state.h;
 		switch (_v0.$) {
 			case 0:
-				return $author$project$Main$render_home(state);
+				return A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					$author$project$Main$render_home(state));
 			case 1:
 				var np = _v0.a;
-				return A2($author$project$Main$render_edit_players, state.e, np);
+				return A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					A2($author$project$Main$render_edit_players, state.e, np));
 			case 2:
-				return $author$project$Main$render_select_game(state.q);
+				return A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					$author$project$Main$render_select_game(state.q));
 			default:
-				return $author$project$Main$render_game(state);
+				var modal = _v0.a;
+				return A2(
+					block_scroll,
+					modal,
+					A2($author$project$Main$render_game, state, modal));
 		}
 	}();
-	return A2($elm$html$Html$div, _List_Nil, render);
+	return render;
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{

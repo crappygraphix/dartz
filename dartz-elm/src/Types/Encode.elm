@@ -139,7 +139,7 @@ encode_app_state state =
       Home -> JE.string "HOME"
       EditPlayers _ -> JE.string "EDITPLAYERS"
       SelectGame -> JE.string "SELECTGAME"
-      PlayGame -> JE.string "PLAYGAME"
+      PlayGame _ -> JE.string "PLAYGAME"
 
   in
     JE.object

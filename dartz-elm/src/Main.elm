@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (Html, div, label, nav, span, text, option, button, select, input, tr, td, table)
-import Html.Attributes exposing (class, placeholder, selected, value)
+import Html.Attributes exposing (class, placeholder, style, selected, value)
 import Html.Events exposing (onClick, onInput)
 import Json.Decode as JD
 import Json.Encode as JE
@@ -108,14 +108,16 @@ update action state =
         GoHome -> { state | screen = Home }
         GoEditPlayers -> { state | screen = EditPlayers (NewPlayerName "") }
         GoSelectGame -> { state | screen = SelectGame }
-        StartGame -> { state | screen = PlayGame, currentPlayer = 0, currentTurn = [], playerData = reset_scores state.game state.playerData, playing = True }
-        ResumeGame -> { state | screen = PlayGame }
+        StartGame -> { state | screen = PlayGame Nothing, currentPlayer = 0, currentTurn = [], playerData = reset_scores state.game state.playerData, playing = True }
+        ResumeGame -> { state | screen = PlayGame Nothing }
         EndGame -> { state | screen = Home, currentPlayer = 0, currentTurn = [], playerData = reset_scores state.game state.playerData, playing = False }
         GameSelected mode -> { state | game = mode }
         NewPlayerInput p -> { state | screen = EditPlayers p }
         NewPlayerCommit p -> { state | playerData = add_player state.playerData p, screen = EditPlayers (NewPlayerName "") }
         DeletePlayer i -> { state | playerData = delete_player state.playerData i }
-        Toss h -> { state | currentTurn = List.take 3 <| h :: state.currentTurn }
+        Toss h -> { state | screen = PlayGame (Just <| SelectSubHit h) }
+        TossModalSelect h -> { state | screen = PlayGame Nothing, currentTurn = List.take 3 <| h :: state.currentTurn }
+        TossModalCancel -> { state | screen = PlayGame Nothing }
         MovePlayerUp i -> { state | playerData = move_player_up state.playerData i }
         MovePlayerDown i -> { state | playerData = move_player_down state.playerData i }
     save_state = store_state << JE.encode 0 <| encode_app_state new_state
@@ -125,15 +127,18 @@ update action state =
 view : AppState -> Html Action
 view state =
   let 
+    block_scroll modal =
+      case modal of
+         Just _ -> div [ class "modal-open" ]
+         Nothing -> div []
     render = 
       case state.screen of
-        Home -> render_home state
-        EditPlayers np -> render_edit_players state.playerData np
-        SelectGame -> render_select_game state.game
-        PlayGame -> render_game state
+        Home -> div [] <| render_home state
+        EditPlayers np -> div [] <| render_edit_players state.playerData np
+        SelectGame -> div [] <| render_select_game state.game
+        PlayGame modal -> block_scroll modal <| render_game state modal
   in
-    div [] render
-    
+    render    
 
 render_home : AppState -> List (Html Action)
 render_home state =
@@ -326,8 +331,8 @@ list_editable_players l =
   in
     [ table [ class "table" ] (List.map player_edit_row l) ]
 
-render_game : AppState -> List (Html Action)
-render_game state =
+render_game : AppState -> Maybe Modal -> List (Html Action)
+render_game state modal =
   [ nav [ class "navbar navbar-dark bg-primary" ]
     [ button [ onClick GoHome, class "btn btn-primary" ] [ text "Home" ]
     , button [ onClick EndGame, class "btn btn-primary" ] [ text "End Game" ]
@@ -336,7 +341,67 @@ render_game state =
     [ S.svg [SA.width "100%", SA.height "100%", SA.viewBox "0 0 100 100"] render_board
     ]
   , render_hits state.currentTurn
-  ]
+  ] ++ render_modal modal
+
+render_modal : Maybe Modal -> List (Html Action)
+render_modal modal =
+  let
+    number_hit_buttons s d t = 
+      [ div [ class "row text-center" ] 
+        [ div [ class "col" ] [ button [ class "btn btn-secondary", onClick <| TossModalSelect s ] [ text "Single" ] ] ]
+      , div [ class "row text-center" ]
+        [ div [ class "col" ] [ button [ class "btn btn-success", onClick <| TossModalSelect d ] [ text "Double" ] ]
+        , div [ class "col" ] [ button [ class "btn btn-danger", onClick <| TossModalSelect d ] [ text "Triple" ] ]
+        ]
+      , div [ class "row text-center" ]
+        [ div [ class "col" ] [ button [ class "btn btn-warning", onClick <| TossModalCancel ] [ text "Cancel" ] ] ]
+      ]
+    subhit_modal h =
+      [ div [ class "modal-backdrop show" ] []
+      , div [ class "modal", style "display" "block" ]
+        [ div [ class "modal-dialog-centered" ] 
+          [ div [ class "modal-content" ]
+            [ div [ class "modal-header text-center" ] 
+              [ div [ class "modal-title w-100" ] [ text <| short_hit_text h ] ]
+            , div [ class "modal-body"] <|
+              case h of
+                HitBullseye -> 
+                  [ button [ class "btn btn-primary", onClick <| TossModalSelect HitBullseye ] [ text "Single" ]
+                  , button [ class "btn btn-danger", onClick <| TossModalSelect HitDoubleBullseye ] [ text "Double" ]
+                  ]
+                HitDoubleBullseye -> 
+                  [ button [ class "btn btn-primary", onClick <| TossModalSelect HitBullseye ] [ text "Single" ]
+                  , button [ class "btn btn-danger", onClick <| TossModalSelect HitDoubleBullseye ] [ text "Double" ]
+                  ]
+                Hit1 _ -> number_hit_buttons (Hit1 SingleHit) (Hit1 DoubleHit) (Hit1 TripleHit)
+                Hit2 _ -> number_hit_buttons (Hit2 SingleHit) (Hit2 DoubleHit) (Hit2 TripleHit)
+                Hit3 _ -> number_hit_buttons (Hit3 SingleHit) (Hit3 DoubleHit) (Hit3 TripleHit)
+                Hit4 _ -> number_hit_buttons (Hit4 SingleHit) (Hit4 DoubleHit) (Hit4 TripleHit)
+                Hit5 _ -> number_hit_buttons (Hit5 SingleHit) (Hit5 DoubleHit) (Hit5 TripleHit)
+                Hit6 _ -> number_hit_buttons (Hit6 SingleHit) (Hit6 DoubleHit) (Hit6 TripleHit)
+                Hit7 _ -> number_hit_buttons (Hit7 SingleHit) (Hit7 DoubleHit) (Hit7 TripleHit)
+                Hit8 _ -> number_hit_buttons (Hit8 SingleHit) (Hit8 DoubleHit) (Hit8 TripleHit)
+                Hit9 _ -> number_hit_buttons (Hit9 SingleHit) (Hit9 DoubleHit) (Hit9 TripleHit)
+                Hit10 _ -> number_hit_buttons (Hit10 SingleHit) (Hit10 DoubleHit) (Hit10 TripleHit)
+                Hit11 _ -> number_hit_buttons (Hit11 SingleHit) (Hit11 DoubleHit) (Hit11 TripleHit)
+                Hit12 _ -> number_hit_buttons (Hit12 SingleHit) (Hit12 DoubleHit) (Hit12 TripleHit)
+                Hit13 _ -> number_hit_buttons (Hit13 SingleHit) (Hit13 DoubleHit) (Hit13 TripleHit)
+                Hit14 _ -> number_hit_buttons (Hit14 SingleHit) (Hit14 DoubleHit) (Hit14 TripleHit)
+                Hit15 _ -> number_hit_buttons (Hit15 SingleHit) (Hit15 DoubleHit) (Hit15 TripleHit)
+                Hit16 _ -> number_hit_buttons (Hit16 SingleHit) (Hit16 DoubleHit) (Hit16 TripleHit)
+                Hit17 _ -> number_hit_buttons (Hit17 SingleHit) (Hit17 DoubleHit) (Hit17 TripleHit)
+                Hit18 _ -> number_hit_buttons (Hit18 SingleHit) (Hit18 DoubleHit) (Hit18 TripleHit)
+                Hit19 _ -> number_hit_buttons (Hit19 SingleHit) (Hit19 DoubleHit) (Hit19 TripleHit)
+                Hit20 _ -> number_hit_buttons (Hit20 SingleHit) (Hit20 DoubleHit) (Hit20 TripleHit)
+                HitMissed -> []
+            ]        
+          ]
+        ]
+      ]
+  in
+    case modal of
+      (Just (SelectSubHit h)) -> subhit_modal h
+      _ -> []
 
 render_hits : List (Hit) -> Html msg
 render_hits hits =
@@ -374,23 +439,11 @@ render_board =
     panels : List ((Float, Float), Int)
     panels = List.indexedMap (\i v -> ((Basics.degrees (toFloat <| (-) 189 <| i * 18), Basics.degrees (toFloat <| (-) 189 <| (i + 1) * 18)), v)) [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5]
 
-    double_slice : ((Float, Float), Int) -> S.Svg Action
-    double_slice (d, v) = S.path [ SE.onClick (Toss <| index_to_hit v DoubleHit) , SA.d (d_from_deg d 45), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] []
-
-    outer_single_slice : ((Float, Float), Int) -> S.Svg Action
-    outer_single_slice (d, v) = S.path [ SE.onClick (Toss <| index_to_hit v SingleHit), SA.d (d_from_deg d 38), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] []
-
-    triple_slice : ((Float, Float), Int) -> S.Svg Action
-    triple_slice (d, v) = S.path [ SE.onClick (Toss <| index_to_hit v TripleHit), SA.d (d_from_deg d 29), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] []
-
-    inner_single_slice : ((Float, Float), Int) -> S.Svg Action
-    inner_single_slice (d, v) = S.path [ SE.onClick (Toss <| index_to_hit v SingleHit), SA.d (d_from_deg d 21), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] []
+    slice : ((Float, Float), Int) -> S.Svg Action
+    slice (d, v) = S.path [ SE.onClick (Toss <| index_to_hit v SingleHit) , SA.d (d_from_deg d 45), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] []
 
     bull : S.Svg Action
-    bull = S.circle [ SE.onClick (Toss HitBullseye), SA.cx "50", SA.cy "50", SA.r "10", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "green" ] []
-
-    double_bull : S.Svg Action
-    double_bull = S.circle [ SE.onClick (Toss HitDoubleBullseye), SA.cx "50", SA.cy "50", SA.r "5", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "red" ] []
+    bull = S.circle [ SE.onClick (Toss HitBullseye), SA.cx "50", SA.cy "50", SA.r "10", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] []
 
     miss : List (S.Svg Action)
     miss = 
@@ -422,10 +475,7 @@ render_board =
       in
         List.map draw_num nums        
   in
-    List.map double_slice panels ++
-    List.map outer_single_slice panels ++
-    List.map triple_slice panels ++
-    List.map inner_single_slice panels ++
-    [ bull, double_bull] ++
+    List.map slice panels ++
+    [ bull ] ++
     miss ++
     number_ring

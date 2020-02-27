@@ -58,11 +58,14 @@ type alias AppState =
   , currentTurn : List Hit
   }
 
+type Modal
+  = SelectSubHit Hit
+
 type Screen
   = Home
   | EditPlayers NewPlayerName
   | SelectGame
-  | PlayGame
+  | PlayGame (Maybe Modal)
 
 type NumbersInVariation = BasicIn | DoubleIn | TripleIn
 
@@ -104,3 +107,5 @@ type Action
   | MovePlayerDown PlayerIndex
   | DeletePlayer PlayerIndex
   | Toss Hit
+  | TossModalSelect Hit
+  | TossModalCancel

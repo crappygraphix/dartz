@@ -200,7 +200,7 @@ app_state_decoder =
     decode_screen = JD.map (\s -> case s of
       "EDITPLAYERS" -> EditPlayers (NewPlayerName "")
       "SELECTGAME" -> SelectGame
-      "PLAYGAME" -> PlayGame
+      "PLAYGAME" -> PlayGame Nothing
       _ -> Home
       ) JD.string
   in
