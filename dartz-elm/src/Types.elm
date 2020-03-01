@@ -109,3 +109,4 @@ type Action
   | Toss Hit
   | TossModalSelect Hit
   | TossModalCancel
+  | FinishTurn

@@ -56,7 +56,19 @@ init s = case JD.decodeValue app_state_decoder s of
 update : Action -> AppState -> (AppState, Cmd Action)
 update action state = 
   let
-    new_player i (NewPlayerName n) = { name = PlayerName n, hits = PlayerHits [], score = NoScore, index = i }
+    new_score mode = 
+      case mode of
+        NoGame -> NoScore
+        Numbers701 _ _ -> NumbersScore (Score 0)
+        Numbers501 _ _ -> NumbersScore (Score 0)
+        Numbers301 _ _ -> NumbersScore (Score 0)
+        AroundTheClock _ -> AroundTheClockScore []
+        AroundTheClock180 _ -> AroundTheClock180Score []
+        Baseball _ -> List.range 1 9 |> List.map (\i -> (Inning i, Score 0)) |> BaseballScore
+        ChaseTheDragon _ -> ChaseTheDragonScore []
+        Cricket _ -> CricketScore (Score 0, [])
+
+    new_player i (NewPlayerName n) mode = { name = PlayerName n, hits = PlayerHits [], score = new_score mode, index = i }
 
     add_player l n =
       let
@@ -64,7 +76,7 @@ update action state =
       in
         if empty n 
         then l 
-        else new_player (PlayerIndex <| 1 + List.length l) n :: l
+        else new_player (PlayerIndex <| 1 + List.length l) n state.game :: l
 
     clear_score mode = case mode of
       NoGame -> NoScore
@@ -118,11 +130,14 @@ update action state =
         Toss h -> { state | screen = PlayGame (Just <| SelectSubHit h) }
         TossModalSelect h -> { state | screen = PlayGame Nothing, currentTurn = List.take 3 <| h :: state.currentTurn }
         TossModalCancel -> { state | screen = PlayGame Nothing }
+        FinishTurn -> finalize_turn state
         MovePlayerUp i -> { state | playerData = move_player_up state.playerData i }
         MovePlayerDown i -> { state | playerData = move_player_down state.playerData i }
     save_state = store_state << JE.encode 0 <| encode_app_state new_state
   in (new_state, save_state)
 
+finalize_turn : AppState -> AppState
+finalize_turn s = s
 
 view : AppState -> Html Action
 view state =
@@ -149,15 +164,18 @@ render_home state =
       else []
     resume_game =  
       if List.length state.playerData > 0 && state.game /= NoGame && state.playing == True
-      then [ li [ class "nav-item" ] [ a [ onClick ResumeGame, class "nav-link" ] [ text "Resume Game" ] ] ]
+      then [ li [ class "nav-item" ] [ a [ onClick ResumeGame, class "nav-link" ] [ text "Resume" ] ] ]
+      else []
+    select_game =
+      if state.playing == False
+      then [ li [ class "nav-item" ] [ a [ onClick GoSelectGame, class "nav-link" ] [ text "Select Game" ] ] ]
       else []
   in
     [ ul [ class "nav bg-primary text-white" ] <|
       start_game ++
       resume_game ++
-      [ li [ class "nav-item" ] [ a [ onClick GoEditPlayers, class "nav-link" ] [ text "Edit Players" ] ]
-      , li [ class "nav-item" ] [ a [ onClick GoSelectGame, class "nav-link" ] [ text "Select Game" ] ]
-      ]
+      [ li [ class "nav-item" ] [ a [ onClick GoEditPlayers, class "nav-link" ] [ text "Edit Players" ] ] ] ++
+      select_game
     , div [] 
       [ text "Selected Game: "
       , game_name state.game
@@ -337,11 +355,21 @@ render_game state modal =
     [ li [ class "nav-item" ] [ a [ onClick GoHome, class "nav-link" ] [ text "Home" ] ]
     , li [ class "nav-item" ] [ a [ onClick EndGame, class "nav-link" ] [ text "End Game" ] ]
     ]
+  , render_current_player_name state.currentPlayer state.playerData
+  , render_hits state.currentTurn
   , div [ class "board" ] 
     [ S.svg [SA.width "100%", SA.height "100%", SA.viewBox "0 0 100 100"] render_board
     ]
-  , render_hits state.currentTurn
   ] ++ render_modal modal
+
+render_current_player_name : Int -> List Player -> Html msg
+render_current_player_name i l = 
+  let
+    find_name = case List.head <| List.drop i l of
+       Nothing -> "????? is throwing."
+       Just p -> player_name_text p.name ++ " is throwing."
+  in
+    div [] [ text find_name ]
 
 render_modal : Maybe Modal -> List (Html Action)
 render_modal modal =
@@ -421,7 +449,11 @@ render_hits hits =
   let
     hit_div hit = div [ class "col-4" ] [ text (hit_text hit) ]
   in
-    div [ class "row"] <| List.map hit_div <| List.reverse hits
+    if List.length hits == 0
+    then
+      div [ class "row" ] [ div [ class "col" ] [ text "No darts thrown yet." ] ]
+    else
+      div [ class "row" ] <| List.map hit_div <| List.reverse hits
 
 render_board : List (S.Svg Action)
 render_board =
@@ -453,15 +485,22 @@ render_board =
     panels = List.indexedMap (\i v -> ((Basics.degrees (toFloat <| (-) 189 <| i * 18), Basics.degrees (toFloat <| (-) 189 <| (i + 1) * 18)), v)) [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5]
 
     slice : ((Float, Float), Int) -> S.Svg Action
-    slice (d, v) = S.path [ SE.onClick (Toss <| index_to_hit v SingleHit) , SA.d (d_from_deg d 45), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] []
+    slice (d, v) = S.path [ SE.onClick (Toss <| index_to_hit v SingleHit) , SA.d (d_from_deg d 43), SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] []
 
     bull : S.Svg Action
     bull = S.circle [ SE.onClick (Toss HitBullseye), SA.cx "50", SA.cy "50", SA.r "10", SA.stroke "white", SA.strokeWidth "0.25", SA.fill "black" ] []
 
     miss : List (S.Svg Action)
     miss = 
-      [ S.circle [ SE.onClick (Toss HitMissed), SA.cx "92", SA.cy "92", SA.r "8", SA.stroke "red", SA.strokeWidth "0.3", SA.fill "orange" ] []
+      [ S.circle [ SE.onClick (Toss HitMissed), SA.cx "92", SA.cy "92", SA.r "7.5", SA.stroke "red", SA.strokeWidth "0.3", SA.fill "orange" ] []
       , S.text_ [ SE.onClick (Toss HitMissed), SA.x "92", SA.y "93", SA.alignmentBaseline "middle", SA.textAnchor "middle", SA.fontSize "5", SA.fill "red" ] [ text "MISS" ] 
+      ]
+
+    end_turn : List (S.Svg Action)
+    end_turn = 
+      [ S.circle [ SE.onClick FinishTurn, SA.cx "8", SA.cy "92", SA.r "7.5", SA.stroke "black", SA.strokeWidth "0.3", SA.fill "green" ] []
+      , S.text_ [ SE.onClick FinishTurn, SA.x "8", SA.y "91", SA.alignmentBaseline "middle", SA.textAnchor "middle", SA.fontSize "4", SA.fill "black" ] [ text "Finish" ] 
+      , S.text_ [ SE.onClick FinishTurn, SA.x "8", SA.y "95", SA.alignmentBaseline "middle", SA.textAnchor "middle", SA.fontSize "4", SA.fill "black" ] [ text "Turn" ] 
       ]
 
     start_end_points : (Float, Float) -> Float -> ((Float, Float), (Float, Float))
@@ -484,11 +523,12 @@ render_board =
 
         draw_num : (Float, Int) -> S.Svg msg
         draw_num (d, v) = 
-          S.text_ (((\(x, y) -> [ SA.x (String.fromFloat (50 + x)), SA.y (String.fromFloat (51 + y)) ]) <| point d 48) ++ [ SA.alignmentBaseline "middle", SA.textAnchor "middle", SA.fontSize "5" ]) [ text <| String.fromInt v ]
+          S.text_ (((\(x, y) -> [ SA.x (String.fromFloat (50 + x)), SA.y (String.fromFloat (51 + y)) ]) <| point d 46) ++ [ SA.alignmentBaseline "middle", SA.textAnchor "middle", SA.fontSize "5" ]) [ text <| String.fromInt v ]
       in
         List.map draw_num nums        
   in
     List.map slice panels ++
     [ bull ] ++
     miss ++
+    end_turn ++
     number_ring

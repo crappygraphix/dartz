@@ -784,11 +784,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.P.E === region.U.E)
+	if (region.Q.F === region.V.F)
 	{
-		return 'on line ' + region.P.E;
+		return 'on line ' + region.Q.F;
 	}
-	return 'on lines ' + region.P.E + ' through ' + region.U.E;
+	return 'on lines ' + region.Q.F + ' through ' + region.V.F;
 }
 
 
@@ -2705,8 +2705,8 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		r: func(record.r),
-		Q: record.Q,
-		N: record.N
+		R: record.R,
+		O: record.O
 	}
 });
 
@@ -2975,10 +2975,10 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.r;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.Q;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.R;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.N) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.O) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3968,7 +3968,7 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 		impl.aK,
 		impl.aI,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.O && impl.O(sendToApp)
+			var divertHrefToApp = impl.P && impl.P(sendToApp)
 			var view = impl.aL;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
@@ -4043,7 +4043,7 @@ function _Browser_application(impl)
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		O: function(sendToApp)
+		P: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4060,7 +4060,7 @@ function _Browser_application(impl)
 					sendToApp(onUrlRequest(
 						(next
 							&& curr.ah === next.ah
-							&& curr.Y === next.Y
+							&& curr.Z === next.Z
 							&& curr.ae.a === next.ae.a
 						)
 							? $elm$browser$Browser$Internal(next)
@@ -4237,7 +4237,7 @@ function _Browser_getViewport()
 			ar: _Browser_window.pageXOffset,
 			as: _Browser_window.pageYOffset,
 			aq: _Browser_doc.documentElement.clientWidth,
-			X: _Browser_doc.documentElement.clientHeight
+			Y: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4248,7 +4248,7 @@ function _Browser_getScene()
 	var elem = _Browser_doc.documentElement;
 	return {
 		aq: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		X: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		Y: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4273,13 +4273,13 @@ function _Browser_getViewportOf(id)
 		return {
 			al: {
 				aq: node.scrollWidth,
-				X: node.scrollHeight
+				Y: node.scrollHeight
 			},
 			ap: {
 				ar: node.scrollLeft,
 				as: node.scrollTop,
 				aq: node.clientWidth,
-				X: node.clientHeight
+				Y: node.clientHeight
 			}
 		};
 	});
@@ -4314,13 +4314,13 @@ function _Browser_getElement(id)
 				ar: x,
 				as: y,
 				aq: _Browser_doc.documentElement.clientWidth,
-				X: _Browser_doc.documentElement.clientHeight
+				Y: _Browser_doc.documentElement.clientHeight
 			},
 			ay: {
 				ar: x + rect.left,
 				as: y + rect.top,
 				aq: rect.width,
-				X: rect.height
+				Y: rect.height
 			}
 		};
 	});
@@ -4859,7 +4859,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {W: fragment, Y: host, ac: path, ae: port_, ah: protocol, ai: query};
+		return {X: fragment, Z: host, ac: path, ae: port_, ah: protocol, ai: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5141,7 +5141,7 @@ var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Types$AnyBullOut = 1;
 var $author$project$Types$AppState = F6(
 	function (playerData, game, screen, playing, currentPlayer, currentTurn) {
-		return {K: currentPlayer, y: currentTurn, q: game, e: playerData, F: playing, h: screen};
+		return {K: currentPlayer, y: currentTurn, n: game, e: playerData, B: playing, h: screen};
 	});
 var $author$project$Types$AroundTheClock = function (a) {
 	return {$: 4, a: a};
@@ -5275,7 +5275,7 @@ var $author$project$Types$PlayGame = function (a) {
 };
 var $author$project$Types$Player = F4(
 	function (name, hits, score, index) {
-		return {aB: hits, A: index, aa: name, am: score};
+		return {aB: hits, A: index, M: name, am: score};
 	});
 var $author$project$Types$PlayerHits = $elm$core$Basics$identity;
 var $author$project$Types$PlayerIndex = $elm$core$Basics$identity;
@@ -5717,7 +5717,7 @@ var $author$project$Types$Decode$app_state_decoder = function () {
 			'currentTurn',
 			$elm$json$Json$Decode$list(decode_hit)));
 }();
-var $author$project$Main$clean_state = {K: 0, y: _List_Nil, q: $author$project$Types$NoGame, e: _List_Nil, F: false, h: $author$project$Types$Home};
+var $author$project$Main$clean_state = {K: 0, y: _List_Nil, n: $author$project$Types$NoGame, e: _List_Nil, B: false, h: $author$project$Types$Home};
 var $elm$json$Json$Decode$decodeValue = _Json_run;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -6066,7 +6066,7 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 		}
 	};
 	var encode_player = function (_v6) {
-		var name = _v6.aa;
+		var name = _v6.M;
 		var hits = _v6.aB;
 		var score = _v6.am;
 		var index = _v6.A;
@@ -6177,13 +6177,13 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 				encode_list_player(state.e)),
 				_Utils_Tuple2(
 				'game',
-				encode_game_mode(state.q)),
+				encode_game_mode(state.n)),
 				_Utils_Tuple2(
 				'screen',
 				encode_screen(state.h)),
 				_Utils_Tuple2(
 				'playing',
-				$elm$json$Json$Encode$bool(state.F)),
+				$elm$json$Json$Encode$bool(state.B)),
 				_Utils_Tuple2(
 				'currentPlayer',
 				$elm$json$Json$Encode$int(state.K)),
@@ -6191,6 +6191,9 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 				'currentTurn',
 				encode_hits(state.y))
 			]));
+};
+var $author$project$Main$finalize_turn = function (s) {
+	return s;
 };
 var $author$project$Ports$store_state = _Platform_outgoingPort('store_state', $elm$json$Json$Encode$string);
 var $elm$core$List$takeReverse = F3(
@@ -6322,10 +6325,44 @@ var $elm$core$List$take = F2(
 var $elm$core$String$trim = _String_trim;
 var $author$project$Main$update = F2(
 	function (action, state) {
-		var new_player = F2(
-			function (i, _v3) {
+		var new_score = function (mode) {
+			switch (mode.$) {
+				case 0:
+					return $author$project$Types$NoScore;
+				case 1:
+					return $author$project$Types$NumbersScore(0);
+				case 2:
+					return $author$project$Types$NumbersScore(0);
+				case 3:
+					return $author$project$Types$NumbersScore(0);
+				case 4:
+					return $author$project$Types$AroundTheClockScore(_List_Nil);
+				case 5:
+					return $author$project$Types$AroundTheClock180Score(_List_Nil);
+				case 6:
+					return $author$project$Types$BaseballScore(
+						A2(
+							$elm$core$List$map,
+							function (i) {
+								return _Utils_Tuple2(i, 0);
+							},
+							A2($elm$core$List$range, 1, 9)));
+				case 7:
+					return $author$project$Types$ChaseTheDragonScore(_List_Nil);
+				default:
+					return $author$project$Types$CricketScore(
+						_Utils_Tuple2(0, _List_Nil));
+			}
+		};
+		var new_player = F3(
+			function (i, _v3, mode) {
 				var n = _v3;
-				return {aB: _List_Nil, A: i, aa: n, am: $author$project$Types$NoScore};
+				return {
+					aB: _List_Nil,
+					A: i,
+					M: n,
+					am: new_score(mode)
+				};
 			});
 		var move_player_up = F2(
 			function (l, i) {
@@ -6417,10 +6454,11 @@ var $author$project$Main$update = F2(
 				};
 				return empty(n) ? l : A2(
 					$elm$core$List$cons,
-					A2(
+					A3(
 						new_player,
 						1 + $elm$core$List$length(l),
-						n),
+						n,
+						state.n),
 					l);
 			});
 		var new_state = function () {
@@ -6445,8 +6483,8 @@ var $author$project$Main$update = F2(
 						{
 							K: 0,
 							y: _List_Nil,
-							e: A2(reset_scores, state.q, state.e),
-							F: true,
+							e: A2(reset_scores, state.n, state.e),
+							B: true,
 							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 4:
@@ -6461,15 +6499,15 @@ var $author$project$Main$update = F2(
 						{
 							K: 0,
 							y: _List_Nil,
-							e: A2(reset_scores, state.q, state.e),
-							F: false,
+							e: A2(reset_scores, state.n, state.e),
+							B: false,
 							h: $author$project$Types$Home
 						});
 				case 6:
 					var mode = action.a;
 					return _Utils_update(
 						state,
-						{q: mode});
+						{n: mode});
 				case 7:
 					var p = action.a;
 					return _Utils_update(
@@ -6517,6 +6555,8 @@ var $author$project$Main$update = F2(
 						{
 							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
+				case 15:
+					return $author$project$Main$finalize_turn(state);
 				case 9:
 					var i = action.a;
 					return _Utils_update(
@@ -6689,7 +6729,7 @@ var $author$project$Main$list_editable_players = function (l) {
 					_List_fromArray(
 						[
 							$elm$html$Html$text(
-							$author$project$Types$Text$player_name_text(player.aa))
+							$author$project$Types$Text$player_name_text(player.M))
 						])),
 					A2(
 					$elm$html$Html$td,
@@ -6831,6 +6871,7 @@ var $author$project$Main$render_edit_players = F2(
 	});
 var $author$project$Types$EndGame = {$: 5};
 var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
+var $author$project$Types$FinishTurn = {$: 15};
 var $author$project$Types$Toss = function (a) {
 	return {$: 12, a: a};
 };
@@ -6922,7 +6963,7 @@ var $author$project$Main$render_board = function () {
 								$elm$core$String$fromFloat(51 + y))
 							]);
 					}(
-						A2(point, d, 48)),
+						A2(point, d, 46)),
 					_List_fromArray(
 						[
 							$elm$svg$Svg$Attributes$alignmentBaseline('middle'),
@@ -6947,7 +6988,7 @@ var $author$project$Main$render_board = function () {
 					$author$project$Types$Toss($author$project$Types$HitMissed)),
 					$elm$svg$Svg$Attributes$cx('92'),
 					$elm$svg$Svg$Attributes$cy('92'),
-					$elm$svg$Svg$Attributes$r('8'),
+					$elm$svg$Svg$Attributes$r('7.5'),
 					$elm$svg$Svg$Attributes$stroke('red'),
 					$elm$svg$Svg$Attributes$strokeWidth('0.3'),
 					$elm$svg$Svg$Attributes$fill('orange')
@@ -7027,6 +7068,54 @@ var $author$project$Main$render_board = function () {
 					return $author$project$Types$HitMissed;
 			}
 		});
+	var end_turn = _List_fromArray(
+		[
+			A2(
+			$elm$svg$Svg$circle,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Events$onClick($author$project$Types$FinishTurn),
+					$elm$svg$Svg$Attributes$cx('8'),
+					$elm$svg$Svg$Attributes$cy('92'),
+					$elm$svg$Svg$Attributes$r('7.5'),
+					$elm$svg$Svg$Attributes$stroke('black'),
+					$elm$svg$Svg$Attributes$strokeWidth('0.3'),
+					$elm$svg$Svg$Attributes$fill('green')
+				]),
+			_List_Nil),
+			A2(
+			$elm$svg$Svg$text_,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Events$onClick($author$project$Types$FinishTurn),
+					$elm$svg$Svg$Attributes$x('8'),
+					$elm$svg$Svg$Attributes$y('91'),
+					$elm$svg$Svg$Attributes$alignmentBaseline('middle'),
+					$elm$svg$Svg$Attributes$textAnchor('middle'),
+					$elm$svg$Svg$Attributes$fontSize('4'),
+					$elm$svg$Svg$Attributes$fill('black')
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Finish')
+				])),
+			A2(
+			$elm$svg$Svg$text_,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Events$onClick($author$project$Types$FinishTurn),
+					$elm$svg$Svg$Attributes$x('8'),
+					$elm$svg$Svg$Attributes$y('95'),
+					$elm$svg$Svg$Attributes$alignmentBaseline('middle'),
+					$elm$svg$Svg$Attributes$textAnchor('middle'),
+					$elm$svg$Svg$Attributes$fontSize('4'),
+					$elm$svg$Svg$Attributes$fill('black')
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Turn')
+				]))
+		]);
 	var d_from_deg = F2(
 		function (d, r) {
 			return 'M 50 50 ' + (l_from(
@@ -7043,7 +7132,7 @@ var $author$project$Main$render_board = function () {
 					$author$project$Types$Toss(
 						A2(index_to_hit, v, 0))),
 					$elm$svg$Svg$Attributes$d(
-					A2(d_from_deg, d, 45)),
+					A2(d_from_deg, d, 43)),
 					$elm$svg$Svg$Attributes$stroke('white'),
 					$elm$svg$Svg$Attributes$strokeWidth('0.25'),
 					$elm$svg$Svg$Attributes$fill('black')
@@ -7069,8 +7158,39 @@ var $author$project$Main$render_board = function () {
 		_Utils_ap(
 			_List_fromArray(
 				[bull]),
-			_Utils_ap(miss, number_ring)));
+			_Utils_ap(
+				miss,
+				_Utils_ap(end_turn, number_ring))));
 }();
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Main$render_current_player_name = F2(
+	function (i, l) {
+		var find_name = function () {
+			var _v0 = $elm$core$List$head(
+				A2($elm$core$List$drop, i, l));
+			if (_v0.$ === 1) {
+				return '????? is throwing.';
+			} else {
+				var p = _v0.a;
+				return $author$project$Types$Text$player_name_text(p.M) + ' is throwing.';
+			}
+		}();
+		return A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text(find_name)
+				]));
+	});
 var $author$project$Types$Text$sub_hit_text = function (s) {
 	switch (s) {
 		case 0:
@@ -7165,7 +7285,25 @@ var $author$project$Main$render_hits = function (hits) {
 					$author$project$Types$Text$hit_text(hit))
 				]));
 	};
-	return A2(
+	return (!$elm$core$List$length(hits)) ? A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('row')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('col')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('No darts thrown yet.')
+					]))
+			])) : A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
@@ -7725,7 +7863,7 @@ var $author$project$Main$render_modal = function (modal) {
 																				[
 																					$elm$html$Html$Attributes$class('btn btn-primary'),
 																					$elm$html$Html$Events$onClick(
-																					$author$project$Types$TossModalSelect($author$project$Types$HitBullseye))
+																					$author$project$Types$TossModalSelect($author$project$Types$HitMissed))
 																				]),
 																			_List_fromArray(
 																				[
@@ -7825,6 +7963,8 @@ var $author$project$Main$render_game = F2(
 										]))
 								]))
 						])),
+					A2($author$project$Main$render_current_player_name, state.K, state.e),
+					$author$project$Main$render_hits(state.y),
 					A2(
 					$elm$html$Html$div,
 					_List_fromArray(
@@ -7842,8 +7982,7 @@ var $author$project$Main$render_game = F2(
 									$elm$svg$Svg$Attributes$viewBox('0 0 100 100')
 								]),
 							$author$project$Main$render_board)
-						])),
-					$author$project$Main$render_hits(state.y)
+						]))
 				]),
 			$author$project$Main$render_modal(modal));
 	});
@@ -8022,7 +8161,7 @@ var $author$project$Types$Dom$game_name = function (mode) {
 	}
 };
 var $author$project$Main$render_home = function (state) {
-	var start_game = (($elm$core$List$length(state.e) > 0) && ((!_Utils_eq(state.q, $author$project$Types$NoGame)) && (!state.F))) ? _List_fromArray(
+	var start_game = (($elm$core$List$length(state.e) > 0) && ((!_Utils_eq(state.n, $author$project$Types$NoGame)) && (!state.B))) ? _List_fromArray(
 		[
 			A2(
 			$elm$html$Html$li,
@@ -8045,7 +8184,30 @@ var $author$project$Main$render_home = function (state) {
 						]))
 				]))
 		]) : _List_Nil;
-	var resume_game = (($elm$core$List$length(state.e) > 0) && ((!_Utils_eq(state.q, $author$project$Types$NoGame)) && state.F)) ? _List_fromArray(
+	var select_game = (!state.B) ? _List_fromArray(
+		[
+			A2(
+			$elm$html$Html$li,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('nav-item')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$a,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick($author$project$Types$GoSelectGame),
+							$elm$html$Html$Attributes$class('nav-link')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Select Game')
+						]))
+				]))
+		]) : _List_Nil;
+	var resume_game = (($elm$core$List$length(state.e) > 0) && ((!_Utils_eq(state.n, $author$project$Types$NoGame)) && state.B)) ? _List_fromArray(
 		[
 			A2(
 			$elm$html$Html$li,
@@ -8064,7 +8226,7 @@ var $author$project$Main$render_home = function (state) {
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text('Resume Game')
+							$elm$html$Html$text('Resume')
 						]))
 				]))
 		]) : _List_Nil;
@@ -8080,56 +8242,38 @@ var $author$project$Main$render_home = function (state) {
 				start_game,
 				_Utils_ap(
 					resume_game,
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$li,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('nav-item')
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$a,
-									_List_fromArray(
-										[
-											$elm$html$Html$Events$onClick($author$project$Types$GoEditPlayers),
-											$elm$html$Html$Attributes$class('nav-link')
-										]),
-									_List_fromArray(
-										[
-											$elm$html$Html$text('Edit Players')
-										]))
-								])),
-							A2(
-							$elm$html$Html$li,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('nav-item')
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$a,
-									_List_fromArray(
-										[
-											$elm$html$Html$Events$onClick($author$project$Types$GoSelectGame),
-											$elm$html$Html$Attributes$class('nav-link')
-										]),
-									_List_fromArray(
-										[
-											$elm$html$Html$text('Select Game')
-										]))
-								]))
-						])))),
+					_Utils_ap(
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$li,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('nav-item')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$a,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick($author$project$Types$GoEditPlayers),
+												$elm$html$Html$Attributes$class('nav-link')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Edit Players')
+											]))
+									]))
+							]),
+						select_game)))),
 			A2(
 			$elm$html$Html$div,
 			_List_Nil,
 			_List_fromArray(
 				[
 					$elm$html$Html$text('Selected Game: '),
-					$author$project$Types$Dom$game_name(state.q)
+					$author$project$Types$Dom$game_name(state.n)
 				]))
 		]);
 };
@@ -8893,15 +9037,6 @@ var $author$project$Types$Dom$game_to_id = function (mode) {
 				var _v65 = mode.a;
 				return 'CTD:TD';
 			}
-	}
-};
-var $elm$core$List$head = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(x);
-	} else {
-		return $elm$core$Maybe$Nothing;
 	}
 };
 var $elm$html$Html$option = _VirtualDom_node('option');
@@ -10027,7 +10162,7 @@ var $author$project$Main$view = function (state) {
 				return A2(
 					$elm$html$Html$div,
 					_List_Nil,
-					$author$project$Main$render_select_game(state.q));
+					$author$project$Main$render_select_game(state.n));
 			default:
 				var modal = _v0.a;
 				return A2(
