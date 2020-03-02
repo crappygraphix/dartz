@@ -60,6 +60,7 @@ type alias AppState =
 
 type Modal
   = SelectSubHit Hit
+  | FinalizeTurn
 
 type Screen
   = Home
@@ -109,4 +110,6 @@ type Action
   | Toss Hit
   | TossModalSelect Hit
   | TossModalCancel
+  | FinishTurnModal
+  | CancelFinishTurn
   | FinishTurn

@@ -130,6 +130,8 @@ update action state =
         Toss h -> { state | screen = PlayGame (Just <| SelectSubHit h) }
         TossModalSelect h -> { state | screen = PlayGame Nothing, currentTurn = List.take 3 <| h :: state.currentTurn }
         TossModalCancel -> { state | screen = PlayGame Nothing }
+        FinishTurnModal -> { state | screen = PlayGame (Just <| FinalizeTurn)}
+        CancelFinishTurn -> { state | screen = PlayGame Nothing }
         FinishTurn -> finalize_turn state
         MovePlayerUp i -> { state | playerData = move_player_up state.playerData i }
         MovePlayerDown i -> { state | playerData = move_player_down state.playerData i }
@@ -374,6 +376,23 @@ render_current_player_name i l =
 render_modal : Maybe Modal -> List (Html Action)
 render_modal modal =
   let
+    confirm_finish_modal =
+      [ div [ class "modal-backdrop show" ] []
+      , div [ class "modal", style "display" "block" ]
+        [ div [ class "modal-dialog-centered" ] 
+          [ div [ class "modal-content" ]
+            [ div [ class "modal-header text-center" ] 
+              [ div [ class "modal-title w-100" ] [ text "Finish Turn" ] ]
+            , div [ class "modal-body"]
+              [ div [ class "row text-center" ]
+                [ div [ class "col" ] [ button [ class "btn btn-primary", onClick FinishTurn ] [ text "Finish Turn" ] ]
+                , div [ class "col" ] [ button [ class "btn btn-danger", onClick CancelFinishTurn ] [ text "Cancel" ] ]
+                ]
+              ]
+            ]
+          ]   
+        ]
+      ]
     number_hit_buttons s d t = 
       [ div [ class "row text-center" ] 
         [ div [ class "col" ] [ button [ class "btn btn-secondary", onClick <| TossModalSelect s ] [ text "Single" ] ] ]
@@ -442,6 +461,7 @@ render_modal modal =
   in
     case modal of
       (Just (SelectSubHit h)) -> subhit_modal h
+      (Just FinalizeTurn) -> confirm_finish_modal
       _ -> []
 
 render_hits : List (Hit) -> Html msg
@@ -498,9 +518,9 @@ render_board =
 
     end_turn : List (S.Svg Action)
     end_turn = 
-      [ S.circle [ SE.onClick FinishTurn, SA.cx "8", SA.cy "92", SA.r "7.5", SA.stroke "black", SA.strokeWidth "0.3", SA.fill "green" ] []
-      , S.text_ [ SE.onClick FinishTurn, SA.x "8", SA.y "91", SA.alignmentBaseline "middle", SA.textAnchor "middle", SA.fontSize "4", SA.fill "black" ] [ text "Finish" ] 
-      , S.text_ [ SE.onClick FinishTurn, SA.x "8", SA.y "95", SA.alignmentBaseline "middle", SA.textAnchor "middle", SA.fontSize "4", SA.fill "black" ] [ text "Turn" ] 
+      [ S.circle [ SE.onClick FinishTurnModal, SA.cx "8", SA.cy "92", SA.r "7.5", SA.stroke "black", SA.strokeWidth "0.3", SA.fill "green" ] []
+      , S.text_ [ SE.onClick FinishTurnModal, SA.x "8", SA.y "91", SA.alignmentBaseline "middle", SA.textAnchor "middle", SA.fontSize "4", SA.fill "black" ] [ text "Finish" ] 
+      , S.text_ [ SE.onClick FinishTurnModal, SA.x "8", SA.y "95", SA.alignmentBaseline "middle", SA.textAnchor "middle", SA.fontSize "4", SA.fill "black" ] [ text "Turn" ] 
       ]
 
     start_end_points : (Float, Float) -> Float -> ((Float, Float), (Float, Float))

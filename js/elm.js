@@ -5141,7 +5141,7 @@ var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Types$AnyBullOut = 1;
 var $author$project$Types$AppState = F6(
 	function (playerData, game, screen, playing, currentPlayer, currentTurn) {
-		return {K: currentPlayer, y: currentTurn, n: game, e: playerData, B: playing, h: screen};
+		return {K: currentPlayer, y: currentTurn, n: game, e: playerData, B: playing, g: screen};
 	});
 var $author$project$Types$AroundTheClock = function (a) {
 	return {$: 4, a: a};
@@ -5717,7 +5717,7 @@ var $author$project$Types$Decode$app_state_decoder = function () {
 			'currentTurn',
 			$elm$json$Json$Decode$list(decode_hit)));
 }();
-var $author$project$Main$clean_state = {K: 0, y: _List_Nil, n: $author$project$Types$NoGame, e: _List_Nil, B: false, h: $author$project$Types$Home};
+var $author$project$Main$clean_state = {K: 0, y: _List_Nil, n: $author$project$Types$NoGame, e: _List_Nil, B: false, g: $author$project$Types$Home};
 var $elm$json$Json$Decode$decodeValue = _Json_run;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -5732,7 +5732,10 @@ var $author$project$Main$init = function (s) {
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Types$SelectSubHit = $elm$core$Basics$identity;
+var $author$project$Types$FinalizeTurn = {$: 1};
+var $author$project$Types$SelectSubHit = function (a) {
+	return {$: 0, a: a};
+};
 var $elm$core$Basics$composeL = F3(
 	function (g, f, x) {
 		return g(
@@ -6180,7 +6183,7 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 				encode_game_mode(state.n)),
 				_Utils_Tuple2(
 				'screen',
-				encode_screen(state.h)),
+				encode_screen(state.g)),
 				_Utils_Tuple2(
 				'playing',
 				$elm$json$Json$Encode$bool(state.B)),
@@ -6466,17 +6469,17 @@ var $author$project$Main$update = F2(
 				case 0:
 					return _Utils_update(
 						state,
-						{h: $author$project$Types$Home});
+						{g: $author$project$Types$Home});
 				case 1:
 					return _Utils_update(
 						state,
 						{
-							h: $author$project$Types$EditPlayers('')
+							g: $author$project$Types$EditPlayers('')
 						});
 				case 2:
 					return _Utils_update(
 						state,
-						{h: $author$project$Types$SelectGame});
+						{g: $author$project$Types$SelectGame});
 				case 3:
 					return _Utils_update(
 						state,
@@ -6485,13 +6488,13 @@ var $author$project$Main$update = F2(
 							y: _List_Nil,
 							e: A2(reset_scores, state.n, state.e),
 							B: true,
-							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+							g: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 4:
 					return _Utils_update(
 						state,
 						{
-							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+							g: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 5:
 					return _Utils_update(
@@ -6501,7 +6504,7 @@ var $author$project$Main$update = F2(
 							y: _List_Nil,
 							e: A2(reset_scores, state.n, state.e),
 							B: false,
-							h: $author$project$Types$Home
+							g: $author$project$Types$Home
 						});
 				case 6:
 					var mode = action.a;
@@ -6513,7 +6516,7 @@ var $author$project$Main$update = F2(
 					return _Utils_update(
 						state,
 						{
-							h: $author$project$Types$EditPlayers(p)
+							g: $author$project$Types$EditPlayers(p)
 						});
 				case 8:
 					var p = action.a;
@@ -6521,7 +6524,7 @@ var $author$project$Main$update = F2(
 						state,
 						{
 							e: A2(add_player, state.e, p),
-							h: $author$project$Types$EditPlayers('')
+							g: $author$project$Types$EditPlayers('')
 						});
 				case 11:
 					var i = action.a;
@@ -6535,8 +6538,9 @@ var $author$project$Main$update = F2(
 					return _Utils_update(
 						state,
 						{
-							h: $author$project$Types$PlayGame(
-								$elm$core$Maybe$Just(h))
+							g: $author$project$Types$PlayGame(
+								$elm$core$Maybe$Just(
+									$author$project$Types$SelectSubHit(h)))
 						});
 				case 13:
 					var h = action.a;
@@ -6547,15 +6551,28 @@ var $author$project$Main$update = F2(
 								$elm$core$List$take,
 								3,
 								A2($elm$core$List$cons, h, state.y)),
-							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+							g: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 14:
 					return _Utils_update(
 						state,
 						{
-							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+							g: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 15:
+					return _Utils_update(
+						state,
+						{
+							g: $author$project$Types$PlayGame(
+								$elm$core$Maybe$Just($author$project$Types$FinalizeTurn))
+						});
+				case 16:
+					return _Utils_update(
+						state,
+						{
+							g: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+						});
+				case 17:
 					return $author$project$Main$finalize_turn(state);
 				case 9:
 					var i = action.a;
@@ -6871,7 +6888,7 @@ var $author$project$Main$render_edit_players = F2(
 	});
 var $author$project$Types$EndGame = {$: 5};
 var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
-var $author$project$Types$FinishTurn = {$: 15};
+var $author$project$Types$FinishTurnModal = {$: 15};
 var $author$project$Types$Toss = function (a) {
 	return {$: 12, a: a};
 };
@@ -7074,7 +7091,7 @@ var $author$project$Main$render_board = function () {
 			$elm$svg$Svg$circle,
 			_List_fromArray(
 				[
-					$elm$svg$Svg$Events$onClick($author$project$Types$FinishTurn),
+					$elm$svg$Svg$Events$onClick($author$project$Types$FinishTurnModal),
 					$elm$svg$Svg$Attributes$cx('8'),
 					$elm$svg$Svg$Attributes$cy('92'),
 					$elm$svg$Svg$Attributes$r('7.5'),
@@ -7087,7 +7104,7 @@ var $author$project$Main$render_board = function () {
 			$elm$svg$Svg$text_,
 			_List_fromArray(
 				[
-					$elm$svg$Svg$Events$onClick($author$project$Types$FinishTurn),
+					$elm$svg$Svg$Events$onClick($author$project$Types$FinishTurnModal),
 					$elm$svg$Svg$Attributes$x('8'),
 					$elm$svg$Svg$Attributes$y('91'),
 					$elm$svg$Svg$Attributes$alignmentBaseline('middle'),
@@ -7103,7 +7120,7 @@ var $author$project$Main$render_board = function () {
 			$elm$svg$Svg$text_,
 			_List_fromArray(
 				[
-					$elm$svg$Svg$Events$onClick($author$project$Types$FinishTurn),
+					$elm$svg$Svg$Events$onClick($author$project$Types$FinishTurnModal),
 					$elm$svg$Svg$Attributes$x('8'),
 					$elm$svg$Svg$Attributes$y('95'),
 					$elm$svg$Svg$Attributes$alignmentBaseline('middle'),
@@ -7314,6 +7331,8 @@ var $author$project$Main$render_hits = function (hits) {
 			hit_div,
 			$elm$core$List$reverse(hits)));
 };
+var $author$project$Types$CancelFinishTurn = {$: 16};
+var $author$project$Types$FinishTurn = {$: 17};
 var $author$project$Types$TossModalCancel = {$: 14};
 var $author$project$Types$TossModalSelect = function (a) {
 	return {$: 13, a: a};
@@ -7899,9 +7918,129 @@ var $author$project$Main$render_modal = function (modal) {
 					]))
 			]);
 	};
+	var confirm_finish_modal = _List_fromArray(
+		[
+			A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('modal-backdrop show')
+				]),
+			_List_Nil),
+			A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('modal'),
+					A2($elm$html$Html$Attributes$style, 'display', 'block')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('modal-dialog-centered')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('modal-content')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('modal-header text-center')
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('modal-title w-100')
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text('Finish Turn')
+												]))
+										])),
+									A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('modal-body')
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('row text-center')
+												]),
+											_List_fromArray(
+												[
+													A2(
+													$elm$html$Html$div,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$class('col')
+														]),
+													_List_fromArray(
+														[
+															A2(
+															$elm$html$Html$button,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('btn btn-primary'),
+																	$elm$html$Html$Events$onClick($author$project$Types$FinishTurn)
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('Finish Turn')
+																]))
+														])),
+													A2(
+													$elm$html$Html$div,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$class('col')
+														]),
+													_List_fromArray(
+														[
+															A2(
+															$elm$html$Html$button,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('btn btn-danger'),
+																	$elm$html$Html$Events$onClick($author$project$Types$CancelFinishTurn)
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('Cancel')
+																]))
+														]))
+												]))
+										]))
+								]))
+						]))
+				]))
+		]);
 	if (!modal.$) {
-		var h = modal.a;
-		return subhit_modal(h);
+		if (!modal.a.$) {
+			var h = modal.a.a;
+			return subhit_modal(h);
+		} else {
+			var _v1 = modal.a;
+			return confirm_finish_modal;
+		}
 	} else {
 		return _List_Nil;
 	}
@@ -10145,7 +10284,7 @@ var $author$project$Main$view = function (state) {
 		}
 	};
 	var render = function () {
-		var _v0 = state.h;
+		var _v0 = state.g;
 		switch (_v0.$) {
 			case 0:
 				return A2(
