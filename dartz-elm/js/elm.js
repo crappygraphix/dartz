@@ -7202,7 +7202,10 @@ var $author$project$Main$render_current_player_name = F2(
 		}();
 		return A2(
 			$elm$html$Html$div,
-			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('container text-center')
+				]),
 			_List_fromArray(
 				[
 					$elm$html$Html$text(find_name)
@@ -7306,7 +7309,7 @@ var $author$project$Main$render_hits = function (hits) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('row')
+				$elm$html$Html$Attributes$class('container')
 			]),
 		_List_fromArray(
 			[
@@ -7314,22 +7317,40 @@ var $author$project$Main$render_hits = function (hits) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('col')
+						$elm$html$Html$Attributes$class('row')
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text('No darts thrown yet.')
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('col')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('No darts thrown yet.')
+							]))
 					]))
 			])) : A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('row')
+				$elm$html$Html$Attributes$class('container')
 			]),
-		A2(
-			$elm$core$List$map,
-			hit_div,
-			$elm$core$List$reverse(hits)));
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('row')
+					]),
+				A2(
+					$elm$core$List$map,
+					hit_div,
+					$elm$core$List$reverse(hits)))
+			]));
 };
 var $author$project$Types$CancelFinishTurn = {$: 16};
 var $author$project$Types$FinishTurn = {$: 17};

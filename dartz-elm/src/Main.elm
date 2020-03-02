@@ -371,7 +371,7 @@ render_current_player_name i l =
        Nothing -> "????? is throwing."
        Just p -> player_name_text p.name ++ " is throwing."
   in
-    div [] [ text find_name ]
+    div [ class "container text-center" ] [ text find_name ]
 
 render_modal : Maybe Modal -> List (Html Action)
 render_modal modal =
@@ -471,9 +471,9 @@ render_hits hits =
   in
     if List.length hits == 0
     then
-      div [ class "row" ] [ div [ class "col" ] [ text "No darts thrown yet." ] ]
+      div [ class "container" ] [ div [ class "row" ] [ div [ class "col" ] [ text "No darts thrown yet." ] ] ]
     else
-      div [ class "row" ] <| List.map hit_div <| List.reverse hits
+      div [ class "container" ] [ div [ class "row" ] <| List.map hit_div <| List.reverse hits ]
 
 render_board : List (S.Svg Action)
 render_board =
