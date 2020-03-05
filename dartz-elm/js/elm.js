@@ -784,11 +784,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.Q.F === region.V.F)
+	if (region.P.D === region.U.D)
 	{
-		return 'on line ' + region.Q.F;
+		return 'on line ' + region.P.D;
 	}
-	return 'on lines ' + region.Q.F + ' through ' + region.V.F;
+	return 'on lines ' + region.P.D + ' through ' + region.U.D;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aD,
-		impl.aK,
-		impl.aI,
+		impl.aE,
+		impl.aL,
+		impl.aJ,
 		function() { return function() {} }
 	);
 });
@@ -2704,9 +2704,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		r: func(record.r),
-		R: record.R,
-		O: record.O
+		p: func(record.p),
+		Q: record.Q,
+		N: record.N
 	}
 });
 
@@ -2974,11 +2974,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.r;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.R;
+		var message = !tag ? value : tag < 3 ? value.a : value.p;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.Q;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.O) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.N) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3928,11 +3928,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aD,
-		impl.aK,
-		impl.aI,
+		impl.aE,
+		impl.aL,
+		impl.aJ,
 		function(sendToApp, initialModel) {
-			var view = impl.aL;
+			var view = impl.aM;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3964,12 +3964,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aD,
-		impl.aK,
-		impl.aI,
+		impl.aE,
+		impl.aL,
+		impl.aJ,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.P && impl.P(sendToApp)
-			var view = impl.aL;
+			var divertHrefToApp = impl.O && impl.O(sendToApp)
+			var view = impl.aM;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3982,7 +3982,7 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aJ) && (_VirtualDom_doc.title = title = doc.aJ);
+				(title !== doc.aK) && (_VirtualDom_doc.title = title = doc.aK);
 			});
 		}
 	);
@@ -4038,12 +4038,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.aE;
-	var onUrlRequest = impl.aF;
+	var onUrlChange = impl.aF;
+	var onUrlRequest = impl.aG;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		P: function(sendToApp)
+		O: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4060,7 +4060,7 @@ function _Browser_application(impl)
 					sendToApp(onUrlRequest(
 						(next
 							&& curr.ah === next.ah
-							&& curr.Z === next.Z
+							&& curr.Y === next.Y
 							&& curr.ae.a === next.ae.a
 						)
 							? $elm$browser$Browser$Internal(next)
@@ -4069,13 +4069,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aD: function(flags)
+		aE: function(flags)
 		{
-			return A3(impl.aD, flags, _Browser_getUrl(), key);
+			return A3(impl.aE, flags, _Browser_getUrl(), key);
 		},
+		aM: impl.aM,
 		aL: impl.aL,
-		aK: impl.aK,
-		aI: impl.aI
+		aJ: impl.aJ
 	});
 }
 
@@ -4141,17 +4141,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { aA: 'hidden', aw: 'visibilitychange' }
+		? { aB: 'hidden', aw: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { aA: 'mozHidden', aw: 'mozvisibilitychange' }
+		? { aB: 'mozHidden', aw: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { aA: 'msHidden', aw: 'msvisibilitychange' }
+		? { aB: 'msHidden', aw: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { aA: 'webkitHidden', aw: 'webkitvisibilitychange' }
-		: { aA: 'hidden', aw: 'visibilitychange' };
+		? { aB: 'webkitHidden', aw: 'webkitvisibilitychange' }
+		: { aB: 'hidden', aw: 'visibilitychange' };
 }
 
 
@@ -4237,7 +4237,7 @@ function _Browser_getViewport()
 			ar: _Browser_window.pageXOffset,
 			as: _Browser_window.pageYOffset,
 			aq: _Browser_doc.documentElement.clientWidth,
-			Y: _Browser_doc.documentElement.clientHeight
+			X: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4248,7 +4248,7 @@ function _Browser_getScene()
 	var elem = _Browser_doc.documentElement;
 	return {
 		aq: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		Y: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		X: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4273,13 +4273,13 @@ function _Browser_getViewportOf(id)
 		return {
 			al: {
 				aq: node.scrollWidth,
-				Y: node.scrollHeight
+				X: node.scrollHeight
 			},
 			ap: {
 				ar: node.scrollLeft,
 				as: node.scrollTop,
 				aq: node.clientWidth,
-				Y: node.clientHeight
+				X: node.clientHeight
 			}
 		};
 	});
@@ -4314,13 +4314,13 @@ function _Browser_getElement(id)
 				ar: x,
 				as: y,
 				aq: _Browser_doc.documentElement.clientWidth,
-				Y: _Browser_doc.documentElement.clientHeight
+				X: _Browser_doc.documentElement.clientHeight
 			},
 			ay: {
 				ar: x + rect.left,
 				as: y + rect.top,
 				aq: rect.width,
-				Y: rect.height
+				X: rect.height
 			}
 		};
 	});
@@ -4859,7 +4859,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {X: fragment, Z: host, ac: path, ae: port_, ah: protocol, ai: query};
+		return {W: fragment, Y: host, ab: path, ae: port_, ah: protocol, ai: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5141,7 +5141,7 @@ var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Types$AnyBullOut = 1;
 var $author$project$Types$AppState = F6(
 	function (playerData, game, screen, playing, currentPlayer, currentTurn) {
-		return {K: currentPlayer, y: currentTurn, n: game, e: playerData, B: playing, g: screen};
+		return {J: currentPlayer, w: currentTurn, aA: game, ad: playerData, z: playing, e: screen};
 	});
 var $author$project$Types$AroundTheClock = function (a) {
 	return {$: 4, a: a};
@@ -5182,9 +5182,10 @@ var $author$project$Types$DoubleBonus = 0;
 var $author$project$Types$DoubleHit = 1;
 var $author$project$Types$DoubleIn = 1;
 var $author$project$Types$DoubleOut = 1;
-var $author$project$Types$EditPlayers = function (a) {
-	return {$: 1, a: a};
-};
+var $author$project$Types$EditPlayers = F2(
+	function (a, b) {
+		return {$: 1, a: a, b: b};
+	});
 var $author$project$Types$GolfCricket = 1;
 var $author$project$Types$Hit1 = function (a) {
 	return {$: 1, a: a};
@@ -5251,6 +5252,7 @@ var $author$project$Types$HitDoubleBullseye = {$: 22};
 var $author$project$Types$HitMissed = {$: 0};
 var $author$project$Types$Home = {$: 0};
 var $author$project$Types$Inning = $elm$core$Basics$identity;
+var $author$project$Types$NewPlayerInitials = $elm$core$Basics$identity;
 var $author$project$Types$NewPlayerName = $elm$core$Basics$identity;
 var $author$project$Types$NoBullOut = 0;
 var $author$project$Types$NoGame = {$: 0};
@@ -5273,12 +5275,13 @@ var $author$project$Types$NumbersScore = function (a) {
 var $author$project$Types$PlayGame = function (a) {
 	return {$: 3, a: a};
 };
-var $author$project$Types$Player = F4(
-	function (name, hits, score, index) {
-		return {aB: hits, A: index, M: name, am: score};
+var $author$project$Types$Player = F5(
+	function (name, initials, hits, score, index) {
+		return {aC: hits, y: index, K: initials, I: name, am: score};
 	});
 var $author$project$Types$PlayerHits = $elm$core$Basics$identity;
 var $author$project$Types$PlayerIndex = $elm$core$Basics$identity;
+var $author$project$Types$PlayerInitials = $elm$core$Basics$identity;
 var $author$project$Types$PlayerName = $elm$core$Basics$identity;
 var $author$project$Types$Score = $elm$core$Basics$identity;
 var $author$project$Types$SelectGame = {$: 2};
@@ -5296,7 +5299,7 @@ var $elm$json$Json$Decode$fail = _Json_fail;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$json$Json$Decode$list = _Json_decodeList;
-var $elm$json$Json$Decode$map4 = _Json_map4;
+var $elm$json$Json$Decode$map5 = _Json_map5;
 var $elm$json$Json$Decode$map6 = _Json_map6;
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$Types$Decode$app_state_decoder = function () {
@@ -5363,7 +5366,7 @@ var $author$project$Types$Decode$app_state_decoder = function () {
 		function (s) {
 			switch (s) {
 				case 'EDITPLAYERS':
-					return $author$project$Types$EditPlayers('');
+					return A2($author$project$Types$EditPlayers, '', '');
 				case 'SELECTGAME':
 					return $author$project$Types$SelectGame;
 				case 'PLAYGAME':
@@ -5374,6 +5377,7 @@ var $author$project$Types$Decode$app_state_decoder = function () {
 		},
 		$elm$json$Json$Decode$string);
 	var decode_player_name = A2($elm$json$Json$Decode$map, $elm$core$Basics$identity, $elm$json$Json$Decode$string);
+	var decode_player_initials = A2($elm$json$Json$Decode$map, $elm$core$Basics$identity, $elm$json$Json$Decode$string);
 	var decode_player_index = A2($elm$json$Json$Decode$map, $elm$core$Basics$identity, $elm$json$Json$Decode$int);
 	var decode_inning_score = A3(
 		$elm$json$Json$Decode$map2,
@@ -5696,10 +5700,11 @@ var $author$project$Types$Decode$app_state_decoder = function () {
 		$elm$json$Json$Decode$andThen,
 		decode_game_score_from_game,
 		A2($elm$json$Json$Decode$field, 'type', $elm$json$Json$Decode$string));
-	var decode_player = A5(
-		$elm$json$Json$Decode$map4,
+	var decode_player = A6(
+		$elm$json$Json$Decode$map5,
 		$author$project$Types$Player,
 		A2($elm$json$Json$Decode$field, 'name', decode_player_name),
+		A2($elm$json$Json$Decode$field, 'initials', decode_player_initials),
 		A2($elm$json$Json$Decode$field, 'hits', decode_player_hits),
 		A2($elm$json$Json$Decode$field, 'score', decode_game_score),
 		A2($elm$json$Json$Decode$field, 'index', decode_player_index));
@@ -5717,7 +5722,7 @@ var $author$project$Types$Decode$app_state_decoder = function () {
 			'currentTurn',
 			$elm$json$Json$Decode$list(decode_hit)));
 }();
-var $author$project$Main$clean_state = {K: 0, y: _List_Nil, n: $author$project$Types$NoGame, e: _List_Nil, B: false, g: $author$project$Types$Home};
+var $author$project$Main$clean_state = {J: 0, w: _List_Nil, aA: $author$project$Types$NoGame, ad: _List_Nil, z: false, e: $author$project$Types$Home};
 var $elm$json$Json$Decode$decodeValue = _Json_run;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -5758,7 +5763,7 @@ var $author$project$Main$delete_player = F2(
 		return A2(
 			$elm$core$List$filter,
 			function (p) {
-				return !_Utils_eq(p.A, i);
+				return !_Utils_eq(p.y, i);
 			},
 			l);
 	});
@@ -5831,9 +5836,13 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 				return $elm$json$Json$Encode$string('PLAYGAME');
 		}
 	};
-	var encode_player_name = function (_v16) {
-		var name = _v16;
+	var encode_player_name = function (_v17) {
+		var name = _v17;
 		return $elm$json$Json$Encode$string(name);
+	};
+	var encode_player_initials = function (_v16) {
+		var i = _v16;
+		return $elm$json$Json$Encode$string(i);
 	};
 	var encode_player_index = function (_v15) {
 		var i = _v15;
@@ -6069,16 +6078,20 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 		}
 	};
 	var encode_player = function (_v6) {
-		var name = _v6.M;
-		var hits = _v6.aB;
+		var name = _v6.I;
+		var initials = _v6.K;
+		var hits = _v6.aC;
 		var score = _v6.am;
-		var index = _v6.A;
+		var index = _v6.y;
 		return $elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
 					_Utils_Tuple2(
 					'name',
 					encode_player_name(name)),
+					_Utils_Tuple2(
+					'initials',
+					encode_player_initials(initials)),
 					_Utils_Tuple2(
 					'hits',
 					encode_player_hits(hits)),
@@ -6177,27 +6190,108 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 			[
 				_Utils_Tuple2(
 				'playerData',
-				encode_list_player(state.e)),
+				encode_list_player(state.ad)),
 				_Utils_Tuple2(
 				'game',
-				encode_game_mode(state.n)),
+				encode_game_mode(state.aA)),
 				_Utils_Tuple2(
 				'screen',
-				encode_screen(state.g)),
+				encode_screen(state.e)),
 				_Utils_Tuple2(
 				'playing',
-				$elm$json$Json$Encode$bool(state.B)),
+				$elm$json$Json$Encode$bool(state.z)),
 				_Utils_Tuple2(
 				'currentPlayer',
-				$elm$json$Json$Encode$int(state.K)),
+				$elm$json$Json$Encode$int(state.J)),
 				_Utils_Tuple2(
 				'currentTurn',
-				encode_hits(state.y))
+				encode_hits(state.w))
 			]));
 };
-var $author$project$Main$finalize_turn = function (s) {
-	return s;
+var $author$project$Games$next_player = F2(
+	function (l, i) {
+		return _Utils_eq(
+			i,
+			$elm$core$List$length(l) - 1) ? 0 : (i + 1);
+	});
+var $author$project$Games$increment_player = function (state) {
+	return _Utils_update(
+		state,
+		{
+			J: A2($author$project$Games$next_player, state.ad, state.J)
+		});
 };
+var $author$project$Games$around_the_clock = F2(
+	function (state, _v0) {
+		var apply_score = state;
+		return $author$project$Games$increment_player(apply_score);
+	});
+var $author$project$Games$around_the_clock_180 = F2(
+	function (state, _v0) {
+		var apply_score = state;
+		return $author$project$Games$increment_player(apply_score);
+	});
+var $author$project$Games$baseball = F2(
+	function (state, _v0) {
+		var apply_score = state;
+		return $author$project$Games$increment_player(apply_score);
+	});
+var $author$project$Games$chase_the_dragon = F2(
+	function (state, _v0) {
+		var apply_score = state;
+		return $author$project$Games$increment_player(apply_score);
+	});
+var $author$project$Games$cricket = F2(
+	function (state, _v0) {
+		var apply_score = state;
+		return $author$project$Games$increment_player(apply_score);
+	});
+var $author$project$Games$numbers = F4(
+	function (state, _v0, _v1, _v2) {
+		var apply_score = state;
+		return $author$project$Games$increment_player(apply_score);
+	});
+var $author$project$Games$finalize_turn = function (state) {
+	var _v0 = state.aA;
+	switch (_v0.$) {
+		case 0:
+			return state;
+		case 1:
+			var i = _v0.a;
+			var o = _v0.b;
+			return A4($author$project$Games$numbers, state, 701, i, o);
+		case 2:
+			var i = _v0.a;
+			var o = _v0.b;
+			return A4($author$project$Games$numbers, state, 501, i, o);
+		case 3:
+			var i = _v0.a;
+			var o = _v0.b;
+			return A4($author$project$Games$numbers, state, 301, i, o);
+		case 4:
+			var v = _v0.a;
+			return A2($author$project$Games$around_the_clock, state, v);
+		case 5:
+			var v = _v0.a;
+			return A2($author$project$Games$around_the_clock_180, state, v);
+		case 6:
+			var v = _v0.a;
+			return A2($author$project$Games$baseball, state, v);
+		case 7:
+			var v = _v0.a;
+			return A2($author$project$Games$chase_the_dragon, state, v);
+		default:
+			var v = _v0.a;
+			return A2($author$project$Games$cricket, state, v);
+	}
+};
+var $elm$core$Basics$ge = _Utils_ge;
+var $author$project$Main$fix_current_player = F2(
+	function (l, i) {
+		return (_Utils_cmp(
+			i,
+			$elm$core$List$length(l) - 1) > -1) ? 0 : i;
+	});
 var $author$project$Ports$store_state = _Platform_outgoingPort('store_state', $elm$json$Json$Encode$string);
 var $elm$core$List$takeReverse = F3(
 	function (n, list, kept) {
@@ -6325,9 +6419,17 @@ var $elm$core$List$take = F2(
 	function (n, list) {
 		return A3($elm$core$List$takeFast, 0, n, list);
 	});
+var $elm$core$String$toUpper = _String_toUpper;
 var $elm$core$String$trim = _String_trim;
 var $author$project$Main$update = F2(
 	function (action, state) {
+		var post_delete_player = function (s) {
+			return _Utils_update(
+				s,
+				{
+					J: A2($author$project$Main$fix_current_player, s.ad, s.J)
+				});
+		};
 		var new_score = function (mode) {
 			switch (mode.$) {
 				case 0:
@@ -6357,13 +6459,15 @@ var $author$project$Main$update = F2(
 						_Utils_Tuple2(0, _List_Nil));
 			}
 		};
-		var new_player = F3(
-			function (i, _v3, mode) {
-				var n = _v3;
+		var new_player = F4(
+			function (i, _v5, _v6, mode) {
+				var n = _v5;
+				var s = _v6;
 				return {
-					aB: _List_Nil,
-					A: i,
-					M: n,
+					aC: _List_Nil,
+					y: i,
+					K: s,
+					I: n,
 					am: new_score(mode)
 				};
 			});
@@ -6371,7 +6475,7 @@ var $author$project$Main$update = F2(
 			function (l, i) {
 				var to_the_left = F2(
 					function (p, acc) {
-						return _Utils_eq(p.A, i) ? _Utils_ap(
+						return _Utils_eq(p.y, i) ? _Utils_ap(
 							A2(
 								$elm$core$List$take,
 								$elm$core$List$length(acc) - 1,
@@ -6397,6 +6501,14 @@ var $author$project$Main$update = F2(
 						$elm$core$List$reverse(l),
 						i));
 			});
+		var digest_initials = function (_v4) {
+			var i = _v4;
+			return $elm$core$String$toUpper(
+				A2(
+					$elm$core$String$left,
+					2,
+					$elm$core$String$trim(i)));
+		};
 		var clear_score = function (mode) {
 			switch (mode.$) {
 				case 0:
@@ -6448,20 +6560,24 @@ var $author$project$Main$update = F2(
 					reset_score(mode),
 					l);
 			});
-		var add_player = F2(
-			function (l, n) {
-				var empty = function (_v1) {
-					var s = _v1;
-					return $elm$core$String$isEmpty(
-						$elm$core$String$trim(s));
-				};
-				return empty(n) ? l : A2(
+		var add_player = F3(
+			function (l, n, i) {
+				var empty = F2(
+					function (_v1, _v2) {
+						var s = _v1;
+						var ni = _v2;
+						return $elm$core$String$isEmpty(
+							$elm$core$String$trim(s)) || $elm$core$String$isEmpty(
+							$elm$core$String$trim(ni));
+					});
+				return A2(empty, n, i) ? l : A2(
 					$elm$core$List$cons,
-					A3(
+					A4(
 						new_player,
 						1 + $elm$core$List$length(l),
 						n,
-						state.n),
+						i,
+						state.aA),
 					l);
 			});
 		var new_state = function () {
@@ -6469,76 +6585,82 @@ var $author$project$Main$update = F2(
 				case 0:
 					return _Utils_update(
 						state,
-						{g: $author$project$Types$Home});
+						{e: $author$project$Types$Home});
 				case 1:
 					return _Utils_update(
 						state,
 						{
-							g: $author$project$Types$EditPlayers('')
+							e: A2($author$project$Types$EditPlayers, '', '')
 						});
 				case 2:
 					return _Utils_update(
 						state,
-						{g: $author$project$Types$SelectGame});
+						{e: $author$project$Types$SelectGame});
 				case 3:
 					return _Utils_update(
 						state,
 						{
-							K: 0,
-							y: _List_Nil,
-							e: A2(reset_scores, state.n, state.e),
-							B: true,
-							g: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+							J: 0,
+							w: _List_Nil,
+							ad: A2(reset_scores, state.aA, state.ad),
+							z: true,
+							e: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 4:
 					return _Utils_update(
 						state,
 						{
-							g: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+							e: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 5:
 					return _Utils_update(
 						state,
 						{
-							K: 0,
-							y: _List_Nil,
-							e: A2(reset_scores, state.n, state.e),
-							B: false,
-							g: $author$project$Types$Home
+							J: 0,
+							w: _List_Nil,
+							ad: A2(reset_scores, state.aA, state.ad),
+							z: false,
+							e: $author$project$Types$Home
 						});
 				case 6:
 					var mode = action.a;
 					return _Utils_update(
 						state,
-						{n: mode});
+						{aA: mode});
 				case 7:
 					var p = action.a;
+					var i = action.b;
 					return _Utils_update(
 						state,
 						{
-							g: $author$project$Types$EditPlayers(p)
+							e: A2(
+								$author$project$Types$EditPlayers,
+								p,
+								digest_initials(i))
 						});
 				case 8:
 					var p = action.a;
+					var i = action.b;
 					return _Utils_update(
 						state,
 						{
-							e: A2(add_player, state.e, p),
-							g: $author$project$Types$EditPlayers('')
+							ad: A3(add_player, state.ad, p, i),
+							e: A2($author$project$Types$EditPlayers, '', '')
 						});
 				case 11:
 					var i = action.a;
-					return _Utils_update(
-						state,
-						{
-							e: A2($author$project$Main$delete_player, state.e, i)
-						});
+					return post_delete_player(
+						_Utils_update(
+							state,
+							{
+								ad: A2($author$project$Main$delete_player, state.ad, i)
+							}));
 				case 12:
 					var h = action.a;
 					return _Utils_update(
 						state,
 						{
-							g: $author$project$Types$PlayGame(
+							e: $author$project$Types$PlayGame(
 								$elm$core$Maybe$Just(
 									$author$project$Types$SelectSubHit(h)))
 						});
@@ -6547,46 +6669,53 @@ var $author$project$Main$update = F2(
 					return _Utils_update(
 						state,
 						{
-							y: A2(
+							w: A2(
 								$elm$core$List$take,
 								3,
-								A2($elm$core$List$cons, h, state.y)),
-							g: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+								A2($elm$core$List$cons, h, state.w)),
+							e: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 14:
 					return _Utils_update(
 						state,
 						{
-							g: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+							e: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 15:
 					return _Utils_update(
 						state,
 						{
-							g: $author$project$Types$PlayGame(
+							e: $author$project$Types$PlayGame(
 								$elm$core$Maybe$Just($author$project$Types$FinalizeTurn))
 						});
 				case 16:
 					return _Utils_update(
 						state,
 						{
-							g: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+							e: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 17:
-					return $author$project$Main$finalize_turn(state);
+					return function (s) {
+						return _Utils_update(
+							s,
+							{
+								e: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+							});
+					}(
+						$author$project$Games$finalize_turn(state));
 				case 9:
 					var i = action.a;
 					return _Utils_update(
 						state,
 						{
-							e: A2(move_player_up, state.e, i)
+							ad: A2(move_player_up, state.ad, i)
 						});
 				default:
 					var i = action.a;
 					return _Utils_update(
 						state,
 						{
-							e: A2(move_player_down, state.e, i)
+							ad: A2(move_player_down, state.ad, i)
 						});
 			}
 		}();
@@ -6610,12 +6739,14 @@ var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$Types$GoHome = {$: 0};
 var $author$project$Types$GoSelectGame = {$: 2};
 var $elm$html$Html$a = _VirtualDom_node('a');
-var $author$project$Types$NewPlayerCommit = function (a) {
-	return {$: 8, a: a};
-};
-var $author$project$Types$NewPlayerInput = function (a) {
-	return {$: 7, a: a};
-};
+var $author$project$Types$NewPlayerCommit = F2(
+	function (a, b) {
+		return {$: 8, a: a, b: b};
+	});
+var $author$project$Types$NewPlayerInput = F2(
+	function (a, b) {
+		return {$: 7, a: a, b: b};
+	});
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$label = _VirtualDom_node('label');
@@ -6671,51 +6802,84 @@ var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProp
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-var $author$project$Main$add_player_form = function (_v0) {
-	var t = _v0;
-	return _List_fromArray(
-		[
-			A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('form-group')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$label,
-					_List_Nil,
-					_List_fromArray(
-						[
-							$elm$html$Html$text('Player Name')
-						])),
-					A2(
-					$elm$html$Html$input,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$value(t),
-							$elm$html$Html$Attributes$placeholder('Name'),
-							$elm$html$Html$Events$onInput(
-							A2($elm$core$Basics$composeL, $author$project$Types$NewPlayerInput, $elm$core$Basics$identity)),
-							$elm$html$Html$Attributes$class('form-control')
-						]),
-					_List_Nil)
-				])),
-			A2(
-			$elm$html$Html$button,
-			_List_fromArray(
-				[
-					$elm$html$Html$Events$onClick(
-					$author$project$Types$NewPlayerCommit(t)),
-					$elm$html$Html$Attributes$class('btn btn-primary')
-				]),
-			_List_fromArray(
-				[
-					$elm$html$Html$text('Add Player')
-				]))
-		]);
-};
+var $author$project$Main$add_player_form = F2(
+	function (_v0, _v1) {
+		var t = _v0;
+		var ni = _v1;
+		return _List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('form-group')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$label,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Player Name')
+							])),
+						A2(
+						$elm$html$Html$input,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$value(t),
+								$elm$html$Html$Attributes$placeholder('Name'),
+								$elm$html$Html$Events$onInput(
+								function (v) {
+									return A2($author$project$Types$NewPlayerInput, v, ni);
+								}),
+								$elm$html$Html$Attributes$class('form-control')
+							]),
+						_List_Nil)
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('form-group')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$label,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Player Initials (Max 2 Characters)')
+							])),
+						A2(
+						$elm$html$Html$input,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$value(ni),
+								$elm$html$Html$Attributes$placeholder('Initials'),
+								$elm$html$Html$Events$onInput(
+								function (v) {
+									return A2($author$project$Types$NewPlayerInput, t, v);
+								}),
+								$elm$html$Html$Attributes$class('form-control')
+							]),
+						_List_Nil)
+					])),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(
+						A2($author$project$Types$NewPlayerCommit, t, ni)),
+						$elm$html$Html$Attributes$class('btn btn-primary')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Add Player')
+					]))
+			]);
+	});
 var $elm$html$Html$li = _VirtualDom_node('li');
 var $author$project$Types$DeletePlayer = function (a) {
 	return {$: 11, a: a};
@@ -6725,6 +6889,10 @@ var $author$project$Types$MovePlayerDown = function (a) {
 };
 var $author$project$Types$MovePlayerUp = function (a) {
 	return {$: 9, a: a};
+};
+var $author$project$Types$Text$player_initials_text = function (_v0) {
+	var s = _v0;
+	return s;
 };
 var $author$project$Types$Text$player_name_text = function (_v0) {
 	var s = _v0;
@@ -6746,7 +6914,7 @@ var $author$project$Main$list_editable_players = function (l) {
 					_List_fromArray(
 						[
 							$elm$html$Html$text(
-							$author$project$Types$Text$player_name_text(player.M))
+							$author$project$Types$Text$player_name_text(player.I) + (' (' + ($author$project$Types$Text$player_initials_text(player.K) + ')')))
 						])),
 					A2(
 					$elm$html$Html$td,
@@ -6758,7 +6926,7 @@ var $author$project$Main$list_editable_players = function (l) {
 							_List_fromArray(
 								[
 									$elm$html$Html$Events$onClick(
-									$author$project$Types$MovePlayerUp(player.A)),
+									$author$project$Types$MovePlayerUp(player.y)),
 									$elm$html$Html$Attributes$class('btn btn-primary')
 								]),
 							_List_fromArray(
@@ -6776,7 +6944,7 @@ var $author$project$Main$list_editable_players = function (l) {
 							_List_fromArray(
 								[
 									$elm$html$Html$Events$onClick(
-									$author$project$Types$MovePlayerDown(player.A)),
+									$author$project$Types$MovePlayerDown(player.y)),
 									$elm$html$Html$Attributes$class('btn btn-primary')
 								]),
 							_List_fromArray(
@@ -6794,7 +6962,7 @@ var $author$project$Main$list_editable_players = function (l) {
 							_List_fromArray(
 								[
 									$elm$html$Html$Events$onClick(
-									$author$project$Types$DeletePlayer(player.A)),
+									$author$project$Types$DeletePlayer(player.y)),
 									$elm$html$Html$Attributes$class('btn btn-danger')
 								]),
 							_List_fromArray(
@@ -6816,8 +6984,8 @@ var $author$project$Main$list_editable_players = function (l) {
 		]);
 };
 var $elm$html$Html$ul = _VirtualDom_node('ul');
-var $author$project$Main$render_edit_players = F2(
-	function (players, np) {
+var $author$project$Main$render_edit_players = F3(
+	function (players, np, ni) {
 		return _Utils_ap(
 			_List_fromArray(
 				[
@@ -6872,7 +7040,7 @@ var $author$project$Main$render_edit_players = F2(
 						]))
 				]),
 			_Utils_ap(
-				$author$project$Main$add_player_form(np),
+				A2($author$project$Main$add_player_form, np, ni),
 				_Utils_ap(
 					_List_fromArray(
 						[
@@ -7197,7 +7365,7 @@ var $author$project$Main$render_current_player_name = F2(
 				return '????? is throwing.';
 			} else {
 				var p = _v0.a;
-				return $author$project$Types$Text$player_name_text(p.M) + ' is throwing.';
+				return $author$project$Types$Text$player_name_text(p.I) + ' is throwing.';
 			}
 		}();
 		return A2(
@@ -8123,8 +8291,8 @@ var $author$project$Main$render_game = F2(
 										]))
 								]))
 						])),
-					A2($author$project$Main$render_current_player_name, state.K, state.e),
-					$author$project$Main$render_hits(state.y),
+					A2($author$project$Main$render_current_player_name, state.J, state.ad),
+					$author$project$Main$render_hits(state.w),
 					A2(
 					$elm$html$Html$div,
 					_List_fromArray(
@@ -8321,7 +8489,7 @@ var $author$project$Types$Dom$game_name = function (mode) {
 	}
 };
 var $author$project$Main$render_home = function (state) {
-	var start_game = (($elm$core$List$length(state.e) > 0) && ((!_Utils_eq(state.n, $author$project$Types$NoGame)) && (!state.B))) ? _List_fromArray(
+	var start_game = (($elm$core$List$length(state.ad) > 0) && ((!_Utils_eq(state.aA, $author$project$Types$NoGame)) && (!state.z))) ? _List_fromArray(
 		[
 			A2(
 			$elm$html$Html$li,
@@ -8344,7 +8512,7 @@ var $author$project$Main$render_home = function (state) {
 						]))
 				]))
 		]) : _List_Nil;
-	var select_game = (!state.B) ? _List_fromArray(
+	var select_game = (!state.z) ? _List_fromArray(
 		[
 			A2(
 			$elm$html$Html$li,
@@ -8367,7 +8535,7 @@ var $author$project$Main$render_home = function (state) {
 						]))
 				]))
 		]) : _List_Nil;
-	var resume_game = (($elm$core$List$length(state.e) > 0) && ((!_Utils_eq(state.n, $author$project$Types$NoGame)) && state.B)) ? _List_fromArray(
+	var resume_game = (($elm$core$List$length(state.ad) > 0) && ((!_Utils_eq(state.aA, $author$project$Types$NoGame)) && state.z)) ? _List_fromArray(
 		[
 			A2(
 			$elm$html$Html$li,
@@ -8390,6 +8558,40 @@ var $author$project$Main$render_home = function (state) {
 						]))
 				]))
 		]) : _List_Nil;
+	var player = function (p) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('row')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('col')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$author$project$Types$Text$player_name_text(p.I))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('col')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$author$project$Types$Text$player_initials_text(p.K))
+						]))
+				]));
+	};
+	var players = A2($elm$core$List$map, player, state.ad);
 	return _List_fromArray(
 		[
 			A2(
@@ -8429,12 +8631,22 @@ var $author$project$Main$render_home = function (state) {
 						select_game)))),
 			A2(
 			$elm$html$Html$div,
-			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('container')
+				]),
 			_List_fromArray(
 				[
 					$elm$html$Html$text('Selected Game: '),
-					$author$project$Types$Dom$game_name(state.n)
-				]))
+					$author$project$Types$Dom$game_name(state.aA)
+				])),
+			A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('container')
+				]),
+			players)
 		]);
 };
 var $elm$html$Html$p = _VirtualDom_node('p');
@@ -8495,14 +8707,14 @@ var $author$project$Types$Dom$game_description = function (mode) {
 						_List_Nil,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Double In / Triple In : Requires double or triple hits during a turn in order to begin point deduction.')
+								$elm$html$Html$text('Double In / Triple In : Requires double or triple hits during the opening turn in order to begin point deduction.')
 							])),
 						A2(
 						$elm$html$Html$p,
 						_List_Nil,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Double Out / Triple Out : Requires double or triple hits during a turn in order to end the game. Busts happen on a turn score of 1 or 2 respectively.')
+								$elm$html$Html$text('Double Out / Triple Out : Requires double or triple hits during the ending turn in order to end the game. Busts happen on a turn score of 1 or 2 respectively.')
 							]))
 					]));
 		case 2:
@@ -8558,14 +8770,14 @@ var $author$project$Types$Dom$game_description = function (mode) {
 						_List_Nil,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Double In / Triple In : Requires double or triple hits during a turn in order to begin point deduction.')
+								$elm$html$Html$text('Double In / Triple In : Requires double or triple hits during the opening turn in order to begin point deduction.')
 							])),
 						A2(
 						$elm$html$Html$p,
 						_List_Nil,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Double Out / Triple Out : Requires double or triple hits during a turn in order to end the game. Busts happen on a turn score of 1 or 2 respectively.')
+								$elm$html$Html$text('Double Out / Triple Out : Requires double or triple hits during the ending turn in order to end the game. Busts happen on a turn score of 1 or 2 respectively.')
 							]))
 					]));
 		case 3:
@@ -8621,14 +8833,14 @@ var $author$project$Types$Dom$game_description = function (mode) {
 						_List_Nil,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Double In / Triple In : Requires double or triple hits during a turn in order to begin point deduction.')
+								$elm$html$Html$text('Double In / Triple In : Requires double or triple hits during the opening turn in order to begin point deduction.')
 							])),
 						A2(
 						$elm$html$Html$p,
 						_List_Nil,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Double Out / Triple Out : Requires double or triple hits during a turn in order to end the game. Busts happen on a turn score of 1 or 2 respectively.')
+								$elm$html$Html$text('Double Out / Triple Out : Requires double or triple hits during the ending turn in order to end the game. Busts happen on a turn score of 1 or 2 respectively.')
 							]))
 					]));
 		case 4:
@@ -10305,7 +10517,7 @@ var $author$project$Main$view = function (state) {
 		}
 	};
 	var render = function () {
-		var _v0 = state.g;
+		var _v0 = state.e;
 		switch (_v0.$) {
 			case 0:
 				return A2(
@@ -10314,15 +10526,16 @@ var $author$project$Main$view = function (state) {
 					$author$project$Main$render_home(state));
 			case 1:
 				var np = _v0.a;
+				var ni = _v0.b;
 				return A2(
 					$elm$html$Html$div,
 					_List_Nil,
-					A2($author$project$Main$render_edit_players, state.e, np));
+					A3($author$project$Main$render_edit_players, state.ad, np, ni));
 			case 2:
 				return A2(
 					$elm$html$Html$div,
 					_List_Nil,
-					$author$project$Main$render_select_game(state.n));
+					$author$project$Main$render_select_game(state.aA));
 			default:
 				var modal = _v0.a;
 				return A2(
@@ -10335,11 +10548,11 @@ var $author$project$Main$view = function (state) {
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{
-		aD: $author$project$Main$init,
-		aI: function (_v0) {
+		aE: $author$project$Main$init,
+		aJ: function (_v0) {
 			return $elm$core$Platform$Sub$none;
 		},
-		aK: $author$project$Main$update,
-		aL: $author$project$Main$view
+		aL: $author$project$Main$update,
+		aM: $author$project$Main$view
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$value)(0)}});}(this));

@@ -81,12 +81,15 @@ encode_app_state state =
 
     encode_player_name (PlayerName name) = JE.string name
 
+    encode_player_initials (PlayerInitials i) = JE.string i
+
     encode_player_index (PlayerIndex i) = JE.int i
 
     encode_player_hits (PlayerHits l) = encode_hits l
     
-    encode_player { name, hits, score, index } = JE.object 
+    encode_player { name, initials, hits, score, index } = JE.object 
       [ ("name", encode_player_name name)
+      , ("initials", encode_player_initials initials)
       , ("hits", encode_player_hits hits )
       , ("score", encode_score score )
       , ("index", encode_player_index index )
@@ -137,7 +140,7 @@ encode_app_state state =
 
     encode_screen s = case s of
       Home -> JE.string "HOME"
-      EditPlayers _ -> JE.string "EDITPLAYERS"
+      EditPlayers _ _ -> JE.string "EDITPLAYERS"
       SelectGame -> JE.string "SELECTGAME"
       PlayGame _ -> JE.string "PLAYGAME"
 

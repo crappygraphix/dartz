@@ -4,6 +4,8 @@ import Types exposing (..)
 
 player_name_text (PlayerName s) = s
 
+player_initials_text (PlayerInitials s) = s
+
 sub_hit_text : SubHit -> String
 sub_hit_text s = case s of
    SingleHit -> "Single"

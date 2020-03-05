@@ -27,8 +27,10 @@ type Hit
   | HitBullseye
   | HitDoubleBullseye
 
+type PlayerInitials = PlayerInitials String
 type PlayerName = PlayerName String
 type NewPlayerName = NewPlayerName String
+type NewPlayerInitials = NewPlayerInitials String
 type PlayerHits = PlayerHits (List Hit)
 type PlayerIndex = PlayerIndex Int
 type Inning = Inning Int
@@ -43,10 +45,11 @@ type GameScore
   | CricketScore (Score, List Hit)
 
 type alias Player =
-  { name    : PlayerName
-  , hits    : PlayerHits
-  , score   : GameScore
-  , index   : PlayerIndex
+  { name     : PlayerName
+  , initials : PlayerInitials
+  , hits     : PlayerHits
+  , score    : GameScore
+  , index    : PlayerIndex
   }
 
 type alias AppState =
@@ -64,7 +67,7 @@ type Modal
 
 type Screen
   = Home
-  | EditPlayers NewPlayerName
+  | EditPlayers NewPlayerName NewPlayerInitials
   | SelectGame
   | PlayGame (Maybe Modal)
 
@@ -102,8 +105,8 @@ type Action
   | ResumeGame
   | EndGame
   | GameSelected GameMode
-  | NewPlayerInput NewPlayerName
-  | NewPlayerCommit NewPlayerName
+  | NewPlayerInput NewPlayerName NewPlayerInitials
+  | NewPlayerCommit NewPlayerName NewPlayerInitials
   | MovePlayerUp PlayerIndex
   | MovePlayerDown PlayerIndex
   | DeletePlayer PlayerIndex

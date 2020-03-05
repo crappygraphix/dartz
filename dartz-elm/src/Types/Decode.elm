@@ -135,6 +135,9 @@ app_state_decoder =
     decode_player_name : JD.Decoder PlayerName
     decode_player_name = JD.map PlayerName JD.string
 
+    decode_player_initials : JD.Decoder PlayerInitials
+    decode_player_initials = JD.map PlayerInitials JD.string
+
     decode_player_index : JD.Decoder PlayerIndex
     decode_player_index = JD.map PlayerIndex JD.int
 
@@ -142,8 +145,9 @@ app_state_decoder =
     decode_player_hits = JD.map PlayerHits <| JD.list decode_hit
     
     decode_player : JD.Decoder Player
-    decode_player = JD.map4 Player
+    decode_player = JD.map5 Player
       (JD.field "name" decode_player_name)
+      (JD.field "initials" decode_player_initials)
       (JD.field "hits" decode_player_hits)
       (JD.field "score" decode_game_score)
       (JD.field "index" decode_player_index)
@@ -198,7 +202,7 @@ app_state_decoder =
 
     decode_screen : JD.Decoder Screen
     decode_screen = JD.map (\s -> case s of
-      "EDITPLAYERS" -> EditPlayers (NewPlayerName "")
+      "EDITPLAYERS" -> EditPlayers (NewPlayerName "") (NewPlayerInitials "")
       "SELECTGAME" -> SelectGame
       "PLAYGAME" -> PlayGame Nothing
       _ -> Home

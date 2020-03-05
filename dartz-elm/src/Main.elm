@@ -10,6 +10,7 @@ import Svg as S
 import Svg.Attributes as SA
 import Svg.Events as SE
 
+import Games exposing (finalize_turn)
 import Ports exposing (store_state)
 import Types exposing (..)
 import Types.Decode exposing (..)
@@ -68,15 +69,17 @@ update action state =
         ChaseTheDragon _ -> ChaseTheDragonScore []
         Cricket _ -> CricketScore (Score 0, [])
 
-    new_player i (NewPlayerName n) mode = { name = PlayerName n, hits = PlayerHits [], score = new_score mode, index = i }
+    new_player i (NewPlayerName n) (NewPlayerInitials s) mode = { name = PlayerName n, initials = PlayerInitials s, hits = PlayerHits [], score = new_score mode, index = i }
 
-    add_player l n =
+    add_player l n i =
       let
-        empty (NewPlayerName s) = String.isEmpty <| String.trim s
+        empty (NewPlayerName s) (NewPlayerInitials ni) = (String.isEmpty <| String.trim s) || (String.isEmpty <| String.trim ni)        
       in
-        if empty n 
+        if empty n i
         then l 
-        else new_player (PlayerIndex <| 1 + List.length l) n state.game :: l
+        else new_player (PlayerIndex <| 1 + List.length l) n i state.game :: l
+    
+    digest_initials (NewPlayerInitials i) = NewPlayerInitials <| String.toUpper <| String.left 2 <| String.trim i
 
     clear_score mode = case mode of
       NoGame -> NoScore
@@ -115,31 +118,30 @@ update action state =
 
     move_player_down l i = List.reverse <| move_player_up (List.reverse l) i
 
+    post_delete_player s = { s | currentPlayer = fix_current_player s.playerData s.currentPlayer }
+
     new_state = 
       case action of
         GoHome -> { state | screen = Home }
-        GoEditPlayers -> { state | screen = EditPlayers (NewPlayerName "") }
+        GoEditPlayers -> { state | screen = EditPlayers (NewPlayerName "") (NewPlayerInitials "")}
         GoSelectGame -> { state | screen = SelectGame }
         StartGame -> { state | screen = PlayGame Nothing, currentPlayer = 0, currentTurn = [], playerData = reset_scores state.game state.playerData, playing = True }
         ResumeGame -> { state | screen = PlayGame Nothing }
         EndGame -> { state | screen = Home, currentPlayer = 0, currentTurn = [], playerData = reset_scores state.game state.playerData, playing = False }
         GameSelected mode -> { state | game = mode }
-        NewPlayerInput p -> { state | screen = EditPlayers p }
-        NewPlayerCommit p -> { state | playerData = add_player state.playerData p, screen = EditPlayers (NewPlayerName "") }
-        DeletePlayer i -> { state | playerData = delete_player state.playerData i }
+        NewPlayerInput p i -> { state | screen = EditPlayers p (digest_initials i) }
+        NewPlayerCommit p i -> { state | playerData = add_player state.playerData p i, screen = EditPlayers (NewPlayerName "") (NewPlayerInitials "") }
+        DeletePlayer i -> { state | playerData = delete_player state.playerData i } |> post_delete_player
         Toss h -> { state | screen = PlayGame (Just <| SelectSubHit h) }
         TossModalSelect h -> { state | screen = PlayGame Nothing, currentTurn = List.take 3 <| h :: state.currentTurn }
         TossModalCancel -> { state | screen = PlayGame Nothing }
         FinishTurnModal -> { state | screen = PlayGame (Just <| FinalizeTurn)}
         CancelFinishTurn -> { state | screen = PlayGame Nothing }
-        FinishTurn -> finalize_turn state
+        FinishTurn -> (\s -> { s | screen = PlayGame Nothing }) <| finalize_turn state
         MovePlayerUp i -> { state | playerData = move_player_up state.playerData i }
         MovePlayerDown i -> { state | playerData = move_player_down state.playerData i }
     save_state = store_state << JE.encode 0 <| encode_app_state new_state
   in (new_state, save_state)
-
-finalize_turn : AppState -> AppState
-finalize_turn s = s
 
 view : AppState -> Html Action
 view state =
@@ -151,7 +153,7 @@ view state =
     render = 
       case state.screen of
         Home -> div [] <| render_home state
-        EditPlayers np -> div [] <| render_edit_players state.playerData np
+        EditPlayers np ni -> div [] <| render_edit_players state.playerData np ni
         SelectGame -> div [] <| render_select_game state.game
         PlayGame modal -> block_scroll modal <| render_game state modal
   in
@@ -172,16 +174,23 @@ render_home state =
       if state.playing == False
       then [ li [ class "nav-item" ] [ a [ onClick GoSelectGame, class "nav-link" ] [ text "Select Game" ] ] ]
       else []
+    player p = 
+      div [ class "row" ]
+      [ div [ class "col" ] [ text <| player_name_text p.name ]
+      , div [ class "col" ] [ text <| player_initials_text p.initials ] 
+      ]
+    players = List.map player state.playerData
   in
     [ ul [ class "nav bg-primary text-white" ] <|
       start_game ++
       resume_game ++
       [ li [ class "nav-item" ] [ a [ onClick GoEditPlayers, class "nav-link" ] [ text "Edit Players" ] ] ] ++
       select_game
-    , div [] 
+    , div [ class "container" ] 
       [ text "Selected Game: "
       , game_name state.game
       ]    
+    , div [ class "container" ] players
     ]
 
 render_select_game : GameMode -> List (Html Action)
@@ -313,37 +322,47 @@ variant_selector mode =
         ]
       ]
 
-render_edit_players : List Player -> NewPlayerName -> List (Html Action)
-render_edit_players players np =
+render_edit_players : List Player -> NewPlayerName -> NewPlayerInitials -> List (Html Action)
+render_edit_players players np ni =
   [ ul [ class "nav bg-primary text-white" ]
     [ li [ class "nav-item" ] [ a [ onClick GoHome, class "nav-link" ] [ text "Home" ] ]
     , li [ class "nav-item" ] [ a [ onClick GoSelectGame, class "nav-link" ] [ text "Select Game" ] ]
     ]
   ] ++
-  (add_player_form np) ++
+  (add_player_form np ni) ++
   [ div []
     [ text "Players" ]
   ] ++
   (list_editable_players players)
 
-add_player_form : NewPlayerName -> List (Html Action)
-add_player_form (NewPlayerName t) = 
+add_player_form : NewPlayerName -> NewPlayerInitials -> List (Html Action)
+add_player_form (NewPlayerName t) (NewPlayerInitials ni) = 
   [ div [ class "form-group" ] 
     [ label [] [ text "Player Name" ]
-    , input [ value t, placeholder "Name", onInput (NewPlayerInput << NewPlayerName), class "form-control" ] []
+    , input [ value t, placeholder "Name", onInput (\v -> NewPlayerInput (NewPlayerName v) (NewPlayerInitials ni)), class "form-control" ] []
     ]
-  , button [ onClick (NewPlayerCommit <| NewPlayerName t), class "btn btn-primary" ] [ text "Add Player" ]
+  , div [ class "form-group" ] 
+    [ label [] [ text "Player Initials (Max 2 Characters)" ]
+    , input [ value ni, placeholder "Initials", onInput (\v -> NewPlayerInput (NewPlayerName t) (NewPlayerInitials v)), class "form-control" ] []
+    ]
+  , button [ onClick (NewPlayerCommit (NewPlayerName t) (NewPlayerInitials ni)), class "btn btn-primary" ] [ text "Add Player" ]
   ]
 
 delete_player : List Player -> PlayerIndex -> List Player
 delete_player l i = List.filter (\p -> p.index /= i) l
+
+fix_current_player : List Player -> Int -> Int
+fix_current_player l i =
+  if i >= List.length l - 1
+  then 0
+  else i
 
 list_editable_players : List Player -> List (Html Action)
 list_editable_players l = 
   let
     player_edit_row player = 
       tr [] 
-        [ td [] [ text <| player_name_text player.name ]
+        [ td [] [ text <| player_name_text player.name ++ " (" ++ player_initials_text player.initials ++ ")" ]
         , td [] [ button [ onClick (MovePlayerUp player.index), class "btn btn-primary" ] [ text "▲"] ]
         , td [] [ button [ onClick (MovePlayerDown player.index), class "btn btn-primary" ] [ text "▼"] ]
         , td [] [ button [ onClick (DeletePlayer player.index), class "btn btn-danger" ] [ text "✖"] ]
@@ -552,3 +571,5 @@ render_board =
     miss ++
     end_turn ++
     number_ring
+
+
