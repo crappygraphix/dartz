@@ -75,6 +75,9 @@ app_state_decoder =
         _ -> HitMissed
       ) JD.string
 
+    decode_hits : JD.Decoder (List Hit)
+    decode_hits = JD.list decode_hit
+
     decode_score_hits : JD.Decoder (Score, List Hit)
     decode_score_hits =
       JD.map2 
@@ -88,6 +91,7 @@ app_state_decoder =
       (\i s -> (Inning i, Score s))
       (JD.field "inning" JD.int)
       (JD.field "score" JD.int)
+    decode_inning_scores = JD.list decode_inning_score
 
     decode_hit_score : JD.Decoder (Hit, Score)
     decode_hit_score =
@@ -95,42 +99,50 @@ app_state_decoder =
       (\h s -> (h, Score s))
       (JD.field "hit" decode_hit)
       (JD.field "score" JD.int)
+    decode_hit_scores = JD.list decode_hit_score
 
-    decode_atcs_score : JD.Decoder GameScore
-    decode_atcs_score =
-      JD.map AroundTheClockScore (JD.field "value" <| JD.list decode_hit)
+    decode_ckt_score : JD.Decoder (PlayerID, CricketScore)
+    decode_ckt_score = JD.map2
+      (\i l -> (PlayerID i, CricketScore l))
+      (JD.field "playerId" JD.int)
+      (JD.field "score" decode_score_hits)
+    decode_ckt_scores = JD.list decode_ckt_score
 
-    decode_atcs180_score : JD.Decoder GameScore
-    decode_atcs180_score =
-      JD.map AroundTheClock180Score (JD.field "value" <| JD.list decode_hit_score)
+    decode_ctd_score : JD.Decoder (PlayerID, ChaseTheDragonScore)
+    decode_ctd_score = JD.map2
+      (\i l -> (PlayerID i, ChaseTheDragonScore l))
+      (JD.field "playerId" JD.int)
+      (JD.field "score" decode_hits)
+    decode_ctd_scores = JD.list decode_ctd_score
 
-    decode_bbls_score : JD.Decoder GameScore
-    decode_bbls_score =
-      JD.map BaseballScore (JD.field "value" <| JD.list decode_inning_score)
+    decode_bbl_score : JD.Decoder (PlayerID, BaseballScore)
+    decode_bbl_score = JD.map2
+      (\i l -> (PlayerID i, BaseballScore l))
+      (JD.field "playerId" JD.int)
+      (JD.field "score" decode_inning_scores)
+    decode_bbl_scores = JD.list decode_bbl_score
 
-    decode_ctds_score : JD.Decoder GameScore
-    decode_ctds_score =
-      JD.map ChaseTheDragonScore (JD.field "value" <| JD.list decode_hit)
+    decode_atc_180_score : JD.Decoder (PlayerID, AroundTheClock180Score)
+    decode_atc_180_score = JD.map2
+      (\i l -> (PlayerID i, AroundTheClock180Score l))
+      (JD.field "playerId" JD.int)
+      (JD.field "score" decode_hit_scores)
+    decode_atc_180_scores = JD.list decode_atc_180_score
 
-    decode_cs_score : JD.Decoder GameScore
-    decode_cs_score =
-      JD.map CricketScore (JD.field "value" <| decode_score_hits)
+    decode_atc_score : JD.Decoder (PlayerID, AroundTheClockScore)
+    decode_atc_score = JD.map2
+      (\i l -> (PlayerID i, AroundTheClockScore l))
+      (JD.field "playerId" JD.int)
+      (JD.field "score" decode_hits)
+    decode_atc_scores = JD.list decode_atc_score
 
-    decode_game_score_from_game : String -> JD.Decoder GameScore
-    decode_game_score_from_game g =
-      case g of
-        "NoScore" -> JD.map (\_ -> NoScore) (JD.field "value" JD.int)
-        "NUMS" -> JD.map (\s -> NumbersScore (Score s)) (JD.field "value" JD.int)
-        "ATCS" -> decode_atcs_score
-        "ATCS180S" -> decode_atcs180_score
-        "BBLS" -> decode_bbls_score
-        "CTDS" -> decode_ctds_score
-        "CS" -> decode_cs_score
-        _ -> JD.fail ("Invalid game type: " ++ g)
+    decode_numbers_score : JD.Decoder (PlayerID, NumbersScore)
+    decode_numbers_score = JD.map2 
+      (\i n -> (PlayerID i, NumbersScore (Score n)))
+      (JD.field "playerId" JD.int)
+      (JD.field "score" JD.int)
 
-    decode_game_score : JD.Decoder GameScore
-    decode_game_score = 
-      JD.field "type" JD.string |> JD.andThen decode_game_score_from_game
+    decode_numbers_scores = JD.list decode_numbers_score
       
     decode_player_name : JD.Decoder PlayerName
     decode_player_name = JD.map PlayerName JD.string
@@ -138,67 +150,111 @@ app_state_decoder =
     decode_player_initials : JD.Decoder PlayerInitials
     decode_player_initials = JD.map PlayerInitials JD.string
 
-    decode_player_index : JD.Decoder PlayerIndex
-    decode_player_index = JD.map PlayerIndex JD.int
+    decode_player_id : JD.Decoder PlayerID
+    decode_player_id = JD.map PlayerID JD.int
 
     decode_player_hits : JD.Decoder PlayerHits
     decode_player_hits = JD.map PlayerHits <| JD.list decode_hit
     
     decode_player : JD.Decoder Player
-    decode_player = JD.map5 Player
+    decode_player = JD.map4 
+      Player
       (JD.field "name" decode_player_name)
       (JD.field "initials" decode_player_initials)
       (JD.field "hits" decode_player_hits)
-      (JD.field "score" decode_game_score)
-      (JD.field "index" decode_player_index)
+      (JD.field "id" decode_player_id)
     
     decode_list_player : JD.Decoder (List Player)
     decode_list_player = JD.list decode_player
 
-    string_to_num_var_i v = case v of
+    decode_num_var_i = JD.map (\v -> case v of
       "TI" -> TripleIn
       "DI" -> DoubleIn
       _ -> BasicIn
+      ) JD.string
 
-    string_to_num_var_o v = case v of
+    decode_num_var_o = JD.map (\v -> case v of
       "TO" -> TripleOut
       "DO" -> DoubleOut
       _ -> BasicOut
+      ) JD.string
     
-    string_to_atc_var v = case v of
+    decode_atc_var = JD.map (\v -> case v of
       "BO" -> AnyBullOut
       "SO" -> SplitBullOut
       _ -> NoBullOut
+      ) JD.string
 
-    string_to_atc_180_var v = case v of
+    decode_atc_180_var = JD.map (\v -> case v of
       "TPL" -> TripleBonus
       _ -> DoubleBonus
+      ) JD.string
 
-    string_to_bbl_var v = case v of
+    decode_bbl_var = JD.map (\v -> case v of
       "SIC" -> SeventhInningCatch
       _ -> BasicBaseball
+      ) JD.string
 
-    string_to_ctd_var v = case v of
+    decode_ctd_var = JD.map (\v -> case v of
       "TD" -> TripleHeadedDragon
       _ -> BasicDragon
+      ) JD.string
 
-    string_to_ckt_var v = case v of
+    decode_ckt_var = JD.map (\v -> case v of
       "G" -> GolfCricket
       _ -> BasicCricket
-
-    decode_game : JD.Decoder GameMode
-    decode_game = JD.map (\s -> case String.split ":" s of
-      ["NoGame"] -> NoGame
-      ["701", i, o] -> Numbers701 (string_to_num_var_i i) (string_to_num_var_o o)
-      ["501", i, o] -> Numbers501 (string_to_num_var_i i) (string_to_num_var_o o)
-      ["301", i, o] -> Numbers301 (string_to_num_var_i i) (string_to_num_var_o o)
-      ["ATC", v] -> AroundTheClock (string_to_atc_var v)
-      ["ATC180", v] -> AroundTheClock180 (string_to_atc_180_var v)
-      ["BBL", v] -> Baseball (string_to_bbl_var v)
-      ["CTD", v] -> ChaseTheDragon (string_to_ctd_var v)
-      ["CKT", v] -> Cricket (string_to_ckt_var v)
-      _ -> NoGame
       ) JD.string
+
+    decode_game_state_type : String -> JD.Decoder GameState
+    decode_game_state_type s = case s of
+      "701" -> JD.map5 Numbers701 
+        (JD.field "in" decode_num_var_i)
+        (JD.field "out" decode_num_var_o)
+        (JD.field "current" JD.int)
+        (JD.field "turn" decode_hits)
+        (JD.field "scores" decode_numbers_scores)
+      "501" -> JD.map5 Numbers501
+        (JD.field "in" decode_num_var_i)
+        (JD.field "out" decode_num_var_o)
+        (JD.field "current" JD.int)
+        (JD.field "turn" decode_hits)
+        (JD.field "scores" decode_numbers_scores)
+      "301" -> JD.map5 Numbers301
+        (JD.field "in" decode_num_var_i)
+        (JD.field "out" decode_num_var_o)
+        (JD.field "current" JD.int)
+        (JD.field "turn" decode_hits)
+        (JD.field "scores" decode_numbers_scores)
+      "ATC" -> JD.map4 AroundTheClock
+        (JD.field "variant" decode_atc_var)
+        (JD.field "current" JD.int)
+        (JD.field "turn" decode_hits)
+        (JD.field "scores" decode_atc_scores)
+      "ATC180" -> JD.map4 AroundTheClock180
+        (JD.field "variant" decode_atc_180_var)
+        (JD.field "current" JD.int)
+        (JD.field "turn" decode_hits)
+        (JD.field "scores" decode_atc_180_scores)
+      "BBL" -> JD.map4 Baseball
+        (JD.field "variant" decode_bbl_var)
+        (JD.field "current" JD.int)
+        (JD.field "turn" decode_hits)
+        (JD.field "scores" decode_bbl_scores)
+      "CTD" -> JD.map4 ChaseTheDragon
+        (JD.field "variant" decode_ctd_var)
+        (JD.field "current" JD.int)
+        (JD.field "turn" decode_hits)
+        (JD.field "scores" decode_ctd_scores)
+      "CKT" -> JD.map4 Cricket
+        (JD.field "variant" decode_ckt_var)
+        (JD.field "current" JD.int)
+        (JD.field "turn" decode_hits)
+        (JD.field "scores" decode_ckt_scores)
+      _ -> JD.succeed NoGame
+
+    decode_game_state : JD.Decoder GameState
+    decode_game_state = JD.field "type" JD.string
+      |> JD.andThen decode_game_state_type    
 
     decode_screen : JD.Decoder Screen
     decode_screen = JD.map (\s -> case s of
@@ -208,11 +264,9 @@ app_state_decoder =
       _ -> Home
       ) JD.string
   in
-    JD.map6 AppState
-    (JD.field "playerData" decode_list_player)
-    (JD.field "game" decode_game)
+    JD.map4 AppState
+    (JD.field "players" decode_list_player)
+    (JD.field "game" decode_game_state)
     (JD.field "screen" decode_screen)
     (JD.field "playing" JD.bool)
-    (JD.field "currentPlayer" JD.int)
-    (JD.field "currentTurn" <| JD.list decode_hit)
     

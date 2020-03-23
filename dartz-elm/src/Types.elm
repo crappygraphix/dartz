@@ -32,33 +32,28 @@ type PlayerName = PlayerName String
 type NewPlayerName = NewPlayerName String
 type NewPlayerInitials = NewPlayerInitials String
 type PlayerHits = PlayerHits (List Hit)
-type PlayerIndex = PlayerIndex Int
+type PlayerID = PlayerID Int
 type Inning = Inning Int
 type Score = Score Int
-type GameScore 
-  = NoScore
-  | NumbersScore Score
-  | AroundTheClockScore (List Hit) 
-  | AroundTheClock180Score (List (Hit, Score))
-  | BaseballScore (List (Inning, Score))
-  | ChaseTheDragonScore (List Hit)
-  | CricketScore (Score, List Hit)
+type NumbersScore = NumbersScore Score
+type AroundTheClockScore = AroundTheClockScore (List Hit) 
+type AroundTheClock180Score = AroundTheClock180Score (List (Hit, Score))
+type BaseballScore = BaseballScore (List (Inning, Score))
+type ChaseTheDragonScore = ChaseTheDragonScore (List Hit)
+type CricketScore = CricketScore (Score, List Hit)
 
 type alias Player =
   { name     : PlayerName
   , initials : PlayerInitials
   , hits     : PlayerHits
-  , score    : GameScore
-  , index    : PlayerIndex
+  , id       : PlayerID
   }
 
 type alias AppState =
-  { playerData : List Player
-  , game : GameMode
+  { players : List Player
+  , game : GameState
   , screen : Screen
   , playing: Bool
-  , currentPlayer : Int
-  , currentTurn : List Hit
   }
 
 type Modal
@@ -85,16 +80,16 @@ type DragonVariation = BasicDragon | TripleHeadedDragon
 
 type CricketVariation = BasicCricket | GolfCricket
 
-type GameMode
+type GameState
   = NoGame
-  | Numbers701 NumbersInVariation NumbersOutVariation
-  | Numbers501 NumbersInVariation NumbersOutVariation
-  | Numbers301 NumbersInVariation NumbersOutVariation
-  | AroundTheClock AroundTheClockVariation
-  | AroundTheClock180 AroundTheClock180Variation
-  | Baseball BaseballVariation
-  | ChaseTheDragon DragonVariation
-  | Cricket CricketVariation
+  | Numbers701 NumbersInVariation NumbersOutVariation Int (List Hit) (List (PlayerID, NumbersScore))
+  | Numbers501 NumbersInVariation NumbersOutVariation Int (List Hit) (List (PlayerID, NumbersScore))
+  | Numbers301 NumbersInVariation NumbersOutVariation Int (List Hit) (List (PlayerID, NumbersScore))
+  | AroundTheClock AroundTheClockVariation Int (List Hit) (List (PlayerID, AroundTheClockScore))
+  | AroundTheClock180 AroundTheClock180Variation Int (List Hit) (List (PlayerID, AroundTheClock180Score))
+  | Baseball BaseballVariation Int (List Hit) (List (PlayerID, BaseballScore))
+  | ChaseTheDragon DragonVariation Int (List Hit) (List (PlayerID, ChaseTheDragonScore))
+  | Cricket CricketVariation Int (List Hit) (List (PlayerID, CricketScore))
 
 
 type Action
@@ -104,12 +99,12 @@ type Action
   | StartGame
   | ResumeGame
   | EndGame
-  | GameSelected GameMode
+  | GameSelected GameState
   | NewPlayerInput NewPlayerName NewPlayerInitials
   | NewPlayerCommit NewPlayerName NewPlayerInitials
-  | MovePlayerUp PlayerIndex
-  | MovePlayerDown PlayerIndex
-  | DeletePlayer PlayerIndex
+  | MovePlayerUp PlayerID
+  | MovePlayerDown PlayerID
+  | DeletePlayer PlayerID
   | Toss Hit
   | TossModalSelect Hit
   | TossModalCancel

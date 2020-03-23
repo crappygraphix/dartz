@@ -10,7 +10,7 @@ import Svg as S
 import Svg.Attributes as SA
 import Svg.Events as SE
 
-import Games exposing (finalize_turn)
+import Game as Game
 import Ports exposing (store_state)
 import Types exposing (..)
 import Types.Decode exposing (..)
@@ -26,27 +26,25 @@ main = Browser.element
   , subscriptions = \_ -> Sub.none
   }
 
-game_list : List GameMode
+game_list : List GameState
 game_list = 
   [ NoGame
-  , Numbers301 BasicIn BasicOut
-  , Numbers501 BasicIn BasicOut
-  , Numbers701 BasicIn BasicOut
-  , Cricket BasicCricket
-  , Baseball BasicBaseball
-  , AroundTheClock NoBullOut
-  , AroundTheClock180 DoubleBonus
-  , ChaseTheDragon BasicDragon
+  , Numbers301 BasicIn BasicOut 0 [] []
+  , Numbers501 BasicIn BasicOut 0 [] []
+  , Numbers701 BasicIn BasicOut 0 [] []
+  , Cricket BasicCricket 0 [] []
+  , Baseball BasicBaseball 0 [] []
+  , AroundTheClock NoBullOut 0 [] []
+  , AroundTheClock180 DoubleBonus 0 [] []
+  , ChaseTheDragon BasicDragon 0 [] []
   ]
 
 clean_state : AppState
 clean_state = 
-  { playerData = []
+  { players = []
   , game = NoGame
   , screen = Home
   , playing = False
-  , currentPlayer = 0
-  , currentTurn = []
   }
 
 init : JE.Value -> (AppState, Cmd Action)
@@ -57,19 +55,19 @@ init s = case JD.decodeValue app_state_decoder s of
 update : Action -> AppState -> (AppState, Cmd Action)
 update action state = 
   let
-    new_score mode = 
-      case mode of
-        NoGame -> NoScore
-        Numbers701 _ _ -> NumbersScore (Score 0)
-        Numbers501 _ _ -> NumbersScore (Score 0)
-        Numbers301 _ _ -> NumbersScore (Score 0)
-        AroundTheClock _ -> AroundTheClockScore []
-        AroundTheClock180 _ -> AroundTheClock180Score []
-        Baseball _ -> List.range 1 9 |> List.map (\i -> (Inning i, Score 0)) |> BaseballScore
-        ChaseTheDragon _ -> ChaseTheDragonScore []
-        Cricket _ -> CricketScore (Score 0, [])
+    id_num (PlayerID i) = i
 
-    new_player i (NewPlayerName n) (NewPlayerInitials s) mode = { name = PlayerName n, initials = PlayerInitials s, hits = PlayerHits [], score = new_score mode, index = i }
+    new_player (NewPlayerName n) (NewPlayerInitials s) i = { name = PlayerName n, initials = PlayerInitials s, hits = PlayerHits [], id = PlayerID i }
+    
+    available_id = 
+      let
+        consumed = List.sort <| List.map (\p -> id_num p.id) state.players
+        check v acc = 
+          if v == acc
+          then v + 1
+          else acc
+      in
+        List.foldl check 0 consumed
 
     add_player l n i =
       let
@@ -77,40 +75,14 @@ update action state =
       in
         if empty n i
         then l 
-        else new_player (PlayerIndex <| 1 + List.length l) n i state.game :: l
+        else l ++ [ new_player n i available_id ]
     
     digest_initials (NewPlayerInitials i) = NewPlayerInitials <| String.toUpper <| String.left 2 <| String.trim i
-
-    clear_score mode = case mode of
-      NoGame -> NoScore
-      Numbers701 _ _ -> NumbersScore (Score 0)
-      Numbers501 _ _ -> NumbersScore (Score 0)
-      Numbers301 _ _ -> NumbersScore (Score 0)
-      AroundTheClock _ -> AroundTheClockScore []
-      AroundTheClock180 _ -> AroundTheClock180Score []
-      Baseball _ -> BaseballScore 
-         [ (Inning 0, Score 0)
-         , (Inning 1, Score 0)
-         , (Inning 2, Score 0)
-         , (Inning 3, Score 0)
-         , (Inning 4, Score 0)
-         , (Inning 5, Score 0)
-         , (Inning 6, Score 0)
-         , (Inning 7, Score 0)
-         , (Inning 8, Score 0)
-         , (Inning 9, Score 0)
-         ]
-      ChaseTheDragon _ -> ChaseTheDragonScore []
-      Cricket _ -> CricketScore (Score 0, [])
-
-    reset_score mode p = { p | score = clear_score mode }
-
-    reset_scores mode l = List.map (reset_score mode) l
 
     move_player_up l i = 
       let
         to_the_left p acc = 
-          if p.index == i
+          if p.id == i
           then (List.take (List.length acc - 1) acc) ++ [ p ] ++ (List.drop (List.length acc - 1) acc)
           else acc ++ [ p ]
       in
@@ -118,28 +90,35 @@ update action state =
 
     move_player_down l i = List.reverse <| move_player_up (List.reverse l) i
 
-    post_delete_player s = { s | currentPlayer = fix_current_player s.playerData s.currentPlayer }
+    delete_player l i = List.filter (\p -> p.id /= i) l
+
+    post_delete_player s = { s | game = Game.player_removed s.players s.game }
+    post_add_player s = { s | game = Game.player_added s.players s.game }
 
     new_state = 
       case action of
         GoHome -> { state | screen = Home }
         GoEditPlayers -> { state | screen = EditPlayers (NewPlayerName "") (NewPlayerInitials "")}
         GoSelectGame -> { state | screen = SelectGame }
-        StartGame -> { state | screen = PlayGame Nothing, currentPlayer = 0, currentTurn = [], playerData = reset_scores state.game state.playerData, playing = True }
+        StartGame -> { state | screen = PlayGame Nothing, game = Game.new_game state.game state.players, playing = True }
         ResumeGame -> { state | screen = PlayGame Nothing }
-        EndGame -> { state | screen = Home, currentPlayer = 0, currentTurn = [], playerData = reset_scores state.game state.playerData, playing = False }
+        EndGame -> { state | screen = Home, game = Game.new_game state.game state.players, playing = False }
         GameSelected mode -> { state | game = mode }
         NewPlayerInput p i -> { state | screen = EditPlayers p (digest_initials i) }
-        NewPlayerCommit p i -> { state | playerData = add_player state.playerData p i, screen = EditPlayers (NewPlayerName "") (NewPlayerInitials "") }
-        DeletePlayer i -> { state | playerData = delete_player state.playerData i } |> post_delete_player
+        NewPlayerCommit p i -> 
+          { state | players = add_player state.players p i, screen = EditPlayers (NewPlayerName "") (NewPlayerInitials "") }
+          |> post_add_player
+        DeletePlayer i -> 
+          { state | players = delete_player state.players i } 
+          |> post_delete_player
         Toss h -> { state | screen = PlayGame (Just <| SelectSubHit h) }
-        TossModalSelect h -> { state | screen = PlayGame Nothing, currentTurn = List.take 3 <| h :: state.currentTurn }
+        TossModalSelect h -> { state | screen = PlayGame Nothing, game = Game.record_toss h state.game }
         TossModalCancel -> { state | screen = PlayGame Nothing }
         FinishTurnModal -> { state | screen = PlayGame (Just <| FinalizeTurn)}
         CancelFinishTurn -> { state | screen = PlayGame Nothing }
-        FinishTurn -> (\s -> { s | screen = PlayGame Nothing }) <| finalize_turn state
-        MovePlayerUp i -> { state | playerData = move_player_up state.playerData i }
-        MovePlayerDown i -> { state | playerData = move_player_down state.playerData i }
+        FinishTurn -> { state | screen = PlayGame Nothing , game = Game.finalize_turn state.game }
+        MovePlayerUp i -> { state | players = move_player_up state.players i }
+        MovePlayerDown i -> { state | players = move_player_down state.players i }
     save_state = store_state << JE.encode 0 <| encode_app_state new_state
   in (new_state, save_state)
 
@@ -153,7 +132,7 @@ view state =
     render = 
       case state.screen of
         Home -> div [] <| render_home state
-        EditPlayers np ni -> div [] <| render_edit_players state.playerData np ni
+        EditPlayers np ni -> div [] <| render_edit_players state np ni
         SelectGame -> div [] <| render_select_game state.game
         PlayGame modal -> block_scroll modal <| render_game state modal
   in
@@ -163,11 +142,11 @@ render_home : AppState -> List (Html Action)
 render_home state =
   let
     start_game =  
-      if List.length state.playerData > 0 && state.game /= NoGame && state.playing == False
+      if List.length state.players > 0 && state.game /= NoGame && state.playing == False
       then [ li [ class "nav-item" ] [ a [ onClick StartGame, class "nav-link" ] [ text "Start Game" ] ] ]
       else []
     resume_game =  
-      if List.length state.playerData > 0 && state.game /= NoGame && state.playing == True
+      if List.length state.players > 0 && state.game /= NoGame && state.playing == True
       then [ li [ class "nav-item" ] [ a [ onClick ResumeGame, class "nav-link" ] [ text "Resume" ] ] ]
       else []
     select_game =
@@ -179,7 +158,7 @@ render_home state =
       [ div [ class "col" ] [ text <| player_name_text p.name ]
       , div [ class "col" ] [ text <| player_initials_text p.initials ] 
       ]
-    players = List.map player state.playerData
+    players = List.map player state.players
   in
     [ ul [ class "nav bg-primary text-white" ] <|
       start_game ++
@@ -193,7 +172,7 @@ render_home state =
     , div [ class "container" ] players
     ]
 
-render_select_game : GameMode -> List (Html Action)
+render_select_game : GameState -> List (Html Action)
 render_select_game mode =
   [ ul [ class "nav bg-primary text-white" ]
     [ li [ class "nav-item" ] [ a [ onClick GoHome, class "nav-link" ] [ text "Home" ] ]
@@ -208,7 +187,7 @@ render_select_game mode =
   variant_selector mode ++
   [ div [] [game_description mode] ]
 
-mode_selector : GameMode -> List (Html Action)
+mode_selector : GameState -> List (Html Action)
 mode_selector mode = 
   [ div [] 
     [ select [ onInput (GameSelected << id_to_game), class "custom-select" ] 
@@ -216,124 +195,130 @@ mode_selector mode =
     ]
   ]
 
-variant_selector : GameMode -> List (Html Action)
+variant_selector : GameState -> List (Html Action)
 variant_selector mode = 
   let is_selected a b = if a == b then [ selected True ] else []
   in case mode of 
     NoGame -> []
-    Numbers301 vi vo -> 
+    Numbers301 vi vo x y z -> 
       [ div []
         [ div [] [ text "In Rule" ]
         , select [ onInput (GameSelected << id_to_game), class "custom-select" ] 
-          [ option ([ value <| game_to_id (Numbers301 BasicIn vo) ] ++ is_selected vi BasicIn) [ text (numbers_variation_in_text BasicIn) ]
-          , option ([ value <| game_to_id (Numbers301 DoubleIn vo) ] ++ is_selected vi DoubleIn) [ text (numbers_variation_in_text DoubleIn) ]
-          , option ([ value <| game_to_id (Numbers301 TripleIn vo) ] ++ is_selected vi TripleIn) [ text (numbers_variation_in_text TripleIn) ]
+          [ option ([ value <| game_to_id (Numbers301 BasicIn vo x y z) ] ++ is_selected vi BasicIn) [ text (numbers_variation_in_text BasicIn) ]
+          , option ([ value <| game_to_id (Numbers301 DoubleIn vo x y z) ] ++ is_selected vi DoubleIn) [ text (numbers_variation_in_text DoubleIn) ]
+          , option ([ value <| game_to_id (Numbers301 TripleIn vo x y z) ] ++ is_selected vi TripleIn) [ text (numbers_variation_in_text TripleIn) ]
           ]
         ]
       , div []
         [ div [] [ text "Out Rule" ]
         , select [ onInput (GameSelected << id_to_game), class "custom-select" ] 
-          [ option ([ value <| game_to_id (Numbers301 vi BasicOut) ] ++ is_selected vo BasicOut) [ text (numbers_variation_out_text BasicOut) ]
-          , option ([ value <| game_to_id (Numbers301 vi DoubleOut) ] ++ is_selected vo DoubleOut) [ text (numbers_variation_out_text DoubleOut) ]
-          , option ([ value <| game_to_id (Numbers301 vi TripleOut) ] ++ is_selected vo TripleOut) [ text (numbers_variation_out_text TripleOut) ]
+          [ option ([ value <| game_to_id (Numbers301 vi BasicOut x y z) ] ++ is_selected vo BasicOut) [ text (numbers_variation_out_text BasicOut) ]
+          , option ([ value <| game_to_id (Numbers301 vi DoubleOut x y z) ] ++ is_selected vo DoubleOut) [ text (numbers_variation_out_text DoubleOut) ]
+          , option ([ value <| game_to_id (Numbers301 vi TripleOut x y z) ] ++ is_selected vo TripleOut) [ text (numbers_variation_out_text TripleOut) ]
           ]
         ]
       ]
-    Numbers501 vi vo -> 
+    Numbers501 vi vo x y z -> 
       [ div []
         [ div [] [ text "In Rule" ]
         , select [ onInput (GameSelected << id_to_game), class "custom-select" ] 
-          [ option ([ value <| game_to_id (Numbers501 BasicIn vo) ] ++ is_selected vi BasicIn) [ text (numbers_variation_in_text BasicIn) ]
-          , option ([ value <| game_to_id (Numbers501 DoubleIn vo) ] ++ is_selected vi DoubleIn) [ text (numbers_variation_in_text DoubleIn) ]
-          , option ([ value <| game_to_id (Numbers501 TripleIn vo) ] ++ is_selected vi TripleIn) [ text (numbers_variation_in_text TripleIn) ]
+          [ option ([ value <| game_to_id (Numbers501 BasicIn vo x y z) ] ++ is_selected vi BasicIn) [ text (numbers_variation_in_text BasicIn) ]
+          , option ([ value <| game_to_id (Numbers501 DoubleIn vo x y z) ] ++ is_selected vi DoubleIn) [ text (numbers_variation_in_text DoubleIn) ]
+          , option ([ value <| game_to_id (Numbers501 TripleIn vo x y z) ] ++ is_selected vi TripleIn) [ text (numbers_variation_in_text TripleIn) ]
           ]
         ]
       , div []
         [ div [] [ text "Out Rule" ]
         , select [ onInput (GameSelected << id_to_game), class "custom-select" ] 
-          [ option ([ value <| game_to_id (Numbers501 vi BasicOut) ] ++ is_selected vo BasicOut) [ text (numbers_variation_out_text BasicOut) ]
-          , option ([ value <| game_to_id (Numbers501 vi DoubleOut) ] ++ is_selected vo DoubleOut) [ text (numbers_variation_out_text DoubleOut) ]
-          , option ([ value <| game_to_id (Numbers501 vi TripleOut) ] ++ is_selected vo TripleOut) [ text (numbers_variation_out_text TripleOut) ]
+          [ option ([ value <| game_to_id (Numbers501 vi BasicOut x y z) ] ++ is_selected vo BasicOut) [ text (numbers_variation_out_text BasicOut) ]
+          , option ([ value <| game_to_id (Numbers501 vi DoubleOut x y z) ] ++ is_selected vo DoubleOut) [ text (numbers_variation_out_text DoubleOut) ]
+          , option ([ value <| game_to_id (Numbers501 vi TripleOut x y z) ] ++ is_selected vo TripleOut) [ text (numbers_variation_out_text TripleOut) ]
           ]
         ]
       ]
-    Numbers701 vi vo -> 
+    Numbers701 vi vo x y z -> 
       [ div []
         [ div [] [ text "In Rule" ]
         , select [ onInput (GameSelected << id_to_game), class "custom-select" ] 
-          [ option ([ value <| game_to_id (Numbers701 BasicIn vo) ] ++ is_selected vi BasicIn) [ text (numbers_variation_in_text BasicIn) ]
-          , option ([ value <| game_to_id (Numbers701 DoubleIn vo) ] ++ is_selected vi DoubleIn) [ text (numbers_variation_in_text DoubleIn) ]
-          , option ([ value <| game_to_id (Numbers701 TripleIn vo) ] ++ is_selected vi TripleIn) [ text (numbers_variation_in_text TripleIn) ]
+          [ option ([ value <| game_to_id (Numbers701 BasicIn vo x y z) ] ++ is_selected vi BasicIn) [ text (numbers_variation_in_text BasicIn) ]
+          , option ([ value <| game_to_id (Numbers701 DoubleIn vo x y z) ] ++ is_selected vi DoubleIn) [ text (numbers_variation_in_text DoubleIn) ]
+          , option ([ value <| game_to_id (Numbers701 TripleIn vo x y z) ] ++ is_selected vi TripleIn) [ text (numbers_variation_in_text TripleIn) ]
           ]
         ]
       , div []
         [ div [] [ text "Out Rule" ]
         , select [ onInput (GameSelected << id_to_game), class "custom-select" ] 
-          [ option ([ value <| game_to_id (Numbers701 vi BasicOut) ] ++ is_selected vo BasicOut) [ text (numbers_variation_out_text BasicOut) ]
-          , option ([ value <| game_to_id (Numbers701 vi DoubleOut) ] ++ is_selected vo DoubleOut) [ text (numbers_variation_out_text DoubleOut) ]
-          , option ([ value <| game_to_id (Numbers701 vi TripleOut) ] ++ is_selected vo TripleOut) [ text (numbers_variation_out_text TripleOut) ]
+          [ option ([ value <| game_to_id (Numbers701 vi BasicOut x y z) ] ++ is_selected vo BasicOut) [ text (numbers_variation_out_text BasicOut) ]
+          , option ([ value <| game_to_id (Numbers701 vi DoubleOut x y z) ] ++ is_selected vo DoubleOut) [ text (numbers_variation_out_text DoubleOut) ]
+          , option ([ value <| game_to_id (Numbers701 vi TripleOut x y z) ] ++ is_selected vo TripleOut) [ text (numbers_variation_out_text TripleOut) ]
           ]
         ]
       ]
-    AroundTheClock v ->
+    AroundTheClock v x y z ->
       [ div []
         [ div [] [ text "Variation" ]
         , select [ onInput (GameSelected << id_to_game), class "custom-select" ] 
-          [ option ([ value <| game_to_id (AroundTheClock NoBullOut) ] ++ is_selected v NoBullOut) [ text (around_the_clock_variation_text NoBullOut) ]
-          , option ([ value <| game_to_id (AroundTheClock AnyBullOut) ] ++ is_selected v AnyBullOut) [ text (around_the_clock_variation_text AnyBullOut) ]
-          , option ([ value <| game_to_id (AroundTheClock SplitBullOut) ] ++ is_selected v SplitBullOut) [ text (around_the_clock_variation_text SplitBullOut) ]
+          [ option ([ value <| game_to_id (AroundTheClock NoBullOut x y z) ] ++ is_selected v NoBullOut) [ text (around_the_clock_variation_text NoBullOut) ]
+          , option ([ value <| game_to_id (AroundTheClock AnyBullOut x y z) ] ++ is_selected v AnyBullOut) [ text (around_the_clock_variation_text AnyBullOut) ]
+          , option ([ value <| game_to_id (AroundTheClock SplitBullOut x y z) ] ++ is_selected v SplitBullOut) [ text (around_the_clock_variation_text SplitBullOut) ]
           ]
         ]
       ]
-    AroundTheClock180 v ->
+    AroundTheClock180 v x y z ->
       [ div []
         [ div [] [ text "Variation" ]
         , select [ onInput (GameSelected << id_to_game), class "custom-select" ] 
-          [ option ([ value <| game_to_id (AroundTheClock180 DoubleBonus)] ++ is_selected v DoubleBonus) [ text (around_the_clock_180_variation_text DoubleBonus) ]
-          , option ([ value <| game_to_id (AroundTheClock180 TripleBonus)] ++ is_selected v TripleBonus) [ text (around_the_clock_180_variation_text TripleBonus) ]
+          [ option ([ value <| game_to_id (AroundTheClock180 DoubleBonus x y z)] ++ is_selected v DoubleBonus) [ text (around_the_clock_180_variation_text DoubleBonus) ]
+          , option ([ value <| game_to_id (AroundTheClock180 TripleBonus x y z)] ++ is_selected v TripleBonus) [ text (around_the_clock_180_variation_text TripleBonus) ]
           ]
         ]
       ]
-    Baseball v ->
+    Baseball v x y z ->
       [ div []
         [ div [] [ text "Variation" ]
         , select [ onInput (GameSelected << id_to_game), class "custom-select" ] 
-          [ option ([ value <| game_to_id (Baseball BasicBaseball)] ++ is_selected v BasicBaseball) [ text (baseball_variation_text BasicBaseball) ]
-          , option ([ value <| game_to_id (Baseball SeventhInningCatch)] ++ is_selected v SeventhInningCatch) [ text (baseball_variation_text SeventhInningCatch) ]
+          [ option ([ value <| game_to_id (Baseball BasicBaseball x y z)] ++ is_selected v BasicBaseball) [ text (baseball_variation_text BasicBaseball) ]
+          , option ([ value <| game_to_id (Baseball SeventhInningCatch x y z)] ++ is_selected v SeventhInningCatch) [ text (baseball_variation_text SeventhInningCatch) ]
           ]
         ]
       ]
-    ChaseTheDragon v ->
+    ChaseTheDragon v x y z ->
       [ div []
         [ div [] [ text "Variation" ]
         , select [ onInput (GameSelected << id_to_game), class "custom-select" ] 
-          [ option ([ value <| game_to_id (ChaseTheDragon BasicDragon)] ++ is_selected v BasicDragon) [ text (dragon_variation_text BasicDragon) ]
-          , option ([ value <| game_to_id (ChaseTheDragon TripleHeadedDragon)] ++ is_selected v TripleHeadedDragon) [ text (dragon_variation_text TripleHeadedDragon) ]
+          [ option ([ value <| game_to_id (ChaseTheDragon BasicDragon x y z)] ++ is_selected v BasicDragon) [ text (dragon_variation_text BasicDragon) ]
+          , option ([ value <| game_to_id (ChaseTheDragon TripleHeadedDragon x y z)] ++ is_selected v TripleHeadedDragon) [ text (dragon_variation_text TripleHeadedDragon) ]
           ]
         ]
       ]
-    Cricket v ->
+    Cricket v x y z ->
       [ div []
         [ div [] [ text "Variation" ]
         , select [ onInput (GameSelected << id_to_game), class "custom-select" ] 
-          [ option ([ value <| game_to_id (Cricket BasicCricket)] ++ is_selected v BasicCricket) [ text (cricket_variation_text BasicCricket) ]
-          , option ([ value <| game_to_id (Cricket GolfCricket)] ++ is_selected v GolfCricket) [ text (cricket_variation_text GolfCricket) ]
+          [ option ([ value <| game_to_id (Cricket BasicCricket x y z)] ++ is_selected v BasicCricket) [ text (cricket_variation_text BasicCricket) ]
+          , option ([ value <| game_to_id (Cricket GolfCricket x y z)] ++ is_selected v GolfCricket) [ text (cricket_variation_text GolfCricket) ]
           ]
         ]
       ]
 
-render_edit_players : List Player -> NewPlayerName -> NewPlayerInitials -> List (Html Action)
-render_edit_players players np ni =
-  [ ul [ class "nav bg-primary text-white" ]
-    [ li [ class "nav-item" ] [ a [ onClick GoHome, class "nav-link" ] [ text "Home" ] ]
-    , li [ class "nav-item" ] [ a [ onClick GoSelectGame, class "nav-link" ] [ text "Select Game" ] ]
-    ]
+render_edit_players : AppState -> NewPlayerName -> NewPlayerInitials -> List (Html Action)
+render_edit_players state np ni =
+  let
+    select_game =
+      if state.playing == False
+      then [ li [ class "nav-item" ] [ a [ onClick GoSelectGame, class "nav-link" ] [ text "Select Game" ] ] ]
+      else []
+  in
+  
+  [ ul [ class "nav bg-primary text-white" ] <|
+    [ li [ class "nav-item" ] [ a [ onClick GoHome, class "nav-link" ] [ text "Home" ] ] ] ++
+    select_game
   ] ++
   (add_player_form np ni) ++
   [ div []
     [ text "Players" ]
   ] ++
-  (list_editable_players players)
+  (list_editable_players state.players)
 
 add_player_form : NewPlayerName -> NewPlayerInitials -> List (Html Action)
 add_player_form (NewPlayerName t) (NewPlayerInitials ni) = 
@@ -348,24 +333,15 @@ add_player_form (NewPlayerName t) (NewPlayerInitials ni) =
   , button [ onClick (NewPlayerCommit (NewPlayerName t) (NewPlayerInitials ni)), class "btn btn-primary" ] [ text "Add Player" ]
   ]
 
-delete_player : List Player -> PlayerIndex -> List Player
-delete_player l i = List.filter (\p -> p.index /= i) l
-
-fix_current_player : List Player -> Int -> Int
-fix_current_player l i =
-  if i >= List.length l - 1
-  then 0
-  else i
-
 list_editable_players : List Player -> List (Html Action)
 list_editable_players l = 
   let
     player_edit_row player = 
       tr [] 
         [ td [] [ text <| player_name_text player.name ++ " (" ++ player_initials_text player.initials ++ ")" ]
-        , td [] [ button [ onClick (MovePlayerUp player.index), class "btn btn-primary" ] [ text "▲"] ]
-        , td [] [ button [ onClick (MovePlayerDown player.index), class "btn btn-primary" ] [ text "▼"] ]
-        , td [] [ button [ onClick (DeletePlayer player.index), class "btn btn-danger" ] [ text "✖"] ]
+        , td [] [ button [ onClick (MovePlayerUp player.id), class "btn btn-primary" ] [ text "▲"] ]
+        , td [] [ button [ onClick (MovePlayerDown player.id), class "btn btn-primary" ] [ text "▼"] ]
+        , td [] [ button [ onClick (DeletePlayer player.id), class "btn btn-danger" ] [ text "✖"] ]
         ]
   in
     [ table [ class "table" ] (List.map player_edit_row l) ]
@@ -376,21 +352,23 @@ render_game state modal =
     [ li [ class "nav-item" ] [ a [ onClick GoHome, class "nav-link" ] [ text "Home" ] ]
     , li [ class "nav-item" ] [ a [ onClick EndGame, class "nav-link" ] [ text "End Game" ] ]
     ]
-  , render_current_player_name state.currentPlayer state.playerData
-  , render_hits state.currentTurn
+  , render_current_player_name state.game state.players
+  , render_hits <| Game.hits state.game
   , div [ class "board" ] 
     [ S.svg [SA.width "100%", SA.height "100%", SA.viewBox "0 0 100 100"] render_board
     ]
   ] ++ render_modal modal
 
-render_current_player_name : Int -> List Player -> Html msg
-render_current_player_name i l = 
+render_current_player_name : GameState -> List Player -> Html msg
+render_current_player_name gs l = 
   let
-    find_name = case List.head <| List.drop i l of
-       Nothing -> "????? is throwing."
-       Just p -> player_name_text p.name ++ " is throwing."
+    find_name mid = case mid of
+      Just id -> case List.head <| List.filter (\p -> p.id == id) l of
+        Nothing -> "????? is throwing."
+        Just p -> player_name_text p.name ++ " is throwing."
+      Nothing -> "????? is throwing."
   in
-    div [ class "container text-center" ] [ text find_name ]
+    div [ class "container text-center" ] [ text <| find_name <| Game.current_player_id gs ]
 
 render_modal : Maybe Modal -> List (Html Action)
 render_modal modal =
