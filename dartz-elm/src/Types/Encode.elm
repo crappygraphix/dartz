@@ -11,9 +11,14 @@ encode_app_state state =
       [ ("score", JE.int s)
       , ("hits", encode_hits l)
       ]
-    encode_inning_score (Inning i, (Score s)) = JE.object
+    encode_inning_state s = case s of
+       InningOpen -> JE.string "O"
+       InningClosed -> JE.string "C"
+
+    encode_inning_score (Inning i, s, (Score sc)) = JE.object
       [ ("inning", JE.int i)
-      , ("score", JE.int i)
+      , ("state", encode_inning_state s)
+      , ("score", JE.int sc)
       ]
     encode_inning_scores l = JE.list encode_inning_score l
 
@@ -51,13 +56,34 @@ encode_app_state state =
       ]
     encode_ctd_scores l = JE.list encode_ctd_score l
 
-    encode_ckt_score (i, CricketScore l) = JE.object
-      [ ("playerId", encode_player_id i)
-      , ("score", encode_score_hits l)
+    encode_score (Score s) = JE.int s
+
+    encode_ckt_slice s = case s of
+      Slice0 -> JE.string "_"
+      Slice1 -> JE.string "/"
+      Slice2 -> JE.string "X"
+      SliceOpen -> JE.string "O"
+      SliceClosed -> JE.string "C"
+
+    encode_ckt_score s = JE.object 
+      [ ("score", encode_score s.score)
+      , ("slice20", encode_ckt_slice s.slice20)
+      , ("slice19", encode_ckt_slice s.slice19)
+      , ("slice18", encode_ckt_slice s.slice18)
+      , ("slice17", encode_ckt_slice s.slice17)
+      , ("slice16", encode_ckt_slice s.slice16)
+      , ("slice15", encode_ckt_slice s.slice15)
+      , ("sliceBull", encode_ckt_slice s.sliceBull)
       ]
-    encode_ckt_scores l = JE.list encode_ckt_score l
+
+    encode_ckt_score_t (i, s) = JE.object
+      [ ("playerId", encode_player_id i)
+      , ("score", encode_ckt_score s)
+      ]
+    encode_ckt_scores l = JE.list encode_ckt_score_t l
 
     encode_sub_hit s = case s of
+      SubMissed -> "M"
       SingleHit -> "S"
       DoubleHit -> "D"
       TripleHit -> "T"
@@ -136,6 +162,8 @@ encode_app_state state =
       BasicCricket -> "B"
       GolfCricket -> "G"
 
+    encode_inning (Inning i) = JE.int i
+
     encode_game_state s = case s of
       NoGame -> JE.object 
         [ ("type", JE.string "NoGame")
@@ -175,11 +203,12 @@ encode_app_state state =
         , ("turn", encode_hits hits)
         , ("scores", encode_atc_180_scores scores)
         ]
-      Baseball v current hits scores -> JE.object
+      Baseball v current hits inning scores -> JE.object
         [ ("type", JE.string "BBL")
         , ("variant", encode_bbl_var v)
         , ("current", JE.int current)
         , ("turn", encode_hits hits)
+        , ("inning", encode_inning inning)
         , ("scores", encode_bbl_scores scores)
         ]
       ChaseTheDragon v current hits scores -> JE.object

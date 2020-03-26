@@ -1,6 +1,6 @@
 module Types exposing (..)
 
-type SubHit = SingleHit | DoubleHit | TripleHit
+type SubHit = SubMissed | SingleHit | DoubleHit | TripleHit
 
 type Hit
   = HitMissed
@@ -34,13 +34,27 @@ type NewPlayerInitials = NewPlayerInitials String
 type PlayerHits = PlayerHits (List Hit)
 type PlayerID = PlayerID Int
 type Inning = Inning Int
+type InningState = InningOpen | InningClosed
 type Score = Score Int
 type NumbersScore = NumbersScore Score
 type AroundTheClockScore = AroundTheClockScore (List Hit) 
 type AroundTheClock180Score = AroundTheClock180Score (List (Hit, Score))
-type BaseballScore = BaseballScore (List (Inning, Score))
+type BaseballScore = BaseballScore (List (Inning, InningState, Score))
 type ChaseTheDragonScore = ChaseTheDragonScore (List Hit)
-type CricketScore = CricketScore (Score, List Hit)
+
+type CricketSliceState = Slice0 | Slice1 | Slice2 | SliceOpen | SliceClosed
+type CricketSlice = S20 | S19 | S18 | S17 | S16 | S15 | SB
+type CricketGolfDelta = Delta CricketSlice Score | DeltaNone
+type alias CricketScore =
+  { score : Score
+  , slice20 : CricketSliceState
+  , slice19 : CricketSliceState
+  , slice18 : CricketSliceState
+  , slice17 : CricketSliceState
+  , slice16 : CricketSliceState
+  , slice15 : CricketSliceState
+  , sliceBull : CricketSliceState
+  }
 
 type alias Player =
   { name     : PlayerName
@@ -87,7 +101,7 @@ type GameState
   | Numbers301 NumbersInVariation NumbersOutVariation Int (List Hit) (List (PlayerID, NumbersScore))
   | AroundTheClock AroundTheClockVariation Int (List Hit) (List (PlayerID, AroundTheClockScore))
   | AroundTheClock180 AroundTheClock180Variation Int (List Hit) (List (PlayerID, AroundTheClock180Score))
-  | Baseball BaseballVariation Int (List Hit) (List (PlayerID, BaseballScore))
+  | Baseball BaseballVariation Int (List Hit) Inning (List (PlayerID, BaseballScore))
   | ChaseTheDragon DragonVariation Int (List Hit) (List (PlayerID, ChaseTheDragonScore))
   | Cricket CricketVariation Int (List Hit) (List (PlayerID, CricketScore))
 

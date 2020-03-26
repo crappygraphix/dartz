@@ -42,8 +42,8 @@ id_to_game s = case s of
   "CKT:B" -> Cricket BasicCricket 0 [] []
   "CKT:G" -> Cricket GolfCricket 0 [] []
  
-  "BBL:B" -> Baseball BasicBaseball 0 [] []
-  "BBL:S" -> Baseball SeventhInningCatch 0 [] []
+  "BBL:B" -> Baseball BasicBaseball 0 [] (Inning 1) []
+  "BBL:S" -> Baseball SeventhInningCatch 0 [] (Inning 1) []
 
   "ATC:NBO" -> AroundTheClock NoBullOut 0 [] []
   "ATC:ABO" -> AroundTheClock AnyBullOut 0 [] []
@@ -94,8 +94,8 @@ game_to_id mode = case mode of
   Cricket BasicCricket _ _ _-> "CKT:B"
   Cricket GolfCricket _ _ _-> "CKT:G"
 
-  Baseball BasicBaseball _ _ _-> "BBL:B"
-  Baseball SeventhInningCatch _ _ _-> "BBL:S"
+  Baseball BasicBaseball _ _ _ _-> "BBL:B"
+  Baseball SeventhInningCatch _ _ _ _-> "BBL:S"
 
   AroundTheClock NoBullOut _ _ _-> "ATC:NBO"
   AroundTheClock AnyBullOut _ _ _-> "ATC:ABO"
@@ -116,7 +116,7 @@ game_name mode =
     Numbers301 vi vo _ _ _-> span [] [ text "301 : ", text (numbers_variation_in_text vi), text "/", text (numbers_variation_out_text vo)]            
     AroundTheClock v _ _ _-> span [] [ text "Around the Clock : ", text (around_the_clock_variation_text v)]
     AroundTheClock180 v _ _ _-> span [] [ text "Around the Clock 180 : ", text (around_the_clock_180_variation_text v)]    
-    Baseball v _ _ _-> span [] [ text "Baseball : ", text (baseball_variation_text v)]
+    Baseball v _ _ _ _ -> span [] [ text "Baseball : ", text (baseball_variation_text v)]
     ChaseTheDragon v _ _ _-> span [] [ text "Chase the Dragon : ", text (dragon_variation_text v)]
     Cricket v _ _ _-> span [] [ text "Cricket : ", text (cricket_variation_text v)]
 
@@ -133,7 +133,7 @@ game_to_option current mode =
       Numbers301 _ _ _ _ _-> option ([ value <| game_to_id mode ] ++ is_selected) [ text "301" ]
       AroundTheClock _ _ _ _-> option ([ value <| game_to_id mode ] ++ is_selected) [ text "Around the Clock" ]
       AroundTheClock180 _ _ _ _-> option ([ value <| game_to_id mode ] ++ is_selected) [ text "Around the Clock 180" ]
-      Baseball _ _ _ _-> option ([ value <| game_to_id mode ] ++ is_selected) [ text "Baseball" ]
+      Baseball _ _ _ _ _-> option ([ value <| game_to_id mode ] ++ is_selected) [ text "Baseball" ]
       ChaseTheDragon _ _ _ _-> option ([ value <| game_to_id mode ] ++ is_selected) [ text "Chase the Dragon" ]
       Cricket _ _ _ _-> option ([ value <| game_to_id mode ] ++ is_selected) [ text "Cricket" ]
 
@@ -193,7 +193,7 @@ game_description mode =
       , p [] [ text "Players who hit 20 are done with their turns." ]
       , p [] [ text "When all players finish, the one with the most points wins." ]
       ]
-    Baseball _ _ _ _ ->  span []
+    Baseball _ _ _ _ _ ->  span []
       [ p [] [ text "Each player takes a 3 dart turn." ]
       , p [] [ text "There are 9 innings and the inning increments each round." ]
       , p [] [ text "Players target the number based on the inning, so board positions 1 to 9 will be used." ]

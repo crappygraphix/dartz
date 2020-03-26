@@ -8,9 +8,10 @@ player_initials_text (PlayerInitials s) = s
 
 sub_hit_text : SubHit -> String
 sub_hit_text s = case s of
-   SingleHit -> "Single"
-   DoubleHit -> "Double"
-   TripleHit -> "Triple"
+  SubMissed -> "Missed"
+  SingleHit -> "Single"
+  DoubleHit -> "Double"
+  TripleHit -> "Triple"
 
 short_hit_text : Hit -> String
 short_hit_text h = case h of

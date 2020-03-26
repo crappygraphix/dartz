@@ -78,6 +78,13 @@ app_state_decoder =
     decode_hits : JD.Decoder (List Hit)
     decode_hits = JD.list decode_hit
 
+    decode_inning_state : JD.Decoder InningState
+    decode_inning_state = JD.map (\s -> case s of
+      "O" -> InningOpen
+      "C" -> InningClosed
+      _ -> InningClosed
+      ) JD.string
+
     decode_score_hits : JD.Decoder (Score, List Hit)
     decode_score_hits =
       JD.map2 
@@ -85,11 +92,12 @@ app_state_decoder =
       (JD.field "score" JD.int)
       (JD.field "hits" <| JD.list decode_hit)
       
-    decode_inning_score : JD.Decoder (Inning, Score)
+    decode_inning_score : JD.Decoder (Inning, InningState, Score)
     decode_inning_score =
-      JD.map2
-      (\i s -> (Inning i, Score s))
+      JD.map3
+      (\i s sc -> (Inning i, s, Score sc))
       (JD.field "inning" JD.int)
+      (JD.field "state" decode_inning_state)
       (JD.field "score" JD.int)
     decode_inning_scores = JD.list decode_inning_score
 
@@ -101,12 +109,36 @@ app_state_decoder =
       (JD.field "score" JD.int)
     decode_hit_scores = JD.list decode_hit_score
 
-    decode_ckt_score : JD.Decoder (PlayerID, CricketScore)
-    decode_ckt_score = JD.map2
-      (\i l -> (PlayerID i, CricketScore l))
+    decode_score : JD.Decoder Score
+    decode_score = JD.map Score JD.int
+
+    decode_ckt_slice : JD.Decoder CricketSliceState
+    decode_ckt_slice = JD.map (\v -> case v of
+      "_" -> Slice0
+      "/" -> Slice1
+      "X" -> Slice2
+      "O" -> SliceOpen
+      "C" -> SliceClosed
+      _ -> Slice0
+      ) JD.string
+
+    decode_ckt_score : JD.Decoder CricketScore
+    decode_ckt_score = JD.map8 CricketScore
+      (JD.field "score" decode_score)
+      (JD.field "slice20" decode_ckt_slice)
+      (JD.field "slice19" decode_ckt_slice)
+      (JD.field "slice18" decode_ckt_slice)
+      (JD.field "slice17" decode_ckt_slice)
+      (JD.field "slice16" decode_ckt_slice)
+      (JD.field "slice15" decode_ckt_slice)
+      (JD.field "sliceBull" decode_ckt_slice)
+
+    decode_ckt_score_t : JD.Decoder (PlayerID, CricketScore)
+    decode_ckt_score_t = JD.map2
+      (\i s -> (PlayerID i, s))
       (JD.field "playerId" JD.int)
-      (JD.field "score" decode_score_hits)
-    decode_ckt_scores = JD.list decode_ckt_score
+      (JD.field "score" decode_ckt_score)
+    decode_ckt_scores = JD.list decode_ckt_score_t
 
     decode_ctd_score : JD.Decoder (PlayerID, ChaseTheDragonScore)
     decode_ctd_score = JD.map2
@@ -205,6 +237,9 @@ app_state_decoder =
       _ -> BasicCricket
       ) JD.string
 
+    decode_inning : JD.Decoder Inning
+    decode_inning = JD.map Inning JD.int
+
     decode_game_state_type : String -> JD.Decoder GameState
     decode_game_state_type s = case s of
       "701" -> JD.map5 Numbers701 
@@ -235,10 +270,11 @@ app_state_decoder =
         (JD.field "current" JD.int)
         (JD.field "turn" decode_hits)
         (JD.field "scores" decode_atc_180_scores)
-      "BBL" -> JD.map4 Baseball
+      "BBL" -> JD.map5 Baseball
         (JD.field "variant" decode_bbl_var)
         (JD.field "current" JD.int)
         (JD.field "turn" decode_hits)
+        (JD.field "inning" decode_inning)
         (JD.field "scores" decode_bbl_scores)
       "CTD" -> JD.map4 ChaseTheDragon
         (JD.field "variant" decode_ctd_var)

@@ -784,11 +784,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.P.E === region.U.E)
+	if (region.X.M === region.ab.M)
 	{
-		return 'on line ' + region.P.E;
+		return 'on line ' + region.X.M;
 	}
-	return 'on lines ' + region.P.E + ' through ' + region.U.E;
+	return 'on lines ' + region.X.M + ' through ' + region.ab.M;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aB,
-		impl.aI,
-		impl.aG,
+		impl.aJ,
+		impl.aQ,
+		impl.aO,
 		function() { return function() {} }
 	);
 });
@@ -2704,9 +2704,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		s: func(record.s),
-		Q: record.Q,
-		N: record.N
+		A: func(record.A),
+		Y: record.Y,
+		V: record.V
 	}
 });
 
@@ -2974,11 +2974,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.s;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.Q;
+		var message = !tag ? value : tag < 3 ? value.a : value.A;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.Y;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.N) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.V) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3928,11 +3928,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aB,
-		impl.aI,
-		impl.aG,
+		impl.aJ,
+		impl.aQ,
+		impl.aO,
 		function(sendToApp, initialModel) {
-			var view = impl.aJ;
+			var view = impl.aR;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3964,12 +3964,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aB,
-		impl.aI,
-		impl.aG,
+		impl.aJ,
+		impl.aQ,
+		impl.aO,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.O && impl.O(sendToApp)
-			var view = impl.aJ;
+			var divertHrefToApp = impl.W && impl.W(sendToApp)
+			var view = impl.aR;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3977,12 +3977,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.at);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aB);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aH) && (_VirtualDom_doc.title = title = doc.aH);
+				(title !== doc.aP) && (_VirtualDom_doc.title = title = doc.aP);
 			});
 		}
 	);
@@ -4038,12 +4038,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.aC;
-	var onUrlRequest = impl.aD;
+	var onUrlChange = impl.aK;
+	var onUrlRequest = impl.aL;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		O: function(sendToApp)
+		W: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4059,9 +4059,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.ag === next.ag
-							&& curr.Y === next.Y
-							&& curr.ad.a === next.ad.a
+							&& curr.ao === next.ao
+							&& curr.af === next.af
+							&& curr.al.a === next.al.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4069,13 +4069,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aB: function(flags)
+		aJ: function(flags)
 		{
-			return A3(impl.aB, flags, _Browser_getUrl(), key);
+			return A3(impl.aJ, flags, _Browser_getUrl(), key);
 		},
-		aJ: impl.aJ,
-		aI: impl.aI,
-		aG: impl.aG
+		aR: impl.aR,
+		aQ: impl.aQ,
+		aO: impl.aO
 	});
 }
 
@@ -4141,17 +4141,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { ay: 'hidden', au: 'visibilitychange' }
+		? { aG: 'hidden', aC: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { ay: 'mozHidden', au: 'mozvisibilitychange' }
+		? { aG: 'mozHidden', aC: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { ay: 'msHidden', au: 'msvisibilitychange' }
+		? { aG: 'msHidden', aC: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { ay: 'webkitHidden', au: 'webkitvisibilitychange' }
-		: { ay: 'hidden', au: 'visibilitychange' };
+		? { aG: 'webkitHidden', aC: 'webkitvisibilitychange' }
+		: { aG: 'hidden', aC: 'visibilitychange' };
 }
 
 
@@ -4232,12 +4232,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		ak: _Browser_getScene(),
-		an: {
-			ap: _Browser_window.pageXOffset,
-			aq: _Browser_window.pageYOffset,
-			ao: _Browser_doc.documentElement.clientWidth,
-			X: _Browser_doc.documentElement.clientHeight
+		as: _Browser_getScene(),
+		av: {
+			ax: _Browser_window.pageXOffset,
+			ay: _Browser_window.pageYOffset,
+			aw: _Browser_doc.documentElement.clientWidth,
+			ae: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4247,8 +4247,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		ao: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		X: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		aw: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		ae: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4271,15 +4271,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			ak: {
-				ao: node.scrollWidth,
-				X: node.scrollHeight
+			as: {
+				aw: node.scrollWidth,
+				ae: node.scrollHeight
 			},
-			an: {
-				ap: node.scrollLeft,
-				aq: node.scrollTop,
-				ao: node.clientWidth,
-				X: node.clientHeight
+			av: {
+				ax: node.scrollLeft,
+				ay: node.scrollTop,
+				aw: node.clientWidth,
+				ae: node.clientHeight
 			}
 		};
 	});
@@ -4309,18 +4309,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			ak: _Browser_getScene(),
-			an: {
-				ap: x,
-				aq: y,
-				ao: _Browser_doc.documentElement.clientWidth,
-				X: _Browser_doc.documentElement.clientHeight
+			as: _Browser_getScene(),
+			av: {
+				ax: x,
+				ay: y,
+				aw: _Browser_doc.documentElement.clientWidth,
+				ae: _Browser_doc.documentElement.clientHeight
 			},
-			aw: {
-				ap: x + rect.left,
-				aq: y + rect.top,
-				ao: rect.width,
-				X: rect.height
+			aE: {
+				ax: x + rect.left,
+				ay: y + rect.top,
+				aw: rect.width,
+				ae: rect.height
 			}
 		};
 	});
@@ -4761,25 +4761,25 @@ var $elm$core$Array$treeFromBuilder = F2(
 	});
 var $elm$core$Array$builderToArray = F2(
 	function (reverseNodeList, builder) {
-		if (!builder.b) {
+		if (!builder.c) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.e),
+				$elm$core$Elm$JsArray$length(builder.f),
 				$elm$core$Array$shiftStep,
 				$elm$core$Elm$JsArray$empty,
-				builder.e);
+				builder.f);
 		} else {
-			var treeLen = builder.b * $elm$core$Array$branchFactor;
+			var treeLen = builder.c * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.f) : builder.f;
-			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.b);
+			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.g) : builder.g;
+			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.c);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.e) + treeLen,
+				$elm$core$Elm$JsArray$length(builder.f) + treeLen,
 				A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep),
 				tree,
-				builder.e);
+				builder.f);
 		}
 	});
 var $elm$core$Basics$idiv = _Basics_idiv;
@@ -4792,7 +4792,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{f: nodeList, b: (len / $elm$core$Array$branchFactor) | 0, e: tail});
+					{g: nodeList, c: (len / $elm$core$Array$branchFactor) | 0, f: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -4859,7 +4859,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {W: fragment, Y: host, ab: path, ad: port_, ag: protocol, ah: query};
+		return {ad: fragment, af: host, aj: path, al: port_, ao: protocol, ap: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5141,7 +5141,7 @@ var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Types$AnyBullOut = 1;
 var $author$project$Types$AppState = F4(
 	function (players, game, screen, playing) {
-		return {a: game, c: players, x: playing, g: screen};
+		return {b: game, d: players, F: playing, h: screen};
 	});
 var $author$project$Types$AroundTheClock = F4(
 	function (a, b, c, d) {
@@ -5153,9 +5153,9 @@ var $author$project$Types$AroundTheClock180 = F4(
 	});
 var $author$project$Types$AroundTheClock180Score = $elm$core$Basics$identity;
 var $author$project$Types$AroundTheClockScore = $elm$core$Basics$identity;
-var $author$project$Types$Baseball = F4(
-	function (a, b, c, d) {
-		return {$: 6, a: a, b: b, c: c, d: d};
+var $author$project$Types$Baseball = F5(
+	function (a, b, c, d, e) {
+		return {$: 6, a: a, b: b, c: c, d: d, e: e};
 	});
 var $author$project$Types$BaseballScore = $elm$core$Basics$identity;
 var $author$project$Types$BasicBaseball = 0;
@@ -5172,9 +5172,12 @@ var $author$project$Types$Cricket = F4(
 	function (a, b, c, d) {
 		return {$: 8, a: a, b: b, c: c, d: d};
 	});
-var $author$project$Types$CricketScore = $elm$core$Basics$identity;
+var $author$project$Types$CricketScore = F8(
+	function (score, slice20, slice19, slice18, slice17, slice16, slice15, sliceBull) {
+		return {a: score, j: slice15, k: slice16, l: slice17, m: slice18, n: slice19, o: slice20, p: sliceBull};
+	});
 var $author$project$Types$DoubleBonus = 0;
-var $author$project$Types$DoubleHit = 1;
+var $author$project$Types$DoubleHit = 2;
 var $author$project$Types$DoubleIn = 1;
 var $author$project$Types$DoubleOut = 1;
 var $author$project$Types$EditPlayers = F2(
@@ -5247,6 +5250,8 @@ var $author$project$Types$HitDoubleBullseye = {$: 22};
 var $author$project$Types$HitMissed = {$: 0};
 var $author$project$Types$Home = {$: 0};
 var $author$project$Types$Inning = $elm$core$Basics$identity;
+var $author$project$Types$InningClosed = 1;
+var $author$project$Types$InningOpen = 0;
 var $author$project$Types$NewPlayerInitials = $elm$core$Basics$identity;
 var $author$project$Types$NewPlayerName = $elm$core$Basics$identity;
 var $author$project$Types$NoBullOut = 0;
@@ -5269,7 +5274,7 @@ var $author$project$Types$PlayGame = function (a) {
 };
 var $author$project$Types$Player = F4(
 	function (name, initials, hits, id) {
-		return {az: hits, r: id, K: initials, J: name};
+		return {aH: hits, z: id, S: initials, R: name};
 	});
 var $author$project$Types$PlayerHits = $elm$core$Basics$identity;
 var $author$project$Types$PlayerID = $elm$core$Basics$identity;
@@ -5278,11 +5283,16 @@ var $author$project$Types$PlayerName = $elm$core$Basics$identity;
 var $author$project$Types$Score = $elm$core$Basics$identity;
 var $author$project$Types$SelectGame = {$: 2};
 var $author$project$Types$SeventhInningCatch = 1;
-var $author$project$Types$SingleHit = 0;
+var $author$project$Types$SingleHit = 1;
+var $author$project$Types$Slice0 = 0;
+var $author$project$Types$Slice1 = 1;
+var $author$project$Types$Slice2 = 2;
+var $author$project$Types$SliceClosed = 4;
+var $author$project$Types$SliceOpen = 3;
 var $author$project$Types$SplitBullOut = 2;
 var $author$project$Types$TripleBonus = 1;
 var $author$project$Types$TripleHeadedDragon = 1;
-var $author$project$Types$TripleHit = 2;
+var $author$project$Types$TripleHit = 3;
 var $author$project$Types$TripleIn = 2;
 var $author$project$Types$TripleOut = 2;
 var $elm$json$Json$Decode$andThen = _Json_andThen;
@@ -5290,8 +5300,10 @@ var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$json$Json$Decode$list = _Json_decodeList;
+var $elm$json$Json$Decode$map3 = _Json_map3;
 var $elm$json$Json$Decode$map4 = _Json_map4;
 var $elm$json$Json$Decode$map5 = _Json_map5;
+var $elm$json$Json$Decode$map8 = _Json_map8;
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$Types$Decode$app_state_decoder = function () {
 	var decode_screen = A2(
@@ -5309,6 +5321,7 @@ var $author$project$Types$Decode$app_state_decoder = function () {
 			}
 		},
 		$elm$json$Json$Decode$string);
+	var decode_score = A2($elm$json$Json$Decode$map, $elm$core$Basics$identity, $elm$json$Json$Decode$int);
 	var decode_player_name = A2($elm$json$Json$Decode$map, $elm$core$Basics$identity, $elm$json$Json$Decode$string);
 	var decode_player_initials = A2($elm$json$Json$Decode$map, $elm$core$Basics$identity, $elm$json$Json$Decode$string);
 	var decode_player_id = A2($elm$json$Json$Decode$map, $elm$core$Basics$identity, $elm$json$Json$Decode$int);
@@ -5347,15 +5360,30 @@ var $author$project$Types$Decode$app_state_decoder = function () {
 			}
 		},
 		$elm$json$Json$Decode$string);
-	var decode_inning_score = A3(
-		$elm$json$Json$Decode$map2,
-		F2(
-			function (i, s) {
-				return _Utils_Tuple2(i, s);
+	var decode_inning_state = A2(
+		$elm$json$Json$Decode$map,
+		function (s) {
+			switch (s) {
+				case 'O':
+					return 0;
+				case 'C':
+					return 1;
+				default:
+					return 1;
+			}
+		},
+		$elm$json$Json$Decode$string);
+	var decode_inning_score = A4(
+		$elm$json$Json$Decode$map3,
+		F3(
+			function (i, s, sc) {
+				return _Utils_Tuple3(i, s, sc);
 			}),
 		A2($elm$json$Json$Decode$field, 'inning', $elm$json$Json$Decode$int),
+		A2($elm$json$Json$Decode$field, 'state', decode_inning_state),
 		A2($elm$json$Json$Decode$field, 'score', $elm$json$Json$Decode$int));
 	var decode_inning_scores = $elm$json$Json$Decode$list(decode_inning_score);
+	var decode_inning = A2($elm$json$Json$Decode$map, $elm$core$Basics$identity, $elm$json$Json$Decode$int);
 	var decode_hit = A2(
 		$elm$json$Json$Decode$map,
 		function (h) {
@@ -5363,125 +5391,125 @@ var $author$project$Types$Decode$app_state_decoder = function () {
 				case 'M':
 					return $author$project$Types$HitMissed;
 				case 'S1':
-					return $author$project$Types$Hit1(0);
-				case 'D1':
 					return $author$project$Types$Hit1(1);
-				case 'T1':
+				case 'D1':
 					return $author$project$Types$Hit1(2);
+				case 'T1':
+					return $author$project$Types$Hit1(3);
 				case 'S2':
-					return $author$project$Types$Hit2(0);
-				case 'D2':
 					return $author$project$Types$Hit2(1);
-				case 'T2':
+				case 'D2':
 					return $author$project$Types$Hit2(2);
+				case 'T2':
+					return $author$project$Types$Hit2(3);
 				case 'S3':
-					return $author$project$Types$Hit3(0);
-				case 'D3':
 					return $author$project$Types$Hit3(1);
-				case 'T3':
+				case 'D3':
 					return $author$project$Types$Hit3(2);
+				case 'T3':
+					return $author$project$Types$Hit3(3);
 				case 'S4':
-					return $author$project$Types$Hit4(0);
-				case 'D4':
 					return $author$project$Types$Hit4(1);
-				case 'T4':
+				case 'D4':
 					return $author$project$Types$Hit4(2);
+				case 'T4':
+					return $author$project$Types$Hit4(3);
 				case 'S5':
-					return $author$project$Types$Hit5(0);
-				case 'D5':
 					return $author$project$Types$Hit5(1);
-				case 'T5':
+				case 'D5':
 					return $author$project$Types$Hit5(2);
+				case 'T5':
+					return $author$project$Types$Hit5(3);
 				case 'S6':
-					return $author$project$Types$Hit6(0);
-				case 'D6':
 					return $author$project$Types$Hit6(1);
-				case 'T6':
+				case 'D6':
 					return $author$project$Types$Hit6(2);
+				case 'T6':
+					return $author$project$Types$Hit6(3);
 				case 'S7':
-					return $author$project$Types$Hit7(0);
-				case 'D7':
 					return $author$project$Types$Hit7(1);
-				case 'T7':
+				case 'D7':
 					return $author$project$Types$Hit7(2);
+				case 'T7':
+					return $author$project$Types$Hit7(3);
 				case 'S8':
-					return $author$project$Types$Hit8(0);
-				case 'D8':
 					return $author$project$Types$Hit8(1);
-				case 'T8':
+				case 'D8':
 					return $author$project$Types$Hit8(2);
+				case 'T8':
+					return $author$project$Types$Hit8(3);
 				case 'S9':
-					return $author$project$Types$Hit9(0);
-				case 'D9':
 					return $author$project$Types$Hit9(1);
-				case 'T9':
+				case 'D9':
 					return $author$project$Types$Hit9(2);
+				case 'T9':
+					return $author$project$Types$Hit9(3);
 				case 'S10':
-					return $author$project$Types$Hit10(0);
-				case 'D10':
 					return $author$project$Types$Hit10(1);
-				case 'T10':
+				case 'D10':
 					return $author$project$Types$Hit10(2);
+				case 'T10':
+					return $author$project$Types$Hit10(3);
 				case 'S11':
-					return $author$project$Types$Hit11(0);
-				case 'D11':
 					return $author$project$Types$Hit11(1);
-				case 'T11':
+				case 'D11':
 					return $author$project$Types$Hit11(2);
+				case 'T11':
+					return $author$project$Types$Hit11(3);
 				case 'S12':
-					return $author$project$Types$Hit12(0);
-				case 'D12':
 					return $author$project$Types$Hit12(1);
-				case 'T12':
+				case 'D12':
 					return $author$project$Types$Hit12(2);
+				case 'T12':
+					return $author$project$Types$Hit12(3);
 				case 'S13':
-					return $author$project$Types$Hit13(0);
-				case 'D13':
 					return $author$project$Types$Hit13(1);
-				case 'T13':
+				case 'D13':
 					return $author$project$Types$Hit13(2);
+				case 'T13':
+					return $author$project$Types$Hit13(3);
 				case 'S14':
-					return $author$project$Types$Hit14(0);
-				case 'D14':
 					return $author$project$Types$Hit14(1);
-				case 'T14':
+				case 'D14':
 					return $author$project$Types$Hit14(2);
+				case 'T14':
+					return $author$project$Types$Hit14(3);
 				case 'S15':
-					return $author$project$Types$Hit15(0);
-				case 'D15':
 					return $author$project$Types$Hit15(1);
-				case 'T15':
+				case 'D15':
 					return $author$project$Types$Hit15(2);
+				case 'T15':
+					return $author$project$Types$Hit15(3);
 				case 'S16':
-					return $author$project$Types$Hit16(0);
-				case 'D16':
 					return $author$project$Types$Hit16(1);
-				case 'T16':
+				case 'D16':
 					return $author$project$Types$Hit16(2);
+				case 'T16':
+					return $author$project$Types$Hit16(3);
 				case 'S17':
-					return $author$project$Types$Hit17(0);
-				case 'D17':
 					return $author$project$Types$Hit17(1);
-				case 'T17':
+				case 'D17':
 					return $author$project$Types$Hit17(2);
+				case 'T17':
+					return $author$project$Types$Hit17(3);
 				case 'S18':
-					return $author$project$Types$Hit18(0);
-				case 'D18':
 					return $author$project$Types$Hit18(1);
-				case 'T18':
+				case 'D18':
 					return $author$project$Types$Hit18(2);
+				case 'T18':
+					return $author$project$Types$Hit18(3);
 				case 'S19':
-					return $author$project$Types$Hit19(0);
-				case 'D19':
 					return $author$project$Types$Hit19(1);
-				case 'T19':
+				case 'D19':
 					return $author$project$Types$Hit19(2);
+				case 'T19':
+					return $author$project$Types$Hit19(3);
 				case 'S20':
-					return $author$project$Types$Hit20(0);
-				case 'D20':
 					return $author$project$Types$Hit20(1);
-				case 'T20':
+				case 'D20':
 					return $author$project$Types$Hit20(2);
+				case 'T20':
+					return $author$project$Types$Hit20(3);
 				case 'Bull':
 					return $author$project$Types$HitBullseye;
 				case 'DBull':
@@ -5553,15 +5581,45 @@ var $author$project$Types$Decode$app_state_decoder = function () {
 			}
 		},
 		$elm$json$Json$Decode$string);
-	var decode_ckt_score = A3(
+	var decode_ckt_slice = A2(
+		$elm$json$Json$Decode$map,
+		function (v) {
+			switch (v) {
+				case '_':
+					return 0;
+				case '/':
+					return 1;
+				case 'X':
+					return 2;
+				case 'O':
+					return 3;
+				case 'C':
+					return 4;
+				default:
+					return 0;
+			}
+		},
+		$elm$json$Json$Decode$string);
+	var decode_ckt_score = A9(
+		$elm$json$Json$Decode$map8,
+		$author$project$Types$CricketScore,
+		A2($elm$json$Json$Decode$field, 'score', decode_score),
+		A2($elm$json$Json$Decode$field, 'slice20', decode_ckt_slice),
+		A2($elm$json$Json$Decode$field, 'slice19', decode_ckt_slice),
+		A2($elm$json$Json$Decode$field, 'slice18', decode_ckt_slice),
+		A2($elm$json$Json$Decode$field, 'slice17', decode_ckt_slice),
+		A2($elm$json$Json$Decode$field, 'slice16', decode_ckt_slice),
+		A2($elm$json$Json$Decode$field, 'slice15', decode_ckt_slice),
+		A2($elm$json$Json$Decode$field, 'sliceBull', decode_ckt_slice));
+	var decode_ckt_score_t = A3(
 		$elm$json$Json$Decode$map2,
 		F2(
-			function (i, l) {
-				return _Utils_Tuple2(i, l);
+			function (i, s) {
+				return _Utils_Tuple2(i, s);
 			}),
 		A2($elm$json$Json$Decode$field, 'playerId', $elm$json$Json$Decode$int),
-		A2($elm$json$Json$Decode$field, 'score', decode_score_hits));
-	var decode_ckt_scores = $elm$json$Json$Decode$list(decode_ckt_score);
+		A2($elm$json$Json$Decode$field, 'score', decode_ckt_score));
+	var decode_ckt_scores = $elm$json$Json$Decode$list(decode_ckt_score_t);
 	var decode_bbl_var = A2(
 		$elm$json$Json$Decode$map,
 		function (v) {
@@ -5668,12 +5726,13 @@ var $author$project$Types$Decode$app_state_decoder = function () {
 					A2($elm$json$Json$Decode$field, 'turn', decode_hits),
 					A2($elm$json$Json$Decode$field, 'scores', decode_atc_180_scores));
 			case 'BBL':
-				return A5(
-					$elm$json$Json$Decode$map4,
+				return A6(
+					$elm$json$Json$Decode$map5,
 					$author$project$Types$Baseball,
 					A2($elm$json$Json$Decode$field, 'variant', decode_bbl_var),
 					A2($elm$json$Json$Decode$field, 'current', $elm$json$Json$Decode$int),
 					A2($elm$json$Json$Decode$field, 'turn', decode_hits),
+					A2($elm$json$Json$Decode$field, 'inning', decode_inning),
 					A2($elm$json$Json$Decode$field, 'scores', decode_bbl_scores));
 			case 'CTD':
 				return A5(
@@ -5707,7 +5766,7 @@ var $author$project$Types$Decode$app_state_decoder = function () {
 		A2($elm$json$Json$Decode$field, 'screen', decode_screen),
 		A2($elm$json$Json$Decode$field, 'playing', $elm$json$Json$Decode$bool));
 }();
-var $author$project$Main$clean_state = {a: $author$project$Types$NoGame, c: _List_Nil, x: false, g: $author$project$Types$Home};
+var $author$project$Main$clean_state = {b: $author$project$Types$NoGame, d: _List_Nil, F: false, h: $author$project$Types$Home};
 var $elm$json$Json$Decode$decodeValue = _Json_run;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -5781,8 +5840,10 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 	var encode_sub_hit = function (s) {
 		switch (s) {
 			case 0:
-				return 'S';
+				return 'M';
 			case 1:
+				return 'S';
+			case 2:
 				return 'D';
 			default:
 				return 'T';
@@ -5800,21 +5861,25 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 				return $elm$json$Json$Encode$string('PLAYGAME');
 		}
 	};
-	var encode_player_name = function (_v22) {
-		var name = _v22;
+	var encode_score = function (_v26) {
+		var s = _v26;
+		return $elm$json$Json$Encode$int(s);
+	};
+	var encode_player_name = function (_v25) {
+		var name = _v25;
 		return $elm$json$Json$Encode$string(name);
 	};
-	var encode_player_initials = function (_v21) {
-		var i = _v21;
+	var encode_player_initials = function (_v24) {
+		var i = _v24;
 		return $elm$json$Json$Encode$string(i);
 	};
-	var encode_player_id = function (_v20) {
-		var i = _v20;
+	var encode_player_id = function (_v23) {
+		var i = _v23;
 		return $elm$json$Json$Encode$int(i);
 	};
-	var encode_numbers_score = function (_v19) {
-		var i = _v19.a;
-		var ns = _v19.b;
+	var encode_numbers_score = function (_v22) {
+		var i = _v22.a;
+		var ns = _v22.b;
 		return $elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
@@ -5855,9 +5920,17 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 				}
 			}());
 	};
-	var encode_inning_score = function (_v16) {
-		var i = _v16.a;
-		var s = _v16.b;
+	var encode_inning_state = function (s) {
+		if (!s) {
+			return $elm$json$Json$Encode$string('O');
+		} else {
+			return $elm$json$Json$Encode$string('C');
+		}
+	};
+	var encode_inning_score = function (_v18) {
+		var i = _v18.a;
+		var s = _v18.b;
+		var sc = _v18.c;
 		return $elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
@@ -5865,12 +5938,19 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 					'inning',
 					$elm$json$Json$Encode$int(i)),
 					_Utils_Tuple2(
+					'state',
+					encode_inning_state(s)),
+					_Utils_Tuple2(
 					'score',
-					$elm$json$Json$Encode$int(i))
+					$elm$json$Json$Encode$int(sc))
 				]));
 	};
 	var encode_inning_scores = function (l) {
 		return A2($elm$json$Json$Encode$list, encode_inning_score, l);
+	};
+	var encode_inning = function (_v17) {
+		var i = _v17;
+		return $elm$json$Json$Encode$int(i);
 	};
 	var encode_hit = function (h) {
 		return $elm$json$Json$Encode$string(
@@ -5945,9 +6025,9 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 				}
 			}());
 	};
-	var encode_hit_score = function (_v14) {
-		var h = _v14.a;
-		var s = _v14.b;
+	var encode_hit_score = function (_v15) {
+		var h = _v15.a;
+		var s = _v15.b;
 		return $elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
@@ -5965,15 +6045,15 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 	var encode_hits = function (l) {
 		return A2($elm$json$Json$Encode$list, encode_hit, l);
 	};
-	var encode_player_hits = function (_v13) {
-		var l = _v13;
+	var encode_player_hits = function (_v14) {
+		var l = _v14;
 		return encode_hits(l);
 	};
-	var encode_player = function (_v12) {
-		var name = _v12.J;
-		var initials = _v12.K;
-		var hits = _v12.az;
-		var id = _v12.r;
+	var encode_player = function (_v13) {
+		var name = _v13.R;
+		var initials = _v13.S;
+		var hits = _v13.aH;
+		var id = _v13.z;
 		return $elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
@@ -5994,9 +6074,9 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 	var encode_list_player = function (l) {
 		return A2($elm$json$Json$Encode$list, encode_player, l);
 	};
-	var encode_score_hits = function (_v11) {
-		var s = _v11.a;
-		var l = _v11.b;
+	var encode_score_hits = function (_v12) {
+		var s = _v12.a;
+		var l = _v12.b;
 		return $elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
@@ -6018,9 +6098,9 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 				}
 			}());
 	};
-	var encode_ctd_score = function (_v9) {
-		var i = _v9.a;
-		var l = _v9.b;
+	var encode_ctd_score = function (_v10) {
+		var i = _v10.a;
+		var l = _v10.b;
 		return $elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
@@ -6045,9 +6125,53 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 				}
 			}());
 	};
-	var encode_ckt_score = function (_v7) {
+	var encode_ckt_slice = function (s) {
+		switch (s) {
+			case 0:
+				return $elm$json$Json$Encode$string('_');
+			case 1:
+				return $elm$json$Json$Encode$string('/');
+			case 2:
+				return $elm$json$Json$Encode$string('X');
+			case 3:
+				return $elm$json$Json$Encode$string('O');
+			default:
+				return $elm$json$Json$Encode$string('C');
+		}
+	};
+	var encode_ckt_score = function (s) {
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'score',
+					encode_score(s.a)),
+					_Utils_Tuple2(
+					'slice20',
+					encode_ckt_slice(s.o)),
+					_Utils_Tuple2(
+					'slice19',
+					encode_ckt_slice(s.n)),
+					_Utils_Tuple2(
+					'slice18',
+					encode_ckt_slice(s.m)),
+					_Utils_Tuple2(
+					'slice17',
+					encode_ckt_slice(s.l)),
+					_Utils_Tuple2(
+					'slice16',
+					encode_ckt_slice(s.k)),
+					_Utils_Tuple2(
+					'slice15',
+					encode_ckt_slice(s.j)),
+					_Utils_Tuple2(
+					'sliceBull',
+					encode_ckt_slice(s.p))
+				]));
+	};
+	var encode_ckt_score_t = function (_v7) {
 		var i = _v7.a;
-		var l = _v7.b;
+		var s = _v7.b;
 		return $elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
@@ -6056,11 +6180,11 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 					encode_player_id(i)),
 					_Utils_Tuple2(
 					'score',
-					encode_score_hits(l))
+					encode_ckt_score(s))
 				]));
 	};
 	var encode_ckt_scores = function (l) {
-		return A2($elm$json$Json$Encode$list, encode_ckt_score, l);
+		return A2($elm$json$Json$Encode$list, encode_ckt_score_t, l);
 	};
 	var encode_bbl_var = function (v) {
 		return $elm$json$Json$Encode$string(
@@ -6292,7 +6416,8 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 				var v = s.a;
 				var current = s.b;
 				var hits = s.c;
-				var scores = s.d;
+				var inning = s.d;
+				var scores = s.e;
 				return $elm$json$Json$Encode$object(
 					_List_fromArray(
 						[
@@ -6308,6 +6433,9 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 							_Utils_Tuple2(
 							'turn',
 							encode_hits(hits)),
+							_Utils_Tuple2(
+							'inning',
+							encode_inning(inning)),
 							_Utils_Tuple2(
 							'scores',
 							encode_bbl_scores(scores))
@@ -6367,16 +6495,16 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 			[
 				_Utils_Tuple2(
 				'players',
-				encode_list_player(state.c)),
+				encode_list_player(state.d)),
 				_Utils_Tuple2(
 				'game',
-				encode_game_state(state.a)),
+				encode_game_state(state.b)),
 				_Utils_Tuple2(
 				'screen',
-				encode_screen(state.g)),
+				encode_screen(state.h)),
 				_Utils_Tuple2(
 				'playing',
-				$elm$json$Json$Encode$bool(state.x))
+				$elm$json$Json$Encode$bool(state.F))
 			]));
 };
 var $elm$core$List$filter = F2(
@@ -6389,6 +6517,21 @@ var $elm$core$List$filter = F2(
 				}),
 			_List_Nil,
 			list);
+	});
+var $author$project$Game$find_by_id = F2(
+	function (p, l) {
+		var check = F2(
+			function (_v1, acc) {
+				var i = _v1.a;
+				var a = _v1.b;
+				if (acc.$ === 1) {
+					return _Utils_eq(p, i) ? $elm$core$Maybe$Just(a) : $elm$core$Maybe$Nothing;
+				} else {
+					var v = acc;
+					return v;
+				}
+			});
+		return A3($elm$core$List$foldr, check, $elm$core$Maybe$Nothing, l);
 	});
 var $elm$core$List$head = function (list) {
 	if (list.b) {
@@ -6428,722 +6571,474 @@ var $author$project$Game$player_id_at = F2(
 			return $elm$core$Maybe$Just(id);
 		}
 	});
-var $author$project$Game$around_the_clock = F4(
-	function (v, c, h, s) {
+var $author$project$Game$update_by_id = F3(
+	function (pid, a, l) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (_v0, acc) {
+					var p = _v0.a;
+					var s = _v0.b;
+					return _Utils_eq(pid, p) ? A2(
+						$elm$core$List$cons,
+						_Utils_Tuple2(p, a),
+						acc) : A2(
+						$elm$core$List$cons,
+						_Utils_Tuple2(p, s),
+						acc);
+				}),
+			_List_Nil,
+			l);
+	});
+var $author$project$Game$apply_score = F3(
+	function (c, s, f) {
 		var _v0 = A2($author$project$Game$player_id_at, c, s);
 		if (_v0.$ === 1) {
 			return s;
 		} else {
 			var pid = _v0.a;
-			return s;
-		}
-	});
-var $author$project$Game$around_the_clock_180 = F4(
-	function (v, c, h, s) {
-		var _v0 = A2($author$project$Game$player_id_at, c, s);
-		if (_v0.$ === 1) {
-			return s;
-		} else {
-			var pid = _v0.a;
-			return s;
-		}
-	});
-var $author$project$Game$baseball = F4(
-	function (v, c, h, s) {
-		var _v0 = A2($author$project$Game$player_id_at, c, s);
-		if (_v0.$ === 1) {
-			return s;
-		} else {
-			var pid = _v0.a;
-			return s;
-		}
-	});
-var $author$project$Game$chase_the_dragon = F4(
-	function (v, c, h, s) {
-		var _v0 = A2($author$project$Game$player_id_at, c, s);
-		if (_v0.$ === 1) {
-			return s;
-		} else {
-			var pid = _v0.a;
-			return s;
-		}
-	});
-var $author$project$Game$clear_hits = function (g) {
-	switch (g.$) {
-		case 0:
-			return $author$project$Types$NoGame;
-		case 1:
-			var i = g.a;
-			var o = g.b;
-			var c = g.c;
-			var s = g.e;
-			return A5($author$project$Types$Numbers701, i, o, c, _List_Nil, s);
-		case 2:
-			var i = g.a;
-			var o = g.b;
-			var c = g.c;
-			var s = g.e;
-			return A5($author$project$Types$Numbers501, i, o, c, _List_Nil, s);
-		case 3:
-			var i = g.a;
-			var o = g.b;
-			var c = g.c;
-			var s = g.e;
-			return A5($author$project$Types$Numbers301, i, o, c, _List_Nil, s);
-		case 4:
-			var v = g.a;
-			var c = g.b;
-			var s = g.d;
-			return A4($author$project$Types$AroundTheClock, v, c, _List_Nil, s);
-		case 5:
-			var v = g.a;
-			var c = g.b;
-			var s = g.d;
-			return A4($author$project$Types$AroundTheClock180, v, c, _List_Nil, s);
-		case 6:
-			var v = g.a;
-			var c = g.b;
-			var s = g.d;
-			return A4($author$project$Types$Baseball, v, c, _List_Nil, s);
-		case 7:
-			var v = g.a;
-			var c = g.b;
-			var s = g.d;
-			return A4($author$project$Types$ChaseTheDragon, v, c, _List_Nil, s);
-		default:
-			var v = g.a;
-			var c = g.b;
-			var s = g.d;
-			return A4($author$project$Types$Cricket, v, c, _List_Nil, s);
-	}
-};
-var $author$project$Game$cricket = F4(
-	function (v, c, h, s) {
-		var _v0 = A2($author$project$Game$player_id_at, c, s);
-		if (_v0.$ === 1) {
-			return s;
-		} else {
-			var pid = _v0.a;
-			return s;
-		}
-	});
-var $author$project$Game$next_player = F2(
-	function (i, l) {
-		return _Utils_eq(
-			i,
-			$elm$core$List$length(l) - 1) ? 0 : (i + 1);
-	});
-var $author$project$Game$increment_player = function (g) {
-	switch (g.$) {
-		case 0:
-			return $author$project$Types$NoGame;
-		case 1:
-			var i = g.a;
-			var o = g.b;
-			var c = g.c;
-			var h = g.d;
-			var s = g.e;
-			return A5(
-				$author$project$Types$Numbers701,
-				i,
-				o,
-				A2($author$project$Game$next_player, c, s),
-				h,
-				s);
-		case 2:
-			var i = g.a;
-			var o = g.b;
-			var c = g.c;
-			var h = g.d;
-			var s = g.e;
-			return A5(
-				$author$project$Types$Numbers501,
-				i,
-				o,
-				A2($author$project$Game$next_player, c, s),
-				h,
-				s);
-		case 3:
-			var i = g.a;
-			var o = g.b;
-			var c = g.c;
-			var h = g.d;
-			var s = g.e;
-			return A5(
-				$author$project$Types$Numbers301,
-				i,
-				o,
-				A2($author$project$Game$next_player, c, s),
-				h,
-				s);
-		case 4:
-			var v = g.a;
-			var c = g.b;
-			var h = g.c;
-			var s = g.d;
-			return A4(
-				$author$project$Types$AroundTheClock,
-				v,
-				A2($author$project$Game$next_player, c, s),
-				h,
-				s);
-		case 5:
-			var v = g.a;
-			var c = g.b;
-			var h = g.c;
-			var s = g.d;
-			return A4(
-				$author$project$Types$AroundTheClock180,
-				v,
-				A2($author$project$Game$next_player, c, s),
-				h,
-				s);
-		case 6:
-			var v = g.a;
-			var c = g.b;
-			var h = g.c;
-			var s = g.d;
-			return A4(
-				$author$project$Types$Baseball,
-				v,
-				A2($author$project$Game$next_player, c, s),
-				h,
-				s);
-		case 7:
-			var v = g.a;
-			var c = g.b;
-			var h = g.c;
-			var s = g.d;
-			return A4(
-				$author$project$Types$ChaseTheDragon,
-				v,
-				A2($author$project$Game$next_player, c, s),
-				h,
-				s);
-		default:
-			var v = g.a;
-			var c = g.b;
-			var h = g.c;
-			var s = g.d;
-			return A4(
-				$author$project$Types$Cricket,
-				v,
-				A2($author$project$Game$next_player, c, s),
-				h,
-				s);
-	}
-};
-var $author$project$Game$numbers = F6(
-	function (goal, i, o, c, h, s) {
-		var _v0 = A2($author$project$Game$player_id_at, c, s);
-		if (_v0.$ === 1) {
-			return s;
-		} else {
-			var pid = _v0.a;
-			return s;
-		}
-	});
-var $author$project$Game$finalize_turn = function (state) {
-	var apply_score = function () {
-		switch (state.$) {
-			case 0:
-				return $author$project$Types$NoGame;
-			case 1:
-				var i = state.a;
-				var o = state.b;
-				var c = state.c;
-				var h = state.d;
-				var s = state.e;
-				return A5(
-					$author$project$Types$Numbers701,
-					i,
-					o,
-					c,
-					h,
-					A6($author$project$Game$numbers, 701, i, o, c, h, s));
-			case 2:
-				var i = state.a;
-				var o = state.b;
-				var c = state.c;
-				var h = state.d;
-				var s = state.e;
-				return A5(
-					$author$project$Types$Numbers501,
-					i,
-					o,
-					c,
-					h,
-					A6($author$project$Game$numbers, 501, i, o, c, h, s));
-			case 3:
-				var i = state.a;
-				var o = state.b;
-				var c = state.c;
-				var h = state.d;
-				var s = state.e;
-				return A5(
-					$author$project$Types$Numbers301,
-					i,
-					o,
-					c,
-					h,
-					A6($author$project$Game$numbers, 301, i, o, c, h, s));
-			case 4:
-				var v = state.a;
-				var c = state.b;
-				var h = state.c;
-				var s = state.d;
-				return A4(
-					$author$project$Types$AroundTheClock,
-					v,
-					c,
-					h,
-					A4($author$project$Game$around_the_clock, v, c, h, s));
-			case 5:
-				var v = state.a;
-				var c = state.b;
-				var h = state.c;
-				var s = state.d;
-				return A4(
-					$author$project$Types$AroundTheClock180,
-					v,
-					c,
-					h,
-					A4($author$project$Game$around_the_clock_180, v, c, h, s));
-			case 6:
-				var v = state.a;
-				var c = state.b;
-				var h = state.c;
-				var s = state.d;
-				return A4(
-					$author$project$Types$Baseball,
-					v,
-					c,
-					h,
-					A4($author$project$Game$baseball, v, c, h, s));
-			case 7:
-				var v = state.a;
-				var c = state.b;
-				var h = state.c;
-				var s = state.d;
-				return A4(
-					$author$project$Types$ChaseTheDragon,
-					v,
-					c,
-					h,
-					A4($author$project$Game$chase_the_dragon, v, c, h, s));
-			default:
-				var v = state.a;
-				var c = state.b;
-				var h = state.c;
-				var s = state.d;
-				return A4(
-					$author$project$Types$Cricket,
-					v,
-					c,
-					h,
-					A4($author$project$Game$cricket, v, c, h, s));
-		}
-	}();
-	return $author$project$Game$clear_hits(
-		$author$project$Game$increment_player(apply_score));
-};
-var $elm$core$Basics$neq = _Utils_notEqual;
-var $author$project$Game$new_atc_180_score = function (p) {
-	return _Utils_Tuple2(p.r, _List_Nil);
-};
-var $author$project$Game$new_atc_180_scores = function (l) {
-	return A2($elm$core$List$map, $author$project$Game$new_atc_180_score, l);
-};
-var $author$project$Game$new_atc_score = function (p) {
-	return _Utils_Tuple2(p.r, _List_Nil);
-};
-var $author$project$Game$new_atc_scores = function (l) {
-	return A2($elm$core$List$map, $author$project$Game$new_atc_score, l);
-};
-var $author$project$Game$new_bbl_score = function (p) {
-	return _Utils_Tuple2(
-		p.r,
-		A2(
-			$elm$core$List$map,
-			function (i) {
-				return _Utils_Tuple2(i, 0);
-			},
-			A2($elm$core$List$range, 1, 9)));
-};
-var $author$project$Game$new_bbl_scores = function (l) {
-	return A2($elm$core$List$map, $author$project$Game$new_bbl_score, l);
-};
-var $author$project$Game$new_ckt_score = function (p) {
-	return _Utils_Tuple2(
-		p.r,
-		_Utils_Tuple2(0, _List_Nil));
-};
-var $author$project$Game$new_ckt_scores = function (l) {
-	return A2($elm$core$List$map, $author$project$Game$new_ckt_score, l);
-};
-var $author$project$Game$new_ctd_score = function (p) {
-	return _Utils_Tuple2(p.r, _List_Nil);
-};
-var $author$project$Game$new_ctd_scores = function (l) {
-	return A2($elm$core$List$map, $author$project$Game$new_ctd_score, l);
-};
-var $author$project$Game$new_num_score = function (p) {
-	return _Utils_Tuple2(p.r, 0);
-};
-var $author$project$Game$new_num_scores = function (l) {
-	return A2($elm$core$List$map, $author$project$Game$new_num_score, l);
-};
-var $author$project$Game$new_game = F2(
-	function (mode, players) {
-		switch (mode.$) {
-			case 0:
-				return $author$project$Types$NoGame;
-			case 1:
-				var i = mode.a;
-				var o = mode.b;
-				return A5(
-					$author$project$Types$Numbers701,
-					i,
-					o,
-					0,
-					_List_Nil,
-					$author$project$Game$new_num_scores(players));
-			case 2:
-				var i = mode.a;
-				var o = mode.b;
-				return A5(
-					$author$project$Types$Numbers501,
-					i,
-					o,
-					0,
-					_List_Nil,
-					$author$project$Game$new_num_scores(players));
-			case 3:
-				var i = mode.a;
-				var o = mode.b;
-				return A5(
-					$author$project$Types$Numbers301,
-					i,
-					o,
-					0,
-					_List_Nil,
-					$author$project$Game$new_num_scores(players));
-			case 4:
-				var v = mode.a;
-				return A4(
-					$author$project$Types$AroundTheClock,
-					v,
-					0,
-					_List_Nil,
-					$author$project$Game$new_atc_scores(players));
-			case 5:
-				var v = mode.a;
-				return A4(
-					$author$project$Types$AroundTheClock180,
-					v,
-					0,
-					_List_Nil,
-					$author$project$Game$new_atc_180_scores(players));
-			case 6:
-				var v = mode.a;
-				return A4(
-					$author$project$Types$Baseball,
-					v,
-					0,
-					_List_Nil,
-					$author$project$Game$new_bbl_scores(players));
-			case 7:
-				var v = mode.a;
-				return A4(
-					$author$project$Types$ChaseTheDragon,
-					v,
-					0,
-					_List_Nil,
-					$author$project$Game$new_ctd_scores(players));
-			default:
-				var v = mode.a;
-				return A4(
-					$author$project$Types$Cricket,
-					v,
-					0,
-					_List_Nil,
-					$author$project$Game$new_ckt_scores(players));
-		}
-	});
-var $author$project$Game$player_added = F2(
-	function (l, g) {
-		var find = F2(
-			function (pid, sl) {
-				return A3(
-					$elm$core$List$foldl,
-					F2(
-						function (_v2, acc) {
-							var spid = _v2.a;
-							var s = _v2.b;
-							return (_Utils_eq(spid, pid) && _Utils_eq(acc, $elm$core$Maybe$Nothing)) ? $elm$core$Maybe$Just(
-								_Utils_Tuple2(spid, s)) : $elm$core$Maybe$Nothing;
-						}),
-					$elm$core$Maybe$Nothing,
-					sl);
-			});
-		var add_missing = F3(
-			function (f, s, p) {
-				var _v1 = A2(find, p.r, s);
-				if (_v1.$ === 1) {
-					return f(p);
-				} else {
-					var v = _v1.a;
-					return v;
-				}
-			});
-		var fix_scores = F2(
-			function (f, s) {
-				return A2(
-					$elm$core$List$map,
-					A2(add_missing, f, s),
-					l);
-			});
-		switch (g.$) {
-			case 0:
-				return $author$project$Types$NoGame;
-			case 1:
-				var i = g.a;
-				var o = g.b;
-				var c = g.c;
-				var h = g.d;
-				var s = g.e;
-				return A5(
-					$author$project$Types$Numbers701,
-					i,
-					o,
-					c,
-					h,
-					A2(fix_scores, $author$project$Game$new_num_score, s));
-			case 2:
-				var i = g.a;
-				var o = g.b;
-				var c = g.c;
-				var h = g.d;
-				var s = g.e;
-				return A5(
-					$author$project$Types$Numbers501,
-					i,
-					o,
-					c,
-					h,
-					A2(fix_scores, $author$project$Game$new_num_score, s));
-			case 3:
-				var i = g.a;
-				var o = g.b;
-				var c = g.c;
-				var h = g.d;
-				var s = g.e;
-				return A5(
-					$author$project$Types$Numbers301,
-					i,
-					o,
-					c,
-					h,
-					A2(fix_scores, $author$project$Game$new_num_score, s));
-			case 4:
-				var v = g.a;
-				var c = g.b;
-				var h = g.c;
-				var s = g.d;
-				return A4(
-					$author$project$Types$AroundTheClock,
-					v,
-					c,
-					h,
-					A2(fix_scores, $author$project$Game$new_atc_score, s));
-			case 5:
-				var v = g.a;
-				var c = g.b;
-				var h = g.c;
-				var s = g.d;
-				return A4(
-					$author$project$Types$AroundTheClock180,
-					v,
-					c,
-					h,
-					A2(fix_scores, $author$project$Game$new_atc_180_score, s));
-			case 6:
-				var v = g.a;
-				var c = g.b;
-				var h = g.c;
-				var s = g.d;
-				return A4(
-					$author$project$Types$Baseball,
-					v,
-					c,
-					h,
-					A2(fix_scores, $author$project$Game$new_bbl_score, s));
-			case 7:
-				var v = g.a;
-				var c = g.b;
-				var h = g.c;
-				var s = g.d;
-				return A4(
-					$author$project$Types$ChaseTheDragon,
-					v,
-					c,
-					h,
-					A2(fix_scores, $author$project$Game$new_ctd_score, s));
-			default:
-				var v = g.a;
-				var c = g.b;
-				var h = g.c;
-				var s = g.d;
-				return A4(
-					$author$project$Types$Cricket,
-					v,
-					c,
-					h,
-					A2(fix_scores, $author$project$Game$new_ckt_score, s));
-		}
-	});
-var $elm$core$List$any = F2(
-	function (isOkay, list) {
-		any:
-		while (true) {
-			if (!list.b) {
-				return false;
+			var _v1 = A2($author$project$Game$find_by_id, pid, s);
+			if (_v1.$ === 1) {
+				return s;
 			} else {
-				var x = list.a;
-				var xs = list.b;
-				if (isOkay(x)) {
-					return true;
-				} else {
-					var $temp$isOkay = isOkay,
-						$temp$list = xs;
-					isOkay = $temp$isOkay;
-					list = $temp$list;
-					continue any;
-				}
+				var ps = _v1.a;
+				return A3(
+					$author$project$Game$update_by_id,
+					pid,
+					f(
+						_Utils_Tuple2(pid, ps)),
+					s);
 			}
 		}
 	});
-var $elm$core$Basics$ge = _Utils_ge;
-var $author$project$Game$player_removed = F2(
-	function (l, g) {
-		var fix_scores = function (s) {
-			return A2(
-				$elm$core$List$filter,
-				function (_v1) {
-					var i = _v1.a;
-					return A2(
-						$elm$core$List$any,
-						function (p) {
-							return _Utils_eq(p.r, i);
-						},
-						l);
-				},
-				s);
-		};
-		var fix_current = function (i) {
-			return (_Utils_cmp(
-				i,
-				$elm$core$List$length(l) - 1) > -1) ? 0 : i;
-		};
-		switch (g.$) {
-			case 0:
-				return $author$project$Types$NoGame;
-			case 1:
-				var i = g.a;
-				var o = g.b;
-				var c = g.c;
-				var h = g.d;
-				var s = g.e;
-				return A5(
-					$author$project$Types$Numbers701,
-					i,
-					o,
-					fix_current(c),
-					h,
-					fix_scores(s));
-			case 2:
-				var i = g.a;
-				var o = g.b;
-				var c = g.c;
-				var h = g.d;
-				var s = g.e;
-				return A5(
-					$author$project$Types$Numbers501,
-					i,
-					o,
-					fix_current(c),
-					h,
-					fix_scores(s));
-			case 3:
-				var i = g.a;
-				var o = g.b;
-				var c = g.c;
-				var h = g.d;
-				var s = g.e;
-				return A5(
-					$author$project$Types$Numbers301,
-					i,
-					o,
-					fix_current(c),
-					h,
-					fix_scores(s));
-			case 4:
-				var v = g.a;
-				var c = g.b;
-				var h = g.c;
-				var s = g.d;
-				return A4(
-					$author$project$Types$AroundTheClock,
-					v,
-					fix_current(c),
-					h,
-					fix_scores(s));
-			case 5:
-				var v = g.a;
-				var c = g.b;
-				var h = g.c;
-				var s = g.d;
-				return A4(
-					$author$project$Types$AroundTheClock180,
-					v,
-					fix_current(c),
-					h,
-					fix_scores(s));
-			case 6:
-				var v = g.a;
-				var c = g.b;
-				var h = g.c;
-				var s = g.d;
-				return A4(
-					$author$project$Types$Baseball,
-					v,
-					fix_current(c),
-					h,
-					fix_scores(s));
-			case 7:
-				var v = g.a;
-				var c = g.b;
-				var h = g.c;
-				var s = g.d;
-				return A4(
-					$author$project$Types$ChaseTheDragon,
-					v,
-					fix_current(c),
-					h,
-					fix_scores(s));
-			default:
-				var v = g.a;
-				var c = g.b;
-				var h = g.c;
-				var s = g.d;
-				return A4(
-					$author$project$Types$Cricket,
-					v,
-					fix_current(c),
-					h,
-					fix_scores(s));
+var $author$project$Game$atc_next = function (ht) {
+	switch (ht.$) {
+		case 0:
+			return $elm$core$Maybe$Nothing;
+		case 1:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit2(1));
+		case 2:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit3(1));
+		case 3:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit4(1));
+		case 4:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit5(1));
+		case 5:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit6(1));
+		case 6:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit7(1));
+		case 7:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit8(1));
+		case 8:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit9(1));
+		case 9:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit10(1));
+		case 10:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit11(1));
+		case 11:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit12(1));
+		case 12:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit13(1));
+		case 13:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit14(1));
+		case 14:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit15(1));
+		case 15:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit16(1));
+		case 16:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit17(1));
+		case 17:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit18(1));
+		case 18:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit19(1));
+		case 19:
+			return $elm$core$Maybe$Just(
+				$author$project$Types$Hit20(1));
+		case 20:
+			return $elm$core$Maybe$Just($author$project$Types$HitBullseye);
+		case 21:
+			return $elm$core$Maybe$Just($author$project$Types$HitDoubleBullseye);
+		default:
+			return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Cascade$cascade = F2(
+	function (def, l) {
+		var check = F2(
+			function (_v2, acc) {
+				var b = _v2.a;
+				var a = _v2.b;
+				if (acc.$ === 1) {
+					return b ? $elm$core$Maybe$Just(a) : acc;
+				} else {
+					var v = acc;
+					return v;
+				}
+			});
+		var _v0 = A3($elm$core$List$foldl, check, $elm$core$Maybe$Nothing, l);
+		if (!_v0.$) {
+			var a = _v0.a;
+			return a;
+		} else {
+			return def;
 		}
 	});
+var $author$project$Game$hit_eq_shallow = F2(
+	function (a, b) {
+		var _v0 = _Utils_Tuple2(a, b);
+		_v0$23:
+		while (true) {
+			switch (_v0.a.$) {
+				case 0:
+					if (!_v0.b.$) {
+						var _v1 = _v0.a;
+						var _v2 = _v0.b;
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 1:
+					if (_v0.b.$ === 1) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 2:
+					if (_v0.b.$ === 2) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 3:
+					if (_v0.b.$ === 3) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 4:
+					if (_v0.b.$ === 4) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 5:
+					if (_v0.b.$ === 5) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 6:
+					if (_v0.b.$ === 6) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 7:
+					if (_v0.b.$ === 7) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 8:
+					if (_v0.b.$ === 8) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 9:
+					if (_v0.b.$ === 9) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 10:
+					if (_v0.b.$ === 10) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 11:
+					if (_v0.b.$ === 11) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 12:
+					if (_v0.b.$ === 12) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 13:
+					if (_v0.b.$ === 13) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 14:
+					if (_v0.b.$ === 14) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 15:
+					if (_v0.b.$ === 15) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 16:
+					if (_v0.b.$ === 16) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 17:
+					if (_v0.b.$ === 17) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 18:
+					if (_v0.b.$ === 18) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 19:
+					if (_v0.b.$ === 19) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 20:
+					if (_v0.b.$ === 20) {
+						return true;
+					} else {
+						break _v0$23;
+					}
+				case 21:
+					if (_v0.b.$ === 21) {
+						var _v3 = _v0.a;
+						var _v4 = _v0.b;
+						return true;
+					} else {
+						break _v0$23;
+					}
+				default:
+					if (_v0.b.$ === 22) {
+						var _v5 = _v0.a;
+						var _v6 = _v0.b;
+						return true;
+					} else {
+						break _v0$23;
+					}
+			}
+		}
+		return false;
+	});
+var $author$project$Game$hit_eq_shallow_m = F2(
+	function (a, mb) {
+		if (!mb.$) {
+			var b = mb.a;
+			return A2($author$project$Game$hit_eq_shallow, a, b);
+		} else {
+			return false;
+		}
+	});
+var $author$project$Game$around_the_clock = F4(
+	function (v, c, hl, sl) {
+		var check = F2(
+			function (h, acc) {
+				var _v1 = $elm$core$List$head(acc);
+				if (_v1.$ === 1) {
+					return A2(
+						$author$project$Game$hit_eq_shallow,
+						h,
+						$author$project$Types$Hit1(1)) ? _List_fromArray(
+						[h]) : _List_Nil;
+				} else {
+					var n = _v1.a;
+					return A2(
+						$author$project$Game$hit_eq_shallow_m,
+						h,
+						$author$project$Game$atc_next(n)) ? A2($elm$core$List$cons, h, acc) : acc;
+				}
+			});
+		var tally = function (s) {
+			return A3($elm$core$List$foldr, check, s, hl);
+		};
+		var calc = function (_v0) {
+			var s = _v0.b;
+			return A2(
+				$author$project$Cascade$cascade,
+				tally(s),
+				_List_fromArray(
+					[
+						_Utils_Tuple2(
+						(!v) && ($elm$core$List$length(hl) === 20),
+						s),
+						_Utils_Tuple2(
+						(v === 1) && ($elm$core$List$length(hl) === 21),
+						s),
+						_Utils_Tuple2(
+						(v === 2) && ($elm$core$List$length(hl) === 22),
+						s)
+					]));
+		};
+		return A3($author$project$Game$apply_score, c, sl, calc);
+	});
+var $author$project$Types$SubMissed = 0;
+var $author$project$Game$sub_hit = function (h) {
+	switch (h.$) {
+		case 0:
+			return 0;
+		case 1:
+			var s = h.a;
+			return s;
+		case 2:
+			var s = h.a;
+			return s;
+		case 3:
+			var s = h.a;
+			return s;
+		case 4:
+			var s = h.a;
+			return s;
+		case 5:
+			var s = h.a;
+			return s;
+		case 6:
+			var s = h.a;
+			return s;
+		case 7:
+			var s = h.a;
+			return s;
+		case 8:
+			var s = h.a;
+			return s;
+		case 9:
+			var s = h.a;
+			return s;
+		case 10:
+			var s = h.a;
+			return s;
+		case 11:
+			var s = h.a;
+			return s;
+		case 12:
+			var s = h.a;
+			return s;
+		case 13:
+			var s = h.a;
+			return s;
+		case 14:
+			var s = h.a;
+			return s;
+		case 15:
+			var s = h.a;
+			return s;
+		case 16:
+			var s = h.a;
+			return s;
+		case 17:
+			var s = h.a;
+			return s;
+		case 18:
+			var s = h.a;
+			return s;
+		case 19:
+			var s = h.a;
+			return s;
+		case 20:
+			var s = h.a;
+			return s;
+		case 21:
+			return 1;
+		default:
+			return 2;
+	}
+};
+var $author$project$Game$around_the_clock_180 = F4(
+	function (v, c, hl, sl) {
+		var bonus = function (h) {
+			if (!v) {
+				var _v4 = $author$project$Game$sub_hit(h);
+				if (_v4 === 2) {
+					return 3;
+				} else {
+					return 1;
+				}
+			} else {
+				var _v5 = $author$project$Game$sub_hit(h);
+				if (_v5 === 3) {
+					return 3;
+				} else {
+					return 1;
+				}
+			}
+		};
+		var check = F2(
+			function (h, acc) {
+				var _v1 = $elm$core$List$head(acc);
+				if (_v1.$ === 1) {
+					return A2(
+						$author$project$Game$hit_eq_shallow,
+						h,
+						$author$project$Types$Hit1(1)) ? _List_fromArray(
+						[
+							_Utils_Tuple2(
+							h,
+							bonus(h))
+						]) : _List_Nil;
+				} else {
+					var _v2 = _v1.a;
+					var n = _v2.a;
+					return A2(
+						$author$project$Game$hit_eq_shallow_m,
+						h,
+						$author$project$Game$atc_next(n)) ? A2(
+						$elm$core$List$cons,
+						_Utils_Tuple2(
+							h,
+							bonus(h)),
+						acc) : acc;
+				}
+			});
+		var tally = function (s) {
+			return A3($elm$core$List$foldr, check, s, hl);
+		};
+		var calc = function (_v0) {
+			var s = _v0.b;
+			return ($elm$core$List$length(hl) === 20) ? s : tally(s);
+		};
+		return A3($author$project$Game$apply_score, c, sl, calc);
+	});
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $elm$core$List$sortBy = _List_sortBy;
+var $elm$core$List$sort = function (xs) {
+	return A2($elm$core$List$sortBy, $elm$core$Basics$identity, xs);
+};
 var $elm$core$List$takeReverse = F3(
 	function (n, list, kept) {
 		takeReverse:
@@ -7270,6 +7165,2249 @@ var $elm$core$List$take = F2(
 	function (n, list) {
 		return A3($elm$core$List$takeFast, 0, n, list);
 	});
+var $author$project$Game$baseball = F5(
+	function (v, c, hl, _v0, sl) {
+		var i = _v0;
+		var update_inning_score = F3(
+			function (s, _v14, acc) {
+				var i2 = _v14.a;
+				var s2 = _v14.b;
+				var sc2 = _v14.c;
+				return _Utils_eq(i, i2) ? A2(
+					$elm$core$List$cons,
+					_Utils_Tuple3(i, 1, s + sc2),
+					acc) : A2(
+					$elm$core$List$cons,
+					_Utils_Tuple3(i2, s2, sc2),
+					acc);
+			});
+		var total_score = function (_v13) {
+			var l = _v13;
+			return A3(
+				$elm$core$List$foldl,
+				F2(
+					function (_v12, acc) {
+						var s = _v12.c;
+						return acc + s;
+					}),
+				0,
+				l);
+		};
+		var total_scores = function (l) {
+			return A3(
+				$elm$core$List$foldl,
+				F2(
+					function (_v11, acc) {
+						var s = _v11.b;
+						return A2(
+							$elm$core$List$cons,
+							total_score(s),
+							acc);
+					}),
+				_List_Nil,
+				l);
+		};
+		var tie_exists = function (l) {
+			var _v9 = A2(
+				$elm$core$List$take,
+				2,
+				$elm$core$List$reverse(
+					$elm$core$List$sort(
+						total_scores(l))));
+			if (_v9.b && _v9.b.b) {
+				var a = _v9.a;
+				var _v10 = _v9.b;
+				var b = _v10.a;
+				return _Utils_eq(a, b);
+			} else {
+				return false;
+			}
+		};
+		var points_for_tie = F2(
+			function (h, acc) {
+				switch (h.$) {
+					case 21:
+						return 1;
+					case 22:
+						return 2;
+					default:
+						return 0;
+				}
+			});
+		var points_for_sub = function (s) {
+			switch (s) {
+				case 1:
+					return 1;
+				case 2:
+					return 2;
+				case 3:
+					return 3;
+				default:
+					return 0;
+			}
+		};
+		var points_for_inning = F2(
+			function (h, acc) {
+				var _v6 = _Utils_Tuple2(i, h);
+				_v6$9:
+				while (true) {
+					switch (_v6.a) {
+						case 1:
+							if (_v6.b.$ === 1) {
+								var s = _v6.b.a;
+								return points_for_sub(s);
+							} else {
+								break _v6$9;
+							}
+						case 2:
+							if (_v6.b.$ === 2) {
+								var s = _v6.b.a;
+								return points_for_sub(s);
+							} else {
+								break _v6$9;
+							}
+						case 3:
+							if (_v6.b.$ === 3) {
+								var s = _v6.b.a;
+								return points_for_sub(s);
+							} else {
+								break _v6$9;
+							}
+						case 4:
+							if (_v6.b.$ === 4) {
+								var s = _v6.b.a;
+								return points_for_sub(s);
+							} else {
+								break _v6$9;
+							}
+						case 5:
+							if (_v6.b.$ === 5) {
+								var s = _v6.b.a;
+								return points_for_sub(s);
+							} else {
+								break _v6$9;
+							}
+						case 6:
+							if (_v6.b.$ === 6) {
+								var s = _v6.b.a;
+								return points_for_sub(s);
+							} else {
+								break _v6$9;
+							}
+						case 7:
+							if (_v6.b.$ === 7) {
+								var s = _v6.b.a;
+								return points_for_sub(s);
+							} else {
+								break _v6$9;
+							}
+						case 8:
+							if (_v6.b.$ === 8) {
+								var s = _v6.b.a;
+								return points_for_sub(s);
+							} else {
+								break _v6$9;
+							}
+						case 9:
+							if (_v6.b.$ === 9) {
+								var s = _v6.b.a;
+								return points_for_sub(s);
+							} else {
+								break _v6$9;
+							}
+						default:
+							break _v6$9;
+					}
+				}
+				return 0;
+			});
+		var closed = F2(
+			function (_v5, acc) {
+				var s = _v5.b;
+				return acc ? (s === 1) : acc;
+			});
+		var player_closed = F2(
+			function (_v4, acc) {
+				var pid = _v4.a;
+				var s = _v4.b;
+				return acc ? A3($elm$core$List$foldr, closed, true, s) : acc;
+			});
+		var apply_inning_points = F2(
+			function (il, s) {
+				return A3(
+					$elm$core$List$foldr,
+					update_inning_score(s),
+					_List_Nil,
+					il);
+			});
+		var calc_7th = function (l) {
+			var points = A3($elm$core$List$foldr, points_for_inning, 0, hl);
+			var penalty = -((total_score(l) / 2) | 0);
+			if (!points) {
+				return A2(apply_inning_points, l, penalty);
+			} else {
+				var x = points;
+				return A2(apply_inning_points, l, x);
+			}
+		};
+		var calc_inning = function (il) {
+			return A2(
+				apply_inning_points,
+				il,
+				A3($elm$core$List$foldr, points_for_inning, 0, hl));
+		};
+		var calc_tie_game = function (il) {
+			return A2(
+				apply_inning_points,
+				il,
+				A3($elm$core$List$foldr, points_for_tie, 0, hl));
+		};
+		var calc = function (_v2) {
+			var il = _v2.b;
+			return A2(
+				$author$project$Cascade$cascade,
+				calc_inning(il),
+				_List_fromArray(
+					[
+						_Utils_Tuple2(
+						A3($elm$core$List$foldr, closed, true, il),
+						il),
+						_Utils_Tuple2(
+						i > 9,
+						calc_tie_game(il)),
+						_Utils_Tuple2(
+						(v === 1) && (i === 7),
+						calc_7th(il))
+					]));
+		};
+		var append_inning = F3(
+			function (ei, _v1, acc) {
+				var pid = _v1.a;
+				var l = _v1.b;
+				return A2(
+					$elm$core$List$cons,
+					_Utils_Tuple2(
+						pid,
+						_Utils_ap(
+							l,
+							_List_fromArray(
+								[
+									_Utils_Tuple3(ei, 0, 0)
+								]))),
+					acc);
+			});
+		var all_closed = function (l) {
+			return A3($elm$core$List$foldr, player_closed, true, l);
+		};
+		var add_extra_inning = function (l) {
+			return (all_closed(l) && tie_exists(l)) ? A3(
+				$elm$core$List$foldr,
+				append_inning(i + 1),
+				_List_Nil,
+				l) : l;
+		};
+		return add_extra_inning(
+			A3($author$project$Game$apply_score, c, sl, calc));
+	});
+var $author$project$Game$ctd_next = function (ht) {
+	_v0$13:
+	while (true) {
+		switch (ht.$) {
+			case 10:
+				if (ht.a === 3) {
+					var _v1 = ht.a;
+					return $elm$core$Maybe$Just(
+						$author$project$Types$Hit11(3));
+				} else {
+					break _v0$13;
+				}
+			case 11:
+				if (ht.a === 3) {
+					var _v2 = ht.a;
+					return $elm$core$Maybe$Just(
+						$author$project$Types$Hit12(3));
+				} else {
+					break _v0$13;
+				}
+			case 12:
+				if (ht.a === 3) {
+					var _v3 = ht.a;
+					return $elm$core$Maybe$Just(
+						$author$project$Types$Hit13(3));
+				} else {
+					break _v0$13;
+				}
+			case 13:
+				if (ht.a === 3) {
+					var _v4 = ht.a;
+					return $elm$core$Maybe$Just(
+						$author$project$Types$Hit14(3));
+				} else {
+					break _v0$13;
+				}
+			case 14:
+				if (ht.a === 3) {
+					var _v5 = ht.a;
+					return $elm$core$Maybe$Just(
+						$author$project$Types$Hit15(3));
+				} else {
+					break _v0$13;
+				}
+			case 15:
+				if (ht.a === 3) {
+					var _v6 = ht.a;
+					return $elm$core$Maybe$Just(
+						$author$project$Types$Hit16(3));
+				} else {
+					break _v0$13;
+				}
+			case 16:
+				if (ht.a === 3) {
+					var _v7 = ht.a;
+					return $elm$core$Maybe$Just(
+						$author$project$Types$Hit17(3));
+				} else {
+					break _v0$13;
+				}
+			case 17:
+				if (ht.a === 3) {
+					var _v8 = ht.a;
+					return $elm$core$Maybe$Just(
+						$author$project$Types$Hit18(3));
+				} else {
+					break _v0$13;
+				}
+			case 18:
+				if (ht.a === 3) {
+					var _v9 = ht.a;
+					return $elm$core$Maybe$Just(
+						$author$project$Types$Hit19(3));
+				} else {
+					break _v0$13;
+				}
+			case 19:
+				if (ht.a === 3) {
+					var _v10 = ht.a;
+					return $elm$core$Maybe$Just(
+						$author$project$Types$Hit20(3));
+				} else {
+					break _v0$13;
+				}
+			case 20:
+				if (ht.a === 3) {
+					var _v11 = ht.a;
+					return $elm$core$Maybe$Just($author$project$Types$HitBullseye);
+				} else {
+					break _v0$13;
+				}
+			case 21:
+				return $elm$core$Maybe$Just($author$project$Types$HitDoubleBullseye);
+			case 22:
+				return $elm$core$Maybe$Just(
+					$author$project$Types$Hit10(3));
+			default:
+				break _v0$13;
+		}
+	}
+	return $elm$core$Maybe$Nothing;
+};
+var $author$project$Game$hit_eq_m = F2(
+	function (a, mb) {
+		if (!mb.$) {
+			var b = mb.a;
+			return _Utils_eq(a, b);
+		} else {
+			return false;
+		}
+	});
+var $author$project$Game$chase_the_dragon = F4(
+	function (v, c, hl, sl) {
+		var check = F2(
+			function (h, acc) {
+				var _v1 = $elm$core$List$head(acc);
+				if (_v1.$ === 1) {
+					return _Utils_eq(
+						h,
+						$author$project$Types$Hit10(3)) ? _List_fromArray(
+						[h]) : _List_Nil;
+				} else {
+					var n = _v1.a;
+					return A2(
+						$author$project$Game$hit_eq_m,
+						h,
+						$author$project$Game$ctd_next(n)) ? A2($elm$core$List$cons, h, acc) : acc;
+				}
+			});
+		var tally = function (s) {
+			return A3($elm$core$List$foldr, check, s, hl);
+		};
+		var calc = function (_v0) {
+			var s = _v0.b;
+			return A2(
+				$author$project$Cascade$cascade,
+				tally(s),
+				_List_fromArray(
+					[
+						_Utils_Tuple2(
+						(!v) && ($elm$core$List$length(hl) === 12),
+						s),
+						_Utils_Tuple2(
+						(v === 1) && ($elm$core$List$length(hl) === 26),
+						s)
+					]));
+		};
+		return A3($author$project$Game$apply_score, c, sl, calc);
+	});
+var $author$project$Game$clear_hits = function (g) {
+	switch (g.$) {
+		case 0:
+			return $author$project$Types$NoGame;
+		case 1:
+			var i = g.a;
+			var o = g.b;
+			var c = g.c;
+			var s = g.e;
+			return A5($author$project$Types$Numbers701, i, o, c, _List_Nil, s);
+		case 2:
+			var i = g.a;
+			var o = g.b;
+			var c = g.c;
+			var s = g.e;
+			return A5($author$project$Types$Numbers501, i, o, c, _List_Nil, s);
+		case 3:
+			var i = g.a;
+			var o = g.b;
+			var c = g.c;
+			var s = g.e;
+			return A5($author$project$Types$Numbers301, i, o, c, _List_Nil, s);
+		case 4:
+			var v = g.a;
+			var c = g.b;
+			var s = g.d;
+			return A4($author$project$Types$AroundTheClock, v, c, _List_Nil, s);
+		case 5:
+			var v = g.a;
+			var c = g.b;
+			var s = g.d;
+			return A4($author$project$Types$AroundTheClock180, v, c, _List_Nil, s);
+		case 6:
+			var v = g.a;
+			var c = g.b;
+			var i = g.d;
+			var s = g.e;
+			return A5($author$project$Types$Baseball, v, c, _List_Nil, i, s);
+		case 7:
+			var v = g.a;
+			var c = g.b;
+			var s = g.d;
+			return A4($author$project$Types$ChaseTheDragon, v, c, _List_Nil, s);
+		default:
+			var v = g.a;
+			var c = g.b;
+			var s = g.d;
+			return A4($author$project$Types$Cricket, v, c, _List_Nil, s);
+	}
+};
+var $author$project$Types$S15 = 5;
+var $author$project$Types$S16 = 4;
+var $author$project$Types$S17 = 3;
+var $author$project$Types$S18 = 2;
+var $author$project$Types$S19 = 1;
+var $author$project$Types$S20 = 0;
+var $author$project$Types$SB = 6;
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var $elm$core$Basics$not = _Basics_not;
+var $elm$core$List$all = F2(
+	function (isOkay, list) {
+		return !A2(
+			$elm$core$List$any,
+			A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay),
+			list);
+	});
+var $author$project$Game$hit_base_points = function (h) {
+	switch (h.$) {
+		case 0:
+			return 0;
+		case 1:
+			var s = h.a;
+			return 1;
+		case 2:
+			var s = h.a;
+			return 2;
+		case 3:
+			var s = h.a;
+			return 3;
+		case 4:
+			var s = h.a;
+			return 4;
+		case 5:
+			var s = h.a;
+			return 5;
+		case 6:
+			var s = h.a;
+			return 6;
+		case 7:
+			var s = h.a;
+			return 7;
+		case 8:
+			var s = h.a;
+			return 8;
+		case 9:
+			var s = h.a;
+			return 9;
+		case 10:
+			var s = h.a;
+			return 10;
+		case 11:
+			var s = h.a;
+			return 11;
+		case 12:
+			var s = h.a;
+			return 12;
+		case 13:
+			var s = h.a;
+			return 13;
+		case 14:
+			var s = h.a;
+			return 14;
+		case 15:
+			var s = h.a;
+			return 15;
+		case 16:
+			var s = h.a;
+			return 16;
+		case 17:
+			var s = h.a;
+			return 17;
+		case 18:
+			var s = h.a;
+			return 18;
+		case 19:
+			var s = h.a;
+			return 19;
+		case 20:
+			var s = h.a;
+			return 20;
+		case 21:
+			return 25;
+		default:
+			return 25;
+	}
+};
+var $author$project$Game$hit_points = function (h) {
+	var mult = F2(
+		function (p, s) {
+			switch (s) {
+				case 0:
+					return 0;
+				case 1:
+					return p;
+				case 2:
+					return p * 2;
+				default:
+					return p * 3;
+			}
+		});
+	switch (h.$) {
+		case 0:
+			return 0;
+		case 1:
+			var s = h.a;
+			return A2(mult, 1, s);
+		case 2:
+			var s = h.a;
+			return A2(mult, 2, s);
+		case 3:
+			var s = h.a;
+			return A2(mult, 3, s);
+		case 4:
+			var s = h.a;
+			return A2(mult, 4, s);
+		case 5:
+			var s = h.a;
+			return A2(mult, 5, s);
+		case 6:
+			var s = h.a;
+			return A2(mult, 6, s);
+		case 7:
+			var s = h.a;
+			return A2(mult, 7, s);
+		case 8:
+			var s = h.a;
+			return A2(mult, 8, s);
+		case 9:
+			var s = h.a;
+			return A2(mult, 9, s);
+		case 10:
+			var s = h.a;
+			return A2(mult, 10, s);
+		case 11:
+			var s = h.a;
+			return A2(mult, 11, s);
+		case 12:
+			var s = h.a;
+			return A2(mult, 12, s);
+		case 13:
+			var s = h.a;
+			return A2(mult, 13, s);
+		case 14:
+			var s = h.a;
+			return A2(mult, 14, s);
+		case 15:
+			var s = h.a;
+			return A2(mult, 15, s);
+		case 16:
+			var s = h.a;
+			return A2(mult, 16, s);
+		case 17:
+			var s = h.a;
+			return A2(mult, 17, s);
+		case 18:
+			var s = h.a;
+			return A2(mult, 18, s);
+		case 19:
+			var s = h.a;
+			return A2(mult, 19, s);
+		case 20:
+			var s = h.a;
+			return A2(mult, 20, s);
+		case 21:
+			return 25;
+		default:
+			return 50;
+	}
+};
+var $elm$core$Basics$neq = _Utils_notEqual;
+var $author$project$Game$cricket = F3(
+	function (c, hl, sl) {
+		var set = F3(
+			function (s, a, b) {
+				switch (a) {
+					case 0:
+						return _Utils_update(
+							s,
+							{o: b});
+					case 1:
+						return _Utils_update(
+							s,
+							{n: b});
+					case 2:
+						return _Utils_update(
+							s,
+							{m: b});
+					case 3:
+						return _Utils_update(
+							s,
+							{l: b});
+					case 4:
+						return _Utils_update(
+							s,
+							{k: b});
+					case 5:
+						return _Utils_update(
+							s,
+							{j: b});
+					default:
+						return _Utils_update(
+							s,
+							{p: b});
+				}
+			});
+		var last_open = F2(
+			function (pid, a) {
+				var others = function (_v11) {
+					var id = _v11.a;
+					return !_Utils_eq(pid, id);
+				};
+				var open = function (_v10) {
+					var s = _v10.b;
+					switch (a) {
+						case 0:
+							return s.o === 3;
+						case 1:
+							return s.n === 3;
+						case 2:
+							return s.m === 3;
+						case 3:
+							return s.l === 3;
+						case 4:
+							return s.k === 3;
+						case 5:
+							return s.j === 3;
+						default:
+							return s.p === 3;
+					}
+				};
+				return A2(
+					$elm$core$List$all,
+					open,
+					A2($elm$core$List$filter, others, sl));
+			});
+		var trim_points = F3(
+			function (pid, a, i) {
+				return A2(last_open, pid, a) ? 0 : i;
+			});
+		var get = F2(
+			function (s, a) {
+				switch (a) {
+					case 0:
+						return s.o;
+					case 1:
+						return s.n;
+					case 2:
+						return s.m;
+					case 3:
+						return s.l;
+					case 4:
+						return s.k;
+					case 5:
+						return s.j;
+					default:
+						return s.p;
+				}
+			});
+		var close = F2(
+			function (l, a) {
+				var change = function (_v7) {
+					var p = _v7.a;
+					var s = _v7.b;
+					switch (a) {
+						case 0:
+							return _Utils_Tuple2(
+								p,
+								_Utils_update(
+									s,
+									{o: 4}));
+						case 1:
+							return _Utils_Tuple2(
+								p,
+								_Utils_update(
+									s,
+									{n: 4}));
+						case 2:
+							return _Utils_Tuple2(
+								p,
+								_Utils_update(
+									s,
+									{m: 4}));
+						case 3:
+							return _Utils_Tuple2(
+								p,
+								_Utils_update(
+									s,
+									{l: 4}));
+						case 4:
+							return _Utils_Tuple2(
+								p,
+								_Utils_update(
+									s,
+									{k: 4}));
+						case 5:
+							return _Utils_Tuple2(
+								p,
+								_Utils_update(
+									s,
+									{j: 4}));
+						default:
+							return _Utils_Tuple2(
+								p,
+								_Utils_update(
+									s,
+									{p: 4}));
+					}
+				};
+				return A2($elm$core$List$map, change, l);
+			});
+		var all_open = F2(
+			function (l, a) {
+				var open = function (_v5) {
+					var s = _v5.b;
+					switch (a) {
+						case 0:
+							return s.o === 3;
+						case 1:
+							return s.n === 3;
+						case 2:
+							return s.m === 3;
+						case 3:
+							return s.l === 3;
+						case 4:
+							return s.k === 3;
+						case 5:
+							return s.j === 3;
+						default:
+							return s.p === 3;
+					}
+				};
+				return A2($elm$core$List$all, open, l);
+			});
+		var close_slice = F2(
+			function (a, l) {
+				return A2(all_open, l, a) ? A2(close, l, a) : l;
+			});
+		var post_process = function (l) {
+			return A2(
+				close_slice,
+				0,
+				A2(
+					close_slice,
+					1,
+					A2(
+						close_slice,
+						2,
+						A2(
+							close_slice,
+							3,
+							A2(
+								close_slice,
+								4,
+								A2(
+									close_slice,
+									5,
+									A2(close_slice, 6, l)))))));
+		};
+		var add_points = F2(
+			function (_v3, i) {
+				var s = _v3;
+				return s + i;
+			});
+		var set_with_score = F5(
+			function (pid, s, a, b, p) {
+				switch (a) {
+					case 0:
+						return _Utils_update(
+							s,
+							{
+								a: A2(
+									add_points,
+									s.a,
+									A3(trim_points, pid, a, p)),
+								o: b
+							});
+					case 1:
+						return _Utils_update(
+							s,
+							{
+								a: A2(
+									add_points,
+									s.a,
+									A3(trim_points, pid, a, p)),
+								n: b
+							});
+					case 2:
+						return _Utils_update(
+							s,
+							{
+								a: A2(
+									add_points,
+									s.a,
+									A3(trim_points, pid, a, p)),
+								m: b
+							});
+					case 3:
+						return _Utils_update(
+							s,
+							{
+								a: A2(
+									add_points,
+									s.a,
+									A3(trim_points, pid, a, p)),
+								l: b
+							});
+					case 4:
+						return _Utils_update(
+							s,
+							{
+								a: A2(
+									add_points,
+									s.a,
+									A3(trim_points, pid, a, p)),
+								k: b
+							});
+					case 5:
+						return _Utils_update(
+							s,
+							{
+								a: A2(
+									add_points,
+									s.a,
+									A3(trim_points, pid, a, p)),
+								j: b
+							});
+					default:
+						return _Utils_update(
+							s,
+							{
+								a: A2(
+									add_points,
+									s.a,
+									A3(trim_points, pid, a, p)),
+								p: b
+							});
+				}
+			});
+		var check = F5(
+			function (pid, cs, h, x, a) {
+				return A2(
+					$author$project$Cascade$cascade,
+					cs,
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							!A2(get, cs, a),
+							A2(
+								$author$project$Cascade$cascade,
+								A3(set, cs, a, 1),
+								_List_fromArray(
+									[
+										_Utils_Tuple2(
+										x === 2,
+										A3(set, cs, a, 2)),
+										_Utils_Tuple2(
+										x === 3,
+										A3(set, cs, a, 3))
+									]))),
+							_Utils_Tuple2(
+							A2(get, cs, a) === 1,
+							A2(
+								$author$project$Cascade$cascade,
+								A3(set, cs, a, 2),
+								_List_fromArray(
+									[
+										_Utils_Tuple2(
+										x === 2,
+										A3(set, cs, a, 3)),
+										_Utils_Tuple2(
+										x === 3,
+										A5(
+											set_with_score,
+											pid,
+											cs,
+											a,
+											3,
+											$author$project$Game$hit_base_points(h)))
+									]))),
+							_Utils_Tuple2(
+							A2(get, cs, a) === 3,
+							A5(
+								set_with_score,
+								pid,
+								cs,
+								a,
+								3,
+								$author$project$Game$hit_points(h))),
+							_Utils_Tuple2(
+							A2(get, cs, a) === 4,
+							cs)
+						]));
+			});
+		var calc_hit = F3(
+			function (pid, h, s) {
+				switch (h.$) {
+					case 20:
+						var x = h.a;
+						return A5(check, pid, s, h, x, 0);
+					case 19:
+						var x = h.a;
+						return A5(check, pid, s, h, x, 1);
+					case 18:
+						var x = h.a;
+						return A5(check, pid, s, h, x, 2);
+					case 17:
+						var x = h.a;
+						return A5(check, pid, s, h, x, 3);
+					case 16:
+						var x = h.a;
+						return A5(check, pid, s, h, x, 4);
+					case 15:
+						var x = h.a;
+						return A5(check, pid, s, h, x, 5);
+					case 21:
+						return A5(check, pid, s, h, 1, 6);
+					case 22:
+						return A5(check, pid, s, h, 2, 6);
+					default:
+						return s;
+				}
+			});
+		var calc_basic = F2(
+			function (pid, s) {
+				return A3(
+					$elm$core$List$foldr,
+					calc_hit(pid),
+					s,
+					hl);
+			});
+		var calc = function (_v0) {
+			var pid = _v0.a;
+			var s = _v0.b;
+			return A2(calc_basic, pid, s);
+		};
+		return post_process(
+			A3($author$project$Game$apply_score, c, sl, calc));
+	});
+var $author$project$Types$Delta = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
+	});
+var $author$project$Types$DeltaNone = {$: 1};
+var $author$project$Game$cricket_golf = F3(
+	function (c, hl, sl) {
+		var set = F4(
+			function (s, a, b, d) {
+				switch (a) {
+					case 0:
+						return _Utils_Tuple2(
+							_Utils_update(
+								s,
+								{o: b}),
+							A2($elm$core$List$cons, $author$project$Types$DeltaNone, d));
+					case 1:
+						return _Utils_Tuple2(
+							_Utils_update(
+								s,
+								{n: b}),
+							A2($elm$core$List$cons, $author$project$Types$DeltaNone, d));
+					case 2:
+						return _Utils_Tuple2(
+							_Utils_update(
+								s,
+								{m: b}),
+							A2($elm$core$List$cons, $author$project$Types$DeltaNone, d));
+					case 3:
+						return _Utils_Tuple2(
+							_Utils_update(
+								s,
+								{l: b}),
+							A2($elm$core$List$cons, $author$project$Types$DeltaNone, d));
+					case 4:
+						return _Utils_Tuple2(
+							_Utils_update(
+								s,
+								{k: b}),
+							A2($elm$core$List$cons, $author$project$Types$DeltaNone, d));
+					case 5:
+						return _Utils_Tuple2(
+							_Utils_update(
+								s,
+								{j: b}),
+							A2($elm$core$List$cons, $author$project$Types$DeltaNone, d));
+					default:
+						return _Utils_Tuple2(
+							_Utils_update(
+								s,
+								{p: b}),
+							A2($elm$core$List$cons, $author$project$Types$DeltaNone, d));
+				}
+			});
+		var last_open = F2(
+			function (pid, a) {
+				var others = function (_v20) {
+					var id = _v20.a;
+					return !_Utils_eq(pid, id);
+				};
+				var open = function (_v19) {
+					var s = _v19.b;
+					switch (a) {
+						case 0:
+							return s.o === 3;
+						case 1:
+							return s.n === 3;
+						case 2:
+							return s.m === 3;
+						case 3:
+							return s.l === 3;
+						case 4:
+							return s.k === 3;
+						case 5:
+							return s.j === 3;
+						default:
+							return s.p === 3;
+					}
+				};
+				return A2(
+					$elm$core$List$all,
+					open,
+					A2($elm$core$List$filter, others, sl));
+			});
+		var trim_points = F3(
+			function (pid, a, i) {
+				return A2(last_open, pid, a) ? 0 : i;
+			});
+		var get = F2(
+			function (s, a) {
+				switch (a) {
+					case 0:
+						return s.o;
+					case 1:
+						return s.n;
+					case 2:
+						return s.m;
+					case 3:
+						return s.l;
+					case 4:
+						return s.k;
+					case 5:
+						return s.j;
+					default:
+						return s.p;
+				}
+			});
+		var close = F2(
+			function (l, a) {
+				var change = function (_v16) {
+					var p = _v16.a;
+					var s = _v16.b;
+					switch (a) {
+						case 0:
+							return _Utils_Tuple2(
+								p,
+								_Utils_update(
+									s,
+									{o: 4}));
+						case 1:
+							return _Utils_Tuple2(
+								p,
+								_Utils_update(
+									s,
+									{n: 4}));
+						case 2:
+							return _Utils_Tuple2(
+								p,
+								_Utils_update(
+									s,
+									{m: 4}));
+						case 3:
+							return _Utils_Tuple2(
+								p,
+								_Utils_update(
+									s,
+									{l: 4}));
+						case 4:
+							return _Utils_Tuple2(
+								p,
+								_Utils_update(
+									s,
+									{k: 4}));
+						case 5:
+							return _Utils_Tuple2(
+								p,
+								_Utils_update(
+									s,
+									{j: 4}));
+						default:
+							return _Utils_Tuple2(
+								p,
+								_Utils_update(
+									s,
+									{p: 4}));
+					}
+				};
+				return A2($elm$core$List$map, change, l);
+			});
+		var all_open = F2(
+			function (l, a) {
+				var open = function (_v14) {
+					var s = _v14.b;
+					switch (a) {
+						case 0:
+							return s.o === 3;
+						case 1:
+							return s.n === 3;
+						case 2:
+							return s.m === 3;
+						case 3:
+							return s.l === 3;
+						case 4:
+							return s.k === 3;
+						case 5:
+							return s.j === 3;
+						default:
+							return s.p === 3;
+					}
+				};
+				return A2($elm$core$List$all, open, l);
+			});
+		var close_slice = F2(
+			function (a, l) {
+				return A2(all_open, l, a) ? A2(close, l, a) : l;
+			});
+		var post_process = function (l) {
+			return A2(
+				close_slice,
+				0,
+				A2(
+					close_slice,
+					1,
+					A2(
+						close_slice,
+						2,
+						A2(
+							close_slice,
+							3,
+							A2(
+								close_slice,
+								4,
+								A2(
+									close_slice,
+									5,
+									A2(close_slice, 6, l)))))));
+		};
+		var add_points = F2(
+			function (_v12, i) {
+				var s = _v12;
+				return s + i;
+			});
+		var set_with_score = F6(
+			function (pid, s, a, b, d, p) {
+				switch (a) {
+					case 0:
+						return _Utils_Tuple2(
+							_Utils_update(
+								s,
+								{o: b}),
+							A2(
+								$elm$core$List$cons,
+								A2(
+									$author$project$Types$Delta,
+									0,
+									A2(
+										add_points,
+										s.a,
+										A3(trim_points, pid, a, p))),
+								d));
+					case 1:
+						return _Utils_Tuple2(
+							_Utils_update(
+								s,
+								{n: b}),
+							A2(
+								$elm$core$List$cons,
+								A2(
+									$author$project$Types$Delta,
+									1,
+									A2(
+										add_points,
+										s.a,
+										A3(trim_points, pid, a, p))),
+								d));
+					case 2:
+						return _Utils_Tuple2(
+							_Utils_update(
+								s,
+								{m: b}),
+							A2(
+								$elm$core$List$cons,
+								A2(
+									$author$project$Types$Delta,
+									2,
+									A2(
+										add_points,
+										s.a,
+										A3(trim_points, pid, a, p))),
+								d));
+					case 3:
+						return _Utils_Tuple2(
+							_Utils_update(
+								s,
+								{l: b}),
+							A2(
+								$elm$core$List$cons,
+								A2(
+									$author$project$Types$Delta,
+									3,
+									A2(
+										add_points,
+										s.a,
+										A3(trim_points, pid, a, p))),
+								d));
+					case 4:
+						return _Utils_Tuple2(
+							_Utils_update(
+								s,
+								{k: b}),
+							A2(
+								$elm$core$List$cons,
+								A2(
+									$author$project$Types$Delta,
+									4,
+									A2(
+										add_points,
+										s.a,
+										A3(trim_points, pid, a, p))),
+								d));
+					case 5:
+						return _Utils_Tuple2(
+							_Utils_update(
+								s,
+								{j: b}),
+							A2(
+								$elm$core$List$cons,
+								A2(
+									$author$project$Types$Delta,
+									5,
+									A2(
+										add_points,
+										s.a,
+										A3(trim_points, pid, a, p))),
+								d));
+					default:
+						return _Utils_Tuple2(
+							_Utils_update(
+								s,
+								{p: b}),
+							A2(
+								$elm$core$List$cons,
+								A2(
+									$author$project$Types$Delta,
+									6,
+									A2(
+										add_points,
+										s.a,
+										A3(trim_points, pid, a, p))),
+								d));
+				}
+			});
+		var check = F6(
+			function (pid, cs, h, x, d, a) {
+				return A2(
+					$author$project$Cascade$cascade,
+					_Utils_Tuple2(
+						cs,
+						A2($elm$core$List$cons, $author$project$Types$DeltaNone, d)),
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							!A2(get, cs, a),
+							A2(
+								$author$project$Cascade$cascade,
+								A4(set, cs, a, 1, d),
+								_List_fromArray(
+									[
+										_Utils_Tuple2(
+										x === 2,
+										A4(set, cs, a, 2, d)),
+										_Utils_Tuple2(
+										x === 3,
+										A4(set, cs, a, 3, d))
+									]))),
+							_Utils_Tuple2(
+							A2(get, cs, a) === 1,
+							A2(
+								$author$project$Cascade$cascade,
+								A4(set, cs, a, 2, d),
+								_List_fromArray(
+									[
+										_Utils_Tuple2(
+										x === 2,
+										A4(set, cs, a, 3, d)),
+										_Utils_Tuple2(
+										x === 3,
+										A6(
+											set_with_score,
+											pid,
+											cs,
+											a,
+											3,
+											d,
+											$author$project$Game$hit_base_points(h)))
+									]))),
+							_Utils_Tuple2(
+							A2(get, cs, a) === 3,
+							A6(
+								set_with_score,
+								pid,
+								cs,
+								a,
+								3,
+								d,
+								$author$project$Game$hit_points(h))),
+							_Utils_Tuple2(
+							A2(get, cs, a) === 4,
+							_Utils_Tuple2(
+								cs,
+								A2($elm$core$List$cons, $author$project$Types$DeltaNone, d)))
+						]));
+			});
+		var calc_hit = F3(
+			function (pid, h, _v10) {
+				var s = _v10.a;
+				var d = _v10.b;
+				switch (h.$) {
+					case 20:
+						var x = h.a;
+						return A6(check, pid, s, h, x, d, 0);
+					case 19:
+						var x = h.a;
+						return A6(check, pid, s, h, x, d, 1);
+					case 18:
+						var x = h.a;
+						return A6(check, pid, s, h, x, d, 2);
+					case 17:
+						var x = h.a;
+						return A6(check, pid, s, h, x, d, 3);
+					case 16:
+						var x = h.a;
+						return A6(check, pid, s, h, x, d, 4);
+					case 15:
+						var x = h.a;
+						return A6(check, pid, s, h, x, d, 5);
+					case 21:
+						return A6(check, pid, s, h, 1, d, 6);
+					case 22:
+						return A6(check, pid, s, h, 2, d, 6);
+					default:
+						return _Utils_Tuple2(
+							s,
+							A2($elm$core$List$cons, $author$project$Types$DeltaNone, d));
+				}
+			});
+		var calc_deltas = F2(
+			function (pid, s) {
+				return A3(
+					$elm$core$List$foldr,
+					calc_hit(pid),
+					_Utils_Tuple2(s, _List_Nil),
+					hl);
+			});
+		var add = F2(
+			function (_v7, _v8) {
+				var a = _v7;
+				var b = _v8;
+				return a + b;
+			});
+		var tally = F3(
+			function (s, slice, delta) {
+				switch (slice) {
+					case 0:
+						return ((s.o === 3) || (s.o === 4)) ? s.a : A2(add, s.a, delta);
+					case 1:
+						return ((s.n === 3) || (s.n === 4)) ? s.a : A2(add, s.a, delta);
+					case 2:
+						return ((s.m === 3) || (s.m === 4)) ? s.a : A2(add, s.a, delta);
+					case 3:
+						return ((s.l === 3) || (s.l === 4)) ? s.a : A2(add, s.a, delta);
+					case 4:
+						return ((s.k === 3) || (s.k === 4)) ? s.a : A2(add, s.a, delta);
+					case 5:
+						return ((s.j === 3) || (s.j === 4)) ? s.a : A2(add, s.a, delta);
+					default:
+						return ((s.p === 3) || (s.p === 4)) ? s.a : A2(add, s.a, delta);
+				}
+			});
+		var apply_delta_to_score = F2(
+			function (d, _v5) {
+				var pid = _v5.a;
+				var s = _v5.b;
+				if (d.$ === 1) {
+					return _Utils_Tuple2(pid, s);
+				} else {
+					var slice = d.a;
+					var delta = d.b;
+					return _Utils_Tuple2(
+						pid,
+						_Utils_update(
+							s,
+							{
+								a: A3(tally, s, slice, delta)
+							}));
+				}
+			});
+		var apply_deltas_to_score = F5(
+			function (pid, ps, dl, _v3, acc) {
+				var oid = _v3.a;
+				var os = _v3.b;
+				return _Utils_eq(pid, oid) ? A2(
+					$elm$core$List$cons,
+					_Utils_Tuple2(pid, ps),
+					acc) : A2(
+					$elm$core$List$cons,
+					A3(
+						$elm$core$List$foldl,
+						apply_delta_to_score,
+						_Utils_Tuple2(oid, os),
+						dl),
+					acc);
+			});
+		var apply_deltas_to_scores = F2(
+			function (pid, _v2) {
+				var ps = _v2.a;
+				var dl = _v2.b;
+				return A3(
+					$elm$core$List$foldr,
+					A3(apply_deltas_to_score, pid, ps, dl),
+					_List_Nil,
+					sl);
+			});
+		var apply_golf_score = function () {
+			var _v0 = A2($author$project$Game$player_id_at, c, sl);
+			if (_v0.$ === 1) {
+				return sl;
+			} else {
+				var pid = _v0.a;
+				var _v1 = A2($author$project$Game$find_by_id, pid, sl);
+				if (_v1.$ === 1) {
+					return sl;
+				} else {
+					var ps = _v1.a;
+					return A2(
+						apply_deltas_to_scores,
+						pid,
+						A2(calc_deltas, pid, ps));
+				}
+			}
+		}();
+		return post_process(apply_golf_score);
+	});
+var $elm$core$Basics$ge = _Utils_ge;
+var $author$project$Game$increment_player = function (g) {
+	var next_player = F2(
+		function (i, l) {
+			return (_Utils_cmp(
+				i,
+				$elm$core$List$length(l) - 1) > -1) ? 0 : (i + 1);
+		});
+	var next_inning = F3(
+		function (_v1, c, l) {
+			var i = _v1;
+			return (_Utils_cmp(
+				c,
+				$elm$core$List$length(l) - 1) > -1) ? (i + 1) : i;
+		});
+	switch (g.$) {
+		case 0:
+			return $author$project$Types$NoGame;
+		case 1:
+			var i = g.a;
+			var o = g.b;
+			var c = g.c;
+			var h = g.d;
+			var s = g.e;
+			return A5(
+				$author$project$Types$Numbers701,
+				i,
+				o,
+				A2(next_player, c, s),
+				h,
+				s);
+		case 2:
+			var i = g.a;
+			var o = g.b;
+			var c = g.c;
+			var h = g.d;
+			var s = g.e;
+			return A5(
+				$author$project$Types$Numbers501,
+				i,
+				o,
+				A2(next_player, c, s),
+				h,
+				s);
+		case 3:
+			var i = g.a;
+			var o = g.b;
+			var c = g.c;
+			var h = g.d;
+			var s = g.e;
+			return A5(
+				$author$project$Types$Numbers301,
+				i,
+				o,
+				A2(next_player, c, s),
+				h,
+				s);
+		case 4:
+			var v = g.a;
+			var c = g.b;
+			var h = g.c;
+			var s = g.d;
+			return A4(
+				$author$project$Types$AroundTheClock,
+				v,
+				A2(next_player, c, s),
+				h,
+				s);
+		case 5:
+			var v = g.a;
+			var c = g.b;
+			var h = g.c;
+			var s = g.d;
+			return A4(
+				$author$project$Types$AroundTheClock180,
+				v,
+				A2(next_player, c, s),
+				h,
+				s);
+		case 6:
+			var v = g.a;
+			var c = g.b;
+			var h = g.c;
+			var i = g.d;
+			var s = g.e;
+			return A5(
+				$author$project$Types$Baseball,
+				v,
+				A2(next_player, c, s),
+				h,
+				A3(next_inning, i, c, s),
+				s);
+		case 7:
+			var v = g.a;
+			var c = g.b;
+			var h = g.c;
+			var s = g.d;
+			return A4(
+				$author$project$Types$ChaseTheDragon,
+				v,
+				A2(next_player, c, s),
+				h,
+				s);
+		default:
+			var v = g.a;
+			var c = g.b;
+			var h = g.c;
+			var s = g.d;
+			return A4(
+				$author$project$Types$Cricket,
+				v,
+				A2(next_player, c, s),
+				h,
+				s);
+	}
+};
+var $author$project$Game$numbers = F6(
+	function (base, i, o, c, hl, sl) {
+		var out_variant_calc = F3(
+			function (v, ht, acc) {
+				return A2(
+					$author$project$Cascade$cascade,
+					acc - $author$project$Game$hit_points(ht),
+					_List_fromArray(
+						[
+							_Utils_Tuple2(!acc, 0),
+							_Utils_Tuple2(
+							(!(acc - $author$project$Game$hit_points(ht))) && _Utils_eq(
+								$author$project$Game$sub_hit(ht),
+								v),
+							0),
+							_Utils_Tuple2(
+							((acc - $author$project$Game$hit_points(ht)) < 2) && (v === 2),
+							acc),
+							_Utils_Tuple2(
+							((acc - $author$project$Game$hit_points(ht)) < 3) && (v === 3),
+							acc),
+							_Utils_Tuple2(
+							(acc - $author$project$Game$hit_points(ht)) < 0,
+							acc)
+						]));
+			});
+		var in_variant_calc = F3(
+			function (v, ht, acc) {
+				return A2(
+					$author$project$Cascade$cascade,
+					acc,
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							_Utils_eq(acc, base) && _Utils_eq(
+								$author$project$Game$sub_hit(ht),
+								v),
+							base - $author$project$Game$hit_points(ht)),
+							_Utils_Tuple2(
+							_Utils_cmp(acc, base) < 0,
+							acc - $author$project$Game$hit_points(ht))
+						]));
+			});
+		var diff_bust = F2(
+			function (ht, acc) {
+				return ((acc - $author$project$Game$hit_points(ht)) >= 0) ? (acc - $author$project$Game$hit_points(ht)) : acc;
+			});
+		var diff = F2(
+			function (ht, acc) {
+				return acc - $author$project$Game$hit_points(ht);
+			});
+		var calc = function (_v7) {
+			var n = _v7.b;
+			var _v0 = _Utils_Tuple3(
+				_Utils_eq(n, base),
+				i,
+				o);
+			if (_v0.a) {
+				switch (_v0.b) {
+					case 0:
+						var _v1 = _v0.b;
+						return A3($elm$core$List$foldr, diff, base, hl);
+					case 1:
+						var _v2 = _v0.b;
+						return A3(
+							$elm$core$List$foldr,
+							in_variant_calc(2),
+							base,
+							hl);
+					default:
+						var _v3 = _v0.b;
+						return A3(
+							$elm$core$List$foldr,
+							in_variant_calc(3),
+							base,
+							hl);
+				}
+			} else {
+				switch (_v0.c) {
+					case 0:
+						var _v4 = _v0.c;
+						return A3($elm$core$List$foldr, diff_bust, n, hl);
+					case 1:
+						var _v5 = _v0.c;
+						return A3(
+							$elm$core$List$foldr,
+							out_variant_calc(2),
+							n,
+							hl);
+					default:
+						var _v6 = _v0.c;
+						return A3(
+							$elm$core$List$foldr,
+							out_variant_calc(3),
+							n,
+							hl);
+				}
+			}
+		};
+		return A3($author$project$Game$apply_score, c, sl, calc);
+	});
+var $author$project$Game$finalize_turn = function (state) {
+	var calc = function () {
+		switch (state.$) {
+			case 0:
+				return $author$project$Types$NoGame;
+			case 1:
+				var i = state.a;
+				var o = state.b;
+				var c = state.c;
+				var h = state.d;
+				var s = state.e;
+				return A5(
+					$author$project$Types$Numbers701,
+					i,
+					o,
+					c,
+					h,
+					A6($author$project$Game$numbers, 701, i, o, c, h, s));
+			case 2:
+				var i = state.a;
+				var o = state.b;
+				var c = state.c;
+				var h = state.d;
+				var s = state.e;
+				return A5(
+					$author$project$Types$Numbers501,
+					i,
+					o,
+					c,
+					h,
+					A6($author$project$Game$numbers, 501, i, o, c, h, s));
+			case 3:
+				var i = state.a;
+				var o = state.b;
+				var c = state.c;
+				var h = state.d;
+				var s = state.e;
+				return A5(
+					$author$project$Types$Numbers301,
+					i,
+					o,
+					c,
+					h,
+					A6($author$project$Game$numbers, 301, i, o, c, h, s));
+			case 4:
+				var v = state.a;
+				var c = state.b;
+				var h = state.c;
+				var s = state.d;
+				return A4(
+					$author$project$Types$AroundTheClock,
+					v,
+					c,
+					h,
+					A4($author$project$Game$around_the_clock, v, c, h, s));
+			case 5:
+				var v = state.a;
+				var c = state.b;
+				var h = state.c;
+				var s = state.d;
+				return A4(
+					$author$project$Types$AroundTheClock180,
+					v,
+					c,
+					h,
+					A4($author$project$Game$around_the_clock_180, v, c, h, s));
+			case 6:
+				var v = state.a;
+				var c = state.b;
+				var h = state.c;
+				var i = state.d;
+				var s = state.e;
+				return A5(
+					$author$project$Types$Baseball,
+					v,
+					c,
+					h,
+					i,
+					A5($author$project$Game$baseball, v, c, h, i, s));
+			case 7:
+				var v = state.a;
+				var c = state.b;
+				var h = state.c;
+				var s = state.d;
+				return A4(
+					$author$project$Types$ChaseTheDragon,
+					v,
+					c,
+					h,
+					A4($author$project$Game$chase_the_dragon, v, c, h, s));
+			default:
+				if (!state.a) {
+					var _v1 = state.a;
+					var c = state.b;
+					var h = state.c;
+					var s = state.d;
+					return A4(
+						$author$project$Types$Cricket,
+						0,
+						c,
+						h,
+						A3($author$project$Game$cricket, c, h, s));
+				} else {
+					var _v2 = state.a;
+					var c = state.b;
+					var h = state.c;
+					var s = state.d;
+					return A4(
+						$author$project$Types$Cricket,
+						1,
+						c,
+						h,
+						A3($author$project$Game$cricket_golf, c, h, s));
+				}
+		}
+	}();
+	return $author$project$Game$clear_hits(
+		$author$project$Game$increment_player(calc));
+};
+var $author$project$Game$new_atc_180_score = function (p) {
+	return _Utils_Tuple2(p.z, _List_Nil);
+};
+var $author$project$Game$new_atc_180_scores = function (l) {
+	return A2($elm$core$List$map, $author$project$Game$new_atc_180_score, l);
+};
+var $author$project$Game$new_atc_score = function (p) {
+	return _Utils_Tuple2(p.z, _List_Nil);
+};
+var $author$project$Game$new_atc_scores = function (l) {
+	return A2($elm$core$List$map, $author$project$Game$new_atc_score, l);
+};
+var $author$project$Game$new_bbl_score = function (p) {
+	return _Utils_Tuple2(
+		p.z,
+		A2(
+			$elm$core$List$map,
+			function (i) {
+				return _Utils_Tuple3(i, 0, 0);
+			},
+			A2($elm$core$List$range, 1, 9)));
+};
+var $author$project$Game$new_bbl_scores = function (l) {
+	return A2($elm$core$List$map, $author$project$Game$new_bbl_score, l);
+};
+var $author$project$Game$new_ckt_score = function (p) {
+	return _Utils_Tuple2(
+		p.z,
+		A8($author$project$Types$CricketScore, 0, 0, 0, 0, 0, 0, 0, 0));
+};
+var $author$project$Game$new_ckt_scores = function (l) {
+	return A2($elm$core$List$map, $author$project$Game$new_ckt_score, l);
+};
+var $author$project$Game$new_ctd_score = function (p) {
+	return _Utils_Tuple2(p.z, _List_Nil);
+};
+var $author$project$Game$new_ctd_scores = function (l) {
+	return A2($elm$core$List$map, $author$project$Game$new_ctd_score, l);
+};
+var $author$project$Game$new_num_score = F2(
+	function (goal, p) {
+		return _Utils_Tuple2(p.z, goal);
+	});
+var $author$project$Game$new_num_scores = F2(
+	function (goal, l) {
+		return A2(
+			$elm$core$List$map,
+			$author$project$Game$new_num_score(goal),
+			l);
+	});
+var $author$project$Game$new_game = F2(
+	function (mode, players) {
+		switch (mode.$) {
+			case 0:
+				return $author$project$Types$NoGame;
+			case 1:
+				var i = mode.a;
+				var o = mode.b;
+				return A5(
+					$author$project$Types$Numbers701,
+					i,
+					o,
+					0,
+					_List_Nil,
+					A2($author$project$Game$new_num_scores, 701, players));
+			case 2:
+				var i = mode.a;
+				var o = mode.b;
+				return A5(
+					$author$project$Types$Numbers501,
+					i,
+					o,
+					0,
+					_List_Nil,
+					A2($author$project$Game$new_num_scores, 501, players));
+			case 3:
+				var i = mode.a;
+				var o = mode.b;
+				return A5(
+					$author$project$Types$Numbers301,
+					i,
+					o,
+					0,
+					_List_Nil,
+					A2($author$project$Game$new_num_scores, 301, players));
+			case 4:
+				var v = mode.a;
+				return A4(
+					$author$project$Types$AroundTheClock,
+					v,
+					0,
+					_List_Nil,
+					$author$project$Game$new_atc_scores(players));
+			case 5:
+				var v = mode.a;
+				return A4(
+					$author$project$Types$AroundTheClock180,
+					v,
+					0,
+					_List_Nil,
+					$author$project$Game$new_atc_180_scores(players));
+			case 6:
+				var v = mode.a;
+				return A5(
+					$author$project$Types$Baseball,
+					v,
+					0,
+					_List_Nil,
+					1,
+					$author$project$Game$new_bbl_scores(players));
+			case 7:
+				var v = mode.a;
+				return A4(
+					$author$project$Types$ChaseTheDragon,
+					v,
+					0,
+					_List_Nil,
+					$author$project$Game$new_ctd_scores(players));
+			default:
+				var v = mode.a;
+				return A4(
+					$author$project$Types$Cricket,
+					v,
+					0,
+					_List_Nil,
+					$author$project$Game$new_ckt_scores(players));
+		}
+	});
+var $author$project$Game$player_added = F2(
+	function (l, g) {
+		var find = F2(
+			function (pid, sl) {
+				return A3(
+					$elm$core$List$foldl,
+					F2(
+						function (_v2, acc) {
+							var spid = _v2.a;
+							var s = _v2.b;
+							return (_Utils_eq(spid, pid) && _Utils_eq(acc, $elm$core$Maybe$Nothing)) ? $elm$core$Maybe$Just(
+								_Utils_Tuple2(spid, s)) : $elm$core$Maybe$Nothing;
+						}),
+					$elm$core$Maybe$Nothing,
+					sl);
+			});
+		var add_missing = F3(
+			function (f, s, p) {
+				var _v1 = A2(find, p.z, s);
+				if (_v1.$ === 1) {
+					return f(p);
+				} else {
+					var v = _v1.a;
+					return v;
+				}
+			});
+		var fix_scores = F2(
+			function (f, s) {
+				return A2(
+					$elm$core$List$map,
+					A2(add_missing, f, s),
+					l);
+			});
+		switch (g.$) {
+			case 0:
+				return $author$project$Types$NoGame;
+			case 1:
+				var i = g.a;
+				var o = g.b;
+				var c = g.c;
+				var h = g.d;
+				var s = g.e;
+				return A5(
+					$author$project$Types$Numbers701,
+					i,
+					o,
+					c,
+					h,
+					A2(
+						fix_scores,
+						$author$project$Game$new_num_score(701),
+						s));
+			case 2:
+				var i = g.a;
+				var o = g.b;
+				var c = g.c;
+				var h = g.d;
+				var s = g.e;
+				return A5(
+					$author$project$Types$Numbers501,
+					i,
+					o,
+					c,
+					h,
+					A2(
+						fix_scores,
+						$author$project$Game$new_num_score(501),
+						s));
+			case 3:
+				var i = g.a;
+				var o = g.b;
+				var c = g.c;
+				var h = g.d;
+				var s = g.e;
+				return A5(
+					$author$project$Types$Numbers301,
+					i,
+					o,
+					c,
+					h,
+					A2(
+						fix_scores,
+						$author$project$Game$new_num_score(301),
+						s));
+			case 4:
+				var v = g.a;
+				var c = g.b;
+				var h = g.c;
+				var s = g.d;
+				return A4(
+					$author$project$Types$AroundTheClock,
+					v,
+					c,
+					h,
+					A2(fix_scores, $author$project$Game$new_atc_score, s));
+			case 5:
+				var v = g.a;
+				var c = g.b;
+				var h = g.c;
+				var s = g.d;
+				return A4(
+					$author$project$Types$AroundTheClock180,
+					v,
+					c,
+					h,
+					A2(fix_scores, $author$project$Game$new_atc_180_score, s));
+			case 6:
+				var v = g.a;
+				var c = g.b;
+				var h = g.c;
+				var i = g.d;
+				var s = g.e;
+				return A5(
+					$author$project$Types$Baseball,
+					v,
+					c,
+					h,
+					i,
+					A2(fix_scores, $author$project$Game$new_bbl_score, s));
+			case 7:
+				var v = g.a;
+				var c = g.b;
+				var h = g.c;
+				var s = g.d;
+				return A4(
+					$author$project$Types$ChaseTheDragon,
+					v,
+					c,
+					h,
+					A2(fix_scores, $author$project$Game$new_ctd_score, s));
+			default:
+				var v = g.a;
+				var c = g.b;
+				var h = g.c;
+				var s = g.d;
+				return A4(
+					$author$project$Types$Cricket,
+					v,
+					c,
+					h,
+					A2(fix_scores, $author$project$Game$new_ckt_score, s));
+		}
+	});
+var $author$project$Game$player_removed = F2(
+	function (l, g) {
+		var fix_scores = function (s) {
+			return A2(
+				$elm$core$List$filter,
+				function (_v1) {
+					var i = _v1.a;
+					return A2(
+						$elm$core$List$any,
+						function (p) {
+							return _Utils_eq(p.z, i);
+						},
+						l);
+				},
+				s);
+		};
+		var fix_current = function (i) {
+			return (_Utils_cmp(
+				i,
+				$elm$core$List$length(l) - 1) > -1) ? 0 : i;
+		};
+		switch (g.$) {
+			case 0:
+				return $author$project$Types$NoGame;
+			case 1:
+				var i = g.a;
+				var o = g.b;
+				var c = g.c;
+				var h = g.d;
+				var s = g.e;
+				return A5(
+					$author$project$Types$Numbers701,
+					i,
+					o,
+					fix_current(c),
+					h,
+					fix_scores(s));
+			case 2:
+				var i = g.a;
+				var o = g.b;
+				var c = g.c;
+				var h = g.d;
+				var s = g.e;
+				return A5(
+					$author$project$Types$Numbers501,
+					i,
+					o,
+					fix_current(c),
+					h,
+					fix_scores(s));
+			case 3:
+				var i = g.a;
+				var o = g.b;
+				var c = g.c;
+				var h = g.d;
+				var s = g.e;
+				return A5(
+					$author$project$Types$Numbers301,
+					i,
+					o,
+					fix_current(c),
+					h,
+					fix_scores(s));
+			case 4:
+				var v = g.a;
+				var c = g.b;
+				var h = g.c;
+				var s = g.d;
+				return A4(
+					$author$project$Types$AroundTheClock,
+					v,
+					fix_current(c),
+					h,
+					fix_scores(s));
+			case 5:
+				var v = g.a;
+				var c = g.b;
+				var h = g.c;
+				var s = g.d;
+				return A4(
+					$author$project$Types$AroundTheClock180,
+					v,
+					fix_current(c),
+					h,
+					fix_scores(s));
+			case 6:
+				var v = g.a;
+				var c = g.b;
+				var h = g.c;
+				var i = g.d;
+				var s = g.e;
+				return A5(
+					$author$project$Types$Baseball,
+					v,
+					fix_current(c),
+					h,
+					i,
+					fix_scores(s));
+			case 7:
+				var v = g.a;
+				var c = g.b;
+				var h = g.c;
+				var s = g.d;
+				return A4(
+					$author$project$Types$ChaseTheDragon,
+					v,
+					fix_current(c),
+					h,
+					fix_scores(s));
+			default:
+				var v = g.a;
+				var c = g.b;
+				var h = g.c;
+				var s = g.d;
+				return A4(
+					$author$project$Types$Cricket,
+					v,
+					fix_current(c),
+					h,
+					fix_scores(s));
+		}
+	});
 var $author$project$Game$record_toss = F2(
 	function (n, g) {
 		var apply = function (h) {
@@ -7346,12 +9484,14 @@ var $author$project$Game$record_toss = F2(
 				var v = g.a;
 				var c = g.b;
 				var h = g.c;
-				var s = g.d;
-				return A4(
+				var i = g.d;
+				var s = g.e;
+				return A5(
 					$author$project$Types$Baseball,
 					v,
 					c,
 					apply(h),
+					i,
 					s);
 			case 7:
 				var v = g.a;
@@ -7377,10 +9517,6 @@ var $author$project$Game$record_toss = F2(
 					s);
 		}
 	});
-var $elm$core$List$sortBy = _List_sortBy;
-var $elm$core$List$sort = function (xs) {
-	return A2($elm$core$List$sortBy, $elm$core$Basics$identity, xs);
-};
 var $author$project$Ports$store_state = _Platform_outgoingPort('store_state', $elm$json$Json$Encode$string);
 var $elm$core$String$toUpper = _String_toUpper;
 var $elm$core$String$trim = _String_trim;
@@ -7390,27 +9526,27 @@ var $author$project$Main$update = F2(
 			return _Utils_update(
 				s,
 				{
-					a: A2($author$project$Game$player_removed, s.c, s.a)
+					b: A2($author$project$Game$player_removed, s.d, s.b)
 				});
 		};
 		var post_add_player = function (s) {
 			return _Utils_update(
 				s,
 				{
-					a: A2($author$project$Game$player_added, s.c, s.a)
+					b: A2($author$project$Game$player_added, s.d, s.b)
 				});
 		};
 		var new_player = F3(
 			function (_v5, _v6, i) {
 				var n = _v5;
 				var s = _v6;
-				return {az: _List_Nil, r: i, K: s, J: n};
+				return {aH: _List_Nil, z: i, S: s, R: n};
 			});
 		var move_player_up = F2(
 			function (l, i) {
 				var to_the_left = F2(
 					function (p, acc) {
-						return _Utils_eq(p.r, i) ? _Utils_ap(
+						return _Utils_eq(p.z, i) ? _Utils_ap(
 							A2(
 								$elm$core$List$take,
 								$elm$core$List$length(acc) - 1,
@@ -7453,7 +9589,7 @@ var $author$project$Main$update = F2(
 				return A2(
 					$elm$core$List$filter,
 					function (p) {
-						return !_Utils_eq(p.r, i);
+						return !_Utils_eq(p.z, i);
 					},
 					l);
 			});
@@ -7462,9 +9598,9 @@ var $author$project$Main$update = F2(
 				A2(
 					$elm$core$List$map,
 					function (p) {
-						return id_num(p.r);
+						return id_num(p.z);
 					},
-					state.c));
+					state.d));
 			var check = F2(
 				function (v, acc) {
 					return _Utils_eq(v, acc) ? (v + 1) : acc;
@@ -7493,51 +9629,51 @@ var $author$project$Main$update = F2(
 				case 0:
 					return _Utils_update(
 						state,
-						{g: $author$project$Types$Home});
+						{h: $author$project$Types$Home});
 				case 1:
 					return _Utils_update(
 						state,
 						{
-							g: A2($author$project$Types$EditPlayers, '', '')
+							h: A2($author$project$Types$EditPlayers, '', '')
 						});
 				case 2:
 					return _Utils_update(
 						state,
-						{g: $author$project$Types$SelectGame});
+						{h: $author$project$Types$SelectGame});
 				case 3:
 					return _Utils_update(
 						state,
 						{
-							a: A2($author$project$Game$new_game, state.a, state.c),
-							x: true,
-							g: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+							b: A2($author$project$Game$new_game, state.b, state.d),
+							F: true,
+							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 4:
 					return _Utils_update(
 						state,
 						{
-							g: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 5:
 					return _Utils_update(
 						state,
 						{
-							a: A2($author$project$Game$new_game, state.a, state.c),
-							x: false,
-							g: $author$project$Types$Home
+							b: A2($author$project$Game$new_game, state.b, state.d),
+							F: false,
+							h: $author$project$Types$Home
 						});
 				case 6:
 					var mode = action.a;
 					return _Utils_update(
 						state,
-						{a: mode});
+						{b: mode});
 				case 7:
 					var p = action.a;
 					var i = action.b;
 					return _Utils_update(
 						state,
 						{
-							g: A2(
+							h: A2(
 								$author$project$Types$EditPlayers,
 								p,
 								digest_initials(i))
@@ -7549,8 +9685,8 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							state,
 							{
-								c: A3(add_player, state.c, p, i),
-								g: A2($author$project$Types$EditPlayers, '', '')
+								d: A3(add_player, state.d, p, i),
+								h: A2($author$project$Types$EditPlayers, '', '')
 							}));
 				case 11:
 					var i = action.a;
@@ -7558,14 +9694,14 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							state,
 							{
-								c: A2(delete_player, state.c, i)
+								d: A2(delete_player, state.d, i)
 							}));
 				case 12:
 					var h = action.a;
 					return _Utils_update(
 						state,
 						{
-							g: $author$project$Types$PlayGame(
+							h: $author$project$Types$PlayGame(
 								$elm$core$Maybe$Just(
 									$author$project$Types$SelectSubHit(h)))
 						});
@@ -7574,48 +9710,48 @@ var $author$project$Main$update = F2(
 					return _Utils_update(
 						state,
 						{
-							a: A2($author$project$Game$record_toss, h, state.a),
-							g: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+							b: A2($author$project$Game$record_toss, h, state.b),
+							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 14:
 					return _Utils_update(
 						state,
 						{
-							g: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 15:
 					return _Utils_update(
 						state,
 						{
-							g: $author$project$Types$PlayGame(
+							h: $author$project$Types$PlayGame(
 								$elm$core$Maybe$Just($author$project$Types$FinalizeTurn))
 						});
 				case 16:
 					return _Utils_update(
 						state,
 						{
-							g: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 17:
 					return _Utils_update(
 						state,
 						{
-							a: $author$project$Game$finalize_turn(state.a),
-							g: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
+							b: $author$project$Game$finalize_turn(state.b),
+							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
 				case 9:
 					var i = action.a;
 					return _Utils_update(
 						state,
 						{
-							c: A2(move_player_up, state.c, i)
+							d: A2(move_player_up, state.d, i)
 						});
 				default:
 					var i = action.a;
 					return _Utils_update(
 						state,
 						{
-							c: A2(move_player_down, state.c, i)
+							d: A2(move_player_down, state.d, i)
 						});
 			}
 		}();
@@ -7814,7 +9950,7 @@ var $author$project$Main$list_editable_players = function (l) {
 					_List_fromArray(
 						[
 							$elm$html$Html$text(
-							$author$project$Types$Text$player_name_text(player.J) + (' (' + ($author$project$Types$Text$player_initials_text(player.K) + ')')))
+							$author$project$Types$Text$player_name_text(player.R) + (' (' + ($author$project$Types$Text$player_initials_text(player.S) + ')')))
 						])),
 					A2(
 					$elm$html$Html$td,
@@ -7826,7 +9962,7 @@ var $author$project$Main$list_editable_players = function (l) {
 							_List_fromArray(
 								[
 									$elm$html$Html$Events$onClick(
-									$author$project$Types$MovePlayerUp(player.r)),
+									$author$project$Types$MovePlayerUp(player.z)),
 									$elm$html$Html$Attributes$class('btn btn-primary')
 								]),
 							_List_fromArray(
@@ -7844,7 +9980,7 @@ var $author$project$Main$list_editable_players = function (l) {
 							_List_fromArray(
 								[
 									$elm$html$Html$Events$onClick(
-									$author$project$Types$MovePlayerDown(player.r)),
+									$author$project$Types$MovePlayerDown(player.z)),
 									$elm$html$Html$Attributes$class('btn btn-primary')
 								]),
 							_List_fromArray(
@@ -7862,7 +9998,7 @@ var $author$project$Main$list_editable_players = function (l) {
 							_List_fromArray(
 								[
 									$elm$html$Html$Events$onClick(
-									$author$project$Types$DeletePlayer(player.r)),
+									$author$project$Types$DeletePlayer(player.z)),
 									$elm$html$Html$Attributes$class('btn btn-danger')
 								]),
 							_List_fromArray(
@@ -7886,7 +10022,7 @@ var $author$project$Main$list_editable_players = function (l) {
 var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $author$project$Main$render_edit_players = F3(
 	function (state, np, ni) {
-		var select_game = (!state.x) ? _List_fromArray(
+		var select_game = (!state.F) ? _List_fromArray(
 			[
 				A2(
 				$elm$html$Html$li,
@@ -7957,7 +10093,7 @@ var $author$project$Main$render_edit_players = F3(
 									$elm$html$Html$text('Players')
 								]))
 						]),
-					$author$project$Main$list_editable_players(state.c))));
+					$author$project$Main$list_editable_players(state.d))));
 	});
 var $author$project$Types$EndGame = {$: 5};
 var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
@@ -8250,7 +10386,7 @@ var $author$project$Main$render_board = function () {
 				[
 					$elm$svg$Svg$Events$onClick(
 					$author$project$Types$Toss(
-						A2(index_to_hit, v, 0))),
+						A2(index_to_hit, v, 1))),
 					$elm$svg$Svg$Attributes$d(
 					A2(d_from_deg, d, 43)),
 					$elm$svg$Svg$Attributes$stroke('white'),
@@ -8308,7 +10444,7 @@ var $author$project$Game$current_player_id = function (g) {
 			return A2($author$project$Game$player_id_at, c, s);
 		case 6:
 			var c = g.b;
-			var s = g.d;
+			var s = g.e;
 			return A2($author$project$Game$player_id_at, c, s);
 		case 7:
 			var c = g.b;
@@ -8329,14 +10465,14 @@ var $author$project$Main$render_current_player_name = F2(
 					A2(
 						$elm$core$List$filter,
 						function (p) {
-							return _Utils_eq(p.r, id);
+							return _Utils_eq(p.z, id);
 						},
 						l));
 				if (_v1.$ === 1) {
 					return '????? is throwing.';
 				} else {
 					var p = _v1.a;
-					return $author$project$Types$Text$player_name_text(p.J) + ' is throwing.';
+					return $author$project$Types$Text$player_name_text(p.R) + ' is throwing.';
 				}
 			} else {
 				return '????? is throwing.';
@@ -8358,8 +10494,10 @@ var $author$project$Main$render_current_player_name = F2(
 var $author$project$Types$Text$sub_hit_text = function (s) {
 	switch (s) {
 		case 0:
-			return 'Single';
+			return 'Missed';
 		case 1:
+			return 'Single';
+		case 2:
 			return 'Double';
 		default:
 			return 'Triple';
@@ -8632,7 +10770,7 @@ var $author$project$Main$render_modal = function (modal) {
 										[
 											$elm$html$Html$Attributes$class('btn btn-danger'),
 											$elm$html$Html$Events$onClick(
-											$author$project$Types$TossModalSelect(d))
+											$author$project$Types$TossModalSelect(t))
 										]),
 									_List_fromArray(
 										[
@@ -8905,123 +11043,123 @@ var $author$project$Main$render_modal = function (modal) {
 												case 1:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit1(0),
 														$author$project$Types$Hit1(1),
-														$author$project$Types$Hit1(2));
+														$author$project$Types$Hit1(2),
+														$author$project$Types$Hit1(3));
 												case 2:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit2(0),
 														$author$project$Types$Hit2(1),
-														$author$project$Types$Hit2(2));
+														$author$project$Types$Hit2(2),
+														$author$project$Types$Hit2(3));
 												case 3:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit3(0),
 														$author$project$Types$Hit3(1),
-														$author$project$Types$Hit3(2));
+														$author$project$Types$Hit3(2),
+														$author$project$Types$Hit3(3));
 												case 4:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit4(0),
 														$author$project$Types$Hit4(1),
-														$author$project$Types$Hit4(2));
+														$author$project$Types$Hit4(2),
+														$author$project$Types$Hit4(3));
 												case 5:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit5(0),
 														$author$project$Types$Hit5(1),
-														$author$project$Types$Hit5(2));
+														$author$project$Types$Hit5(2),
+														$author$project$Types$Hit5(3));
 												case 6:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit6(0),
 														$author$project$Types$Hit6(1),
-														$author$project$Types$Hit6(2));
+														$author$project$Types$Hit6(2),
+														$author$project$Types$Hit6(3));
 												case 7:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit7(0),
 														$author$project$Types$Hit7(1),
-														$author$project$Types$Hit7(2));
+														$author$project$Types$Hit7(2),
+														$author$project$Types$Hit7(3));
 												case 8:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit8(0),
 														$author$project$Types$Hit8(1),
-														$author$project$Types$Hit8(2));
+														$author$project$Types$Hit8(2),
+														$author$project$Types$Hit8(3));
 												case 9:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit9(0),
 														$author$project$Types$Hit9(1),
-														$author$project$Types$Hit9(2));
+														$author$project$Types$Hit9(2),
+														$author$project$Types$Hit9(3));
 												case 10:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit10(0),
 														$author$project$Types$Hit10(1),
-														$author$project$Types$Hit10(2));
+														$author$project$Types$Hit10(2),
+														$author$project$Types$Hit10(3));
 												case 11:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit11(0),
 														$author$project$Types$Hit11(1),
-														$author$project$Types$Hit11(2));
+														$author$project$Types$Hit11(2),
+														$author$project$Types$Hit11(3));
 												case 12:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit12(0),
 														$author$project$Types$Hit12(1),
-														$author$project$Types$Hit12(2));
+														$author$project$Types$Hit12(2),
+														$author$project$Types$Hit12(3));
 												case 13:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit13(0),
 														$author$project$Types$Hit13(1),
-														$author$project$Types$Hit13(2));
+														$author$project$Types$Hit13(2),
+														$author$project$Types$Hit13(3));
 												case 14:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit14(0),
 														$author$project$Types$Hit14(1),
-														$author$project$Types$Hit14(2));
+														$author$project$Types$Hit14(2),
+														$author$project$Types$Hit14(3));
 												case 15:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit15(0),
 														$author$project$Types$Hit15(1),
-														$author$project$Types$Hit15(2));
+														$author$project$Types$Hit15(2),
+														$author$project$Types$Hit15(3));
 												case 16:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit16(0),
 														$author$project$Types$Hit16(1),
-														$author$project$Types$Hit16(2));
+														$author$project$Types$Hit16(2),
+														$author$project$Types$Hit16(3));
 												case 17:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit17(0),
 														$author$project$Types$Hit17(1),
-														$author$project$Types$Hit17(2));
+														$author$project$Types$Hit17(2),
+														$author$project$Types$Hit17(3));
 												case 18:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit18(0),
 														$author$project$Types$Hit18(1),
-														$author$project$Types$Hit18(2));
+														$author$project$Types$Hit18(2),
+														$author$project$Types$Hit18(3));
 												case 19:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit19(0),
 														$author$project$Types$Hit19(1),
-														$author$project$Types$Hit19(2));
+														$author$project$Types$Hit19(2),
+														$author$project$Types$Hit19(3));
 												case 20:
 													return A3(
 														number_hit_buttons,
-														$author$project$Types$Hit20(0),
 														$author$project$Types$Hit20(1),
-														$author$project$Types$Hit20(2));
+														$author$project$Types$Hit20(2),
+														$author$project$Types$Hit20(3));
 												default:
 													return _List_fromArray(
 														[
@@ -9267,9 +11405,9 @@ var $author$project$Main$render_game = F2(
 										]))
 								]))
 						])),
-					A2($author$project$Main$render_current_player_name, state.a, state.c),
+					A2($author$project$Main$render_current_player_name, state.b, state.d),
 					$author$project$Main$render_hits(
-					$author$project$Game$hits(state.a)),
+					$author$project$Game$hits(state.b)),
 					A2(
 					$elm$html$Html$div,
 					_List_fromArray(
@@ -9466,7 +11604,7 @@ var $author$project$Types$Dom$game_name = function (mode) {
 	}
 };
 var $author$project$Main$render_home = function (state) {
-	var start_game = (($elm$core$List$length(state.c) > 0) && ((!_Utils_eq(state.a, $author$project$Types$NoGame)) && (!state.x))) ? _List_fromArray(
+	var start_game = (($elm$core$List$length(state.d) > 0) && ((!_Utils_eq(state.b, $author$project$Types$NoGame)) && (!state.F))) ? _List_fromArray(
 		[
 			A2(
 			$elm$html$Html$li,
@@ -9489,7 +11627,7 @@ var $author$project$Main$render_home = function (state) {
 						]))
 				]))
 		]) : _List_Nil;
-	var select_game = (!state.x) ? _List_fromArray(
+	var select_game = (!state.F) ? _List_fromArray(
 		[
 			A2(
 			$elm$html$Html$li,
@@ -9512,7 +11650,7 @@ var $author$project$Main$render_home = function (state) {
 						]))
 				]))
 		]) : _List_Nil;
-	var resume_game = (($elm$core$List$length(state.c) > 0) && ((!_Utils_eq(state.a, $author$project$Types$NoGame)) && state.x)) ? _List_fromArray(
+	var resume_game = (($elm$core$List$length(state.d) > 0) && ((!_Utils_eq(state.b, $author$project$Types$NoGame)) && state.F)) ? _List_fromArray(
 		[
 			A2(
 			$elm$html$Html$li,
@@ -9553,7 +11691,7 @@ var $author$project$Main$render_home = function (state) {
 					_List_fromArray(
 						[
 							$elm$html$Html$text(
-							$author$project$Types$Text$player_name_text(p.J))
+							$author$project$Types$Text$player_name_text(p.R))
 						])),
 					A2(
 					$elm$html$Html$div,
@@ -9564,11 +11702,11 @@ var $author$project$Main$render_home = function (state) {
 					_List_fromArray(
 						[
 							$elm$html$Html$text(
-							$author$project$Types$Text$player_initials_text(p.K))
+							$author$project$Types$Text$player_initials_text(p.S))
 						]))
 				]));
 	};
-	var players = A2($elm$core$List$map, player, state.c);
+	var players = A2($elm$core$List$map, player, state.d);
 	return _List_fromArray(
 		[
 			A2(
@@ -9615,7 +11753,7 @@ var $author$project$Main$render_home = function (state) {
 			_List_fromArray(
 				[
 					$elm$html$Html$text('Selected Game: '),
-					$author$project$Types$Dom$game_name(state.a)
+					$author$project$Types$Dom$game_name(state.b)
 				])),
 			A2(
 			$elm$html$Html$div,
@@ -10189,7 +12327,7 @@ var $author$project$Main$game_list = _List_fromArray(
 		A5($author$project$Types$Numbers501, 0, 0, 0, _List_Nil, _List_Nil),
 		A5($author$project$Types$Numbers701, 0, 0, 0, _List_Nil, _List_Nil),
 		A4($author$project$Types$Cricket, 0, 0, _List_Nil, _List_Nil),
-		A4($author$project$Types$Baseball, 0, 0, _List_Nil, _List_Nil),
+		A5($author$project$Types$Baseball, 0, 0, _List_Nil, 0, _List_Nil),
 		A4($author$project$Types$AroundTheClock, 0, 0, _List_Nil, _List_Nil),
 		A4($author$project$Types$AroundTheClock180, 0, 0, _List_Nil, _List_Nil),
 		A4($author$project$Types$ChaseTheDragon, 0, 0, _List_Nil, _List_Nil)
@@ -10604,9 +12742,9 @@ var $author$project$Types$Dom$id_to_game = function (s) {
 		case 'CKT:G':
 			return A4($author$project$Types$Cricket, 1, 0, _List_Nil, _List_Nil);
 		case 'BBL:B':
-			return A4($author$project$Types$Baseball, 0, 0, _List_Nil, _List_Nil);
+			return A5($author$project$Types$Baseball, 0, 0, _List_Nil, 1, _List_Nil);
 		case 'BBL:S':
-			return A4($author$project$Types$Baseball, 1, 0, _List_Nil, _List_Nil);
+			return A5($author$project$Types$Baseball, 1, 0, _List_Nil, 1, _List_Nil);
 		case 'ATC:NBO':
 			return A4($author$project$Types$AroundTheClock, 0, 0, _List_Nil, _List_Nil);
 		case 'ATC:ABO':
@@ -11242,9 +13380,10 @@ var $author$project$Main$variant_selector = function (mode) {
 				]);
 		case 6:
 			var v = mode.a;
-			var x = mode.b;
-			var y = mode.c;
-			var z = mode.d;
+			var w = mode.b;
+			var x = mode.c;
+			var y = mode.d;
+			var z = mode.e;
 			return _List_fromArray(
 				[
 					A2(
@@ -11276,7 +13415,7 @@ var $author$project$Main$variant_selector = function (mode) {
 											[
 												$elm$html$Html$Attributes$value(
 												$author$project$Types$Dom$game_to_id(
-													A4($author$project$Types$Baseball, 0, x, y, z)))
+													A5($author$project$Types$Baseball, 0, w, x, y, z)))
 											]),
 										A2(is_selected, v, 0)),
 									_List_fromArray(
@@ -11291,7 +13430,7 @@ var $author$project$Main$variant_selector = function (mode) {
 											[
 												$elm$html$Html$Attributes$value(
 												$author$project$Types$Dom$game_to_id(
-													A4($author$project$Types$Baseball, 1, x, y, z)))
+													A5($author$project$Types$Baseball, 1, w, x, y, z)))
 											]),
 										A2(is_selected, v, 1)),
 									_List_fromArray(
@@ -11518,7 +13657,7 @@ var $author$project$Main$view = function (state) {
 		}
 	};
 	var render = function () {
-		var _v0 = state.g;
+		var _v0 = state.h;
 		switch (_v0.$) {
 			case 0:
 				return A2(
@@ -11536,7 +13675,7 @@ var $author$project$Main$view = function (state) {
 				return A2(
 					$elm$html$Html$div,
 					_List_Nil,
-					$author$project$Main$render_select_game(state.a));
+					$author$project$Main$render_select_game(state.b));
 			default:
 				var modal = _v0.a;
 				return A2(
@@ -11549,11 +13688,11 @@ var $author$project$Main$view = function (state) {
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{
-		aB: $author$project$Main$init,
-		aG: function (_v0) {
+		aJ: $author$project$Main$init,
+		aO: function (_v0) {
 			return $elm$core$Platform$Sub$none;
 		},
-		aI: $author$project$Main$update,
-		aJ: $author$project$Main$view
+		aQ: $author$project$Main$update,
+		aR: $author$project$Main$view
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$value)(0)}});}(this));
