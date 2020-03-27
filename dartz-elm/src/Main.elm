@@ -618,8 +618,10 @@ render_bbl lp c (Inning i) l =
     inning x = tr [] <| 
       [ (td (if i == x then [ class "table-info" ] else []) [ text <| String.fromInt x ]) ] ++ List.map (player_inning x) l
     innings = List.map inning <| List.range 1 (max 9 i)
+    sum (BaseballScore sl) = List.foldr (\(_, _, (Score z)) acc -> acc + z) 0 sl
+    totals = [ tr [] <| [ td [] [ text "T" ] ] ++ List.map (\(_, s) -> td [] [ text <| String.fromInt (sum s) ]) l ]
   in
-    table [ class "table" ] (hdr ++ innings)
+    table [ class "table" ] (hdr ++ innings ++ totals)
 
 render_ctd : List Player -> Int -> List (PlayerID, ChaseTheDragonScore) -> Html msg
 render_ctd lp c l = 
@@ -669,4 +671,3 @@ render_ckt lp c l =
       
   in
     table [ class "table" ] <| hdr ++ List.indexedMap row l
-
