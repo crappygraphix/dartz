@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, a, div, label, ul, li, span, text, option, button, select, input, tr, td, table)
+import Html exposing (Html, h1, a, div, label, ul, li, span, text, option, button, select, input, tr, td, table)
 import Html.Attributes exposing (class, placeholder, style, selected, value, href)
 import Html.Events exposing (onClick, onInput)
 import Json.Decode as JD
@@ -79,7 +79,7 @@ update action state =
     
     digest_initials (NewPlayerInitials i) = NewPlayerInitials <| String.toUpper <| String.left 2 <| String.trim i
 
-    move_player_up l i = 
+    move_player_up l i =
       let
         to_the_left p acc = 
           if p.id == i
@@ -357,18 +357,12 @@ render_game state modal =
   , div [ class "board" ] 
     [ S.svg [SA.width "100%", SA.height "100%", SA.viewBox "0 0 100 100"] render_board
     ]
+  , render_scores state.players state.game
   ] ++ render_modal modal
 
 render_current_player_name : GameState -> List Player -> Html msg
 render_current_player_name gs l = 
-  let
-    find_name mid = case mid of
-      Just id -> case List.head <| List.filter (\p -> p.id == id) l of
-        Nothing -> "????? is throwing."
-        Just p -> player_name_text p.name ++ " is throwing."
-      Nothing -> "????? is throwing."
-  in
-    div [ class "container text-center" ] [ text <| find_name <| Game.current_player_id gs ]
+  div [ class "container text-center" ] [ text <| append_to_name l " is throwing." <| Game.current_player_id gs ]
 
 render_modal : Maybe Modal -> List (Html Action)
 render_modal modal =
@@ -379,7 +373,7 @@ render_modal modal =
         [ div [ class "modal-dialog-centered" ] 
           [ div [ class "modal-content" ]
             [ div [ class "modal-header text-center" ] 
-              [ div [ class "modal-title w-100" ] [ text "Finish Turn" ] ]
+              [ div [ class "modal-title w-100" ] [ h1 [] [ text "Finish Turn" ] ] ]
             , div [ class "modal-body"]
               [ div [ class "row text-center" ]
                 [ div [ class "col" ] [ button [ class "btn btn-primary", onClick FinishTurn ] [ text "Finish Turn" ] ]
@@ -406,7 +400,7 @@ render_modal modal =
         [ div [ class "modal-dialog-centered" ] 
           [ div [ class "modal-content" ]
             [ div [ class "modal-header text-center" ] 
-              [ div [ class "modal-title w-100" ] [ text <| short_hit_text h ] ]
+              [ div [ class "modal-title w-100" ] [ h1 [] [ text <| short_hit_text h ] ] ]
             , div [ class "modal-body"] <|
               case h of
                 HitBullseye -> 
@@ -464,7 +458,7 @@ render_modal modal =
 render_hits : List (Hit) -> Html msg
 render_hits hits =
   let
-    hit_div hit = div [ class "col-4" ] [ text (hit_text hit) ]
+    hit_div hit = div [ class "col-4 text-center" ] [ text (hit_text hit) ]
   in
     if List.length hits == 0
     then
@@ -550,4 +544,129 @@ render_board =
     end_turn ++
     number_ring
 
+append_to_name : List Player -> String -> Maybe PlayerID -> String
+append_to_name l s mid = 
+  let 
+    unwrap (PlayerName x) = x
+    name id = List.foldr (\p acc -> if p.id == id then unwrap p.name else acc) "?????" l
+  in
+    case mid of
+      Just id -> name id ++ s
+      Nothing -> "?????" ++ s
+
+render_scores : List Player -> GameState -> Html msg
+render_scores lp g = case g of
+  NoGame -> text "No Game"
+  Numbers701 _ _ c _ l -> render_numbers lp c l
+  Numbers501 _ _ c _ l -> render_numbers lp c l
+  Numbers301 _ _ c _ l -> render_numbers lp c l
+  AroundTheClock _ c _ l -> render_atc lp c l
+  AroundTheClock180 _ c _ l -> render_atc_180 lp c l
+  Baseball _ c _ i l -> render_bbl lp c i l
+  ChaseTheDragon _ c _ l -> render_ctd lp c l
+  Cricket _ c _ l -> render_ckt lp c l
+
+player_initials : List Player -> PlayerID -> PlayerInitials
+player_initials l pid = List.foldr (\p acc -> if pid == p.id then p.initials else acc) (PlayerInitials "??") l
+
+render_numbers : List Player -> Int -> List (PlayerID, NumbersScore) -> Html msg
+render_numbers lp c l = 
+  let
+    row i (pid, NumbersScore (Score s)) =
+      tr (if i == c then [ class "table-info" ] else [] )
+        [ td [] [ text <| (\(PlayerInitials x) -> x) <| player_initials lp pid ] 
+        , td [] [ text <| String.fromInt s ] 
+        ]
+  in
+    table [ class "table" ] (List.indexedMap row l)
+
+render_atc : List Player -> Int -> List (PlayerID, AroundTheClockScore) -> Html msg
+render_atc lp c l = 
+  let 
+    hits_to_string hl = String.join " " <| List.foldl (\h acc -> hit_text h::acc) [] hl
+    row i (pid, AroundTheClockScore hl) =
+      tr (if i == c then [ class "table-info" ] else [] )
+        <| ( td [] [ text <| (\(PlayerInitials x) -> x) <| player_initials lp pid ])
+        :: [ td [] [ text <| hits_to_string hl ] ]
+  in
+    table [ class "table" ] (List.indexedMap row l)
+
+render_atc_180 : List Player -> Int -> List (PlayerID, AroundTheClock180Score) -> Html msg
+render_atc_180 lp c l = 
+  let 
+    unpack (Score s) = s
+    sum_scores sl = List.foldr (\(Score a) (Score b) -> Score (a + b)) (Score 0) sl
+    hits_to_string hl = String.join " " <| List.foldl (\h acc -> hit_text h::acc) [] hl
+    row i (pid, AroundTheClock180Score hsl) =
+      tr (if i == c then [ class "table-info" ] else [] )
+        <| ( td [] [ text <| (\(PlayerInitials x) -> x) <| player_initials lp pid ])
+        :: ( td [] [ text <| String.fromInt <| unpack <| sum_scores <| List.map Tuple.second hsl ])
+        :: [ td [] [ text <| hits_to_string <| List.map Tuple.first hsl ] ]
+  in
+    table [ class "table" ] (List.indexedMap row l)
+
+render_bbl : List Player -> Int -> Inning -> List (PlayerID, BaseballScore) -> Html msg
+render_bbl lp c (Inning i) l = 
+  let 
+    hdr = [ tr [] (
+      [ td [] [ text "IN" ] ] ++
+      (List.indexedMap (\x (pid, _) -> td (if c == x then [ class "table-info" ] else []) [ text <| (\(PlayerInitials y) -> y) <| player_initials lp pid ] ) l)
+      ) ]
+
+    inning_score x (BaseballScore s) = String.fromInt <| List.foldl (\(Inning y, _, Score z) acc -> if y == x then z else acc) 0 s
+    player_inning x (_, s) = td [] [ text <| inning_score x s ]
+    inning x = tr [] <| 
+      [ (td (if i == x then [ class "table-info" ] else []) [ text <| String.fromInt x ]) ] ++ List.map (player_inning x) l
+    innings = List.map inning <| List.range 1 (max 9 i)
+  in
+    table [ class "table" ] (hdr ++ innings)
+
+render_ctd : List Player -> Int -> List (PlayerID, ChaseTheDragonScore) -> Html msg
+render_ctd lp c l = 
+  let 
+    hits_to_string hl = String.join " " <| List.foldl (\h acc -> hit_text h::acc) [] hl
+    row i (pid, ChaseTheDragonScore hl) =
+      tr (if i == c then [ class "table-info" ] else [] )
+        <| ( td [] [ text <| (\(PlayerInitials x) -> x) <| player_initials lp pid ])
+        :: [ td [] [ text <| hits_to_string hl ] ]
+  in
+    table [ class "table" ] (List.indexedMap row l)
+
+render_ckt : List Player -> Int -> List (PlayerID, CricketScore) -> Html msg
+render_ckt lp c l = 
+  let 
+    hdr = 
+      [ tr [] 
+        [ td [] []
+        , td [] [ text "\u{2473}" ]
+        , td [] [ text "\u{2472}" ]
+        , td [] [ text "\u{2471}" ]
+        , td [] [ text "\u{2470}" ]
+        , td [] [ text "\u{246F}" ]
+        , td [] [ text "\u{246E}" ]
+        , td [] [ text "\u{24B7}" ]
+        , td [] []
+        ]
+      ]
+    slice x = case x of
+      Slice0 -> ""
+      Slice1 -> "\u{002D}"
+      Slice2 -> "\u{002B}"
+      SliceOpen -> "\u{2295}"
+      SliceClosed -> "\u{229B}"
+    extract (Score s) = String.fromInt s
+    row i (pid, s) = tr (if i == c then [ class "table-info" ] else [] )
+      [ td [] [ text <| (\(PlayerInitials x) -> x) <| player_initials lp pid ]
+      , td [] [ text <| slice s.slice20 ]
+      , td [] [ text <| slice s.slice19 ]
+      , td [] [ text <| slice s.slice18 ]
+      , td [] [ text <| slice s.slice17 ]
+      , td [] [ text <| slice s.slice16 ]
+      , td [] [ text <| slice s.slice15 ]
+      , td [] [ text <| slice s.sliceBull ]
+      , td [] [ text <| extract s.score]
+      ]
+      
+  in
+    table [ class "table" ] <| hdr ++ List.indexedMap row l
 

@@ -1,5 +1,11 @@
 @import "bootstrap";
 
+.hit {
+    border: 1px solid black;
+    border-radius: 100%;
+    font-family: $font-family-monospace;
+}
+
 .board {
     background: $gray-400;
     border-radius: 100%;

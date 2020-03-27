@@ -4761,7 +4761,7 @@ var $elm$core$Array$treeFromBuilder = F2(
 	});
 var $elm$core$Array$builderToArray = F2(
 	function (reverseNodeList, builder) {
-		if (!builder.c) {
+		if (!builder.d) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
 				$elm$core$Elm$JsArray$length(builder.f),
@@ -4769,11 +4769,11 @@ var $elm$core$Array$builderToArray = F2(
 				$elm$core$Elm$JsArray$empty,
 				builder.f);
 		} else {
-			var treeLen = builder.c * $elm$core$Array$branchFactor;
+			var treeLen = builder.d * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
 			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.g) : builder.g;
-			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.c);
+			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.d);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
 				$elm$core$Elm$JsArray$length(builder.f) + treeLen,
@@ -4792,7 +4792,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{g: nodeList, c: (len / $elm$core$Array$branchFactor) | 0, f: tail});
+					{g: nodeList, d: (len / $elm$core$Array$branchFactor) | 0, f: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -5141,7 +5141,7 @@ var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Types$AnyBullOut = 1;
 var $author$project$Types$AppState = F4(
 	function (players, game, screen, playing) {
-		return {b: game, d: players, F: playing, h: screen};
+		return {b: game, c: players, F: playing, h: screen};
 	});
 var $author$project$Types$AroundTheClock = F4(
 	function (a, b, c, d) {
@@ -5274,7 +5274,7 @@ var $author$project$Types$PlayGame = function (a) {
 };
 var $author$project$Types$Player = F4(
 	function (name, initials, hits, id) {
-		return {aH: hits, z: id, S: initials, R: name};
+		return {aH: hits, z: id, R: initials, S: name};
 	});
 var $author$project$Types$PlayerHits = $elm$core$Basics$identity;
 var $author$project$Types$PlayerID = $elm$core$Basics$identity;
@@ -5766,7 +5766,7 @@ var $author$project$Types$Decode$app_state_decoder = function () {
 		A2($elm$json$Json$Decode$field, 'screen', decode_screen),
 		A2($elm$json$Json$Decode$field, 'playing', $elm$json$Json$Decode$bool));
 }();
-var $author$project$Main$clean_state = {b: $author$project$Types$NoGame, d: _List_Nil, F: false, h: $author$project$Types$Home};
+var $author$project$Main$clean_state = {b: $author$project$Types$NoGame, c: _List_Nil, F: false, h: $author$project$Types$Home};
 var $elm$json$Json$Decode$decodeValue = _Json_run;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -6050,8 +6050,8 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 		return encode_hits(l);
 	};
 	var encode_player = function (_v13) {
-		var name = _v13.R;
-		var initials = _v13.S;
+		var name = _v13.S;
+		var initials = _v13.R;
 		var hits = _v13.aH;
 		var id = _v13.z;
 		return $elm$json$Json$Encode$object(
@@ -6495,7 +6495,7 @@ var $author$project$Types$Encode$encode_app_state = function (state) {
 			[
 				_Utils_Tuple2(
 				'players',
-				encode_list_player(state.d)),
+				encode_list_player(state.c)),
 				_Utils_Tuple2(
 				'game',
 				encode_game_state(state.b)),
@@ -6521,15 +6521,10 @@ var $elm$core$List$filter = F2(
 var $author$project$Game$find_by_id = F2(
 	function (p, l) {
 		var check = F2(
-			function (_v1, acc) {
-				var i = _v1.a;
-				var a = _v1.b;
-				if (acc.$ === 1) {
-					return _Utils_eq(p, i) ? $elm$core$Maybe$Just(a) : $elm$core$Maybe$Nothing;
-				} else {
-					var v = acc;
-					return v;
-				}
+			function (_v0, acc) {
+				var i = _v0.a;
+				var a = _v0.b;
+				return (_Utils_eq(p, i) && _Utils_eq(acc, $elm$core$Maybe$Nothing)) ? $elm$core$Maybe$Just(a) : acc;
 			});
 		return A3($elm$core$List$foldr, check, $elm$core$Maybe$Nothing, l);
 	});
@@ -7227,11 +7222,11 @@ var $author$project$Game$baseball = F5(
 			function (h, acc) {
 				switch (h.$) {
 					case 21:
-						return 1;
+						return acc + 1;
 					case 22:
-						return 2;
+						return acc + 2;
 					default:
-						return 0;
+						return acc;
 				}
 			});
 		var points_for_sub = function (s) {
@@ -7255,63 +7250,63 @@ var $author$project$Game$baseball = F5(
 						case 1:
 							if (_v6.b.$ === 1) {
 								var s = _v6.b.a;
-								return points_for_sub(s);
+								return acc + points_for_sub(s);
 							} else {
 								break _v6$9;
 							}
 						case 2:
 							if (_v6.b.$ === 2) {
 								var s = _v6.b.a;
-								return points_for_sub(s);
+								return acc + points_for_sub(s);
 							} else {
 								break _v6$9;
 							}
 						case 3:
 							if (_v6.b.$ === 3) {
 								var s = _v6.b.a;
-								return points_for_sub(s);
+								return acc + points_for_sub(s);
 							} else {
 								break _v6$9;
 							}
 						case 4:
 							if (_v6.b.$ === 4) {
 								var s = _v6.b.a;
-								return points_for_sub(s);
+								return acc + points_for_sub(s);
 							} else {
 								break _v6$9;
 							}
 						case 5:
 							if (_v6.b.$ === 5) {
 								var s = _v6.b.a;
-								return points_for_sub(s);
+								return acc + points_for_sub(s);
 							} else {
 								break _v6$9;
 							}
 						case 6:
 							if (_v6.b.$ === 6) {
 								var s = _v6.b.a;
-								return points_for_sub(s);
+								return acc + points_for_sub(s);
 							} else {
 								break _v6$9;
 							}
 						case 7:
 							if (_v6.b.$ === 7) {
 								var s = _v6.b.a;
-								return points_for_sub(s);
+								return acc + points_for_sub(s);
 							} else {
 								break _v6$9;
 							}
 						case 8:
 							if (_v6.b.$ === 8) {
 								var s = _v6.b.a;
-								return points_for_sub(s);
+								return acc + points_for_sub(s);
 							} else {
 								break _v6$9;
 							}
 						case 9:
 							if (_v6.b.$ === 9) {
 								var s = _v6.b.a;
-								return points_for_sub(s);
+								return acc + points_for_sub(s);
 							} else {
 								break _v6$9;
 							}
@@ -7319,7 +7314,7 @@ var $author$project$Game$baseball = F5(
 							break _v6$9;
 					}
 				}
-				return 0;
+				return acc;
 			});
 		var closed = F2(
 			function (_v5, acc) {
@@ -8106,6 +8101,32 @@ var $author$project$Game$cricket = F3(
 											a,
 											3,
 											$author$project$Game$hit_base_points(h)))
+									]))),
+							_Utils_Tuple2(
+							A2(get, cs, a) === 2,
+							A2(
+								$author$project$Cascade$cascade,
+								A3(set, cs, a, 3),
+								_List_fromArray(
+									[
+										_Utils_Tuple2(
+										x === 2,
+										A5(
+											set_with_score,
+											pid,
+											cs,
+											a,
+											3,
+											$author$project$Game$hit_base_points(h))),
+										_Utils_Tuple2(
+										x === 3,
+										A5(
+											set_with_score,
+											pid,
+											cs,
+											a,
+											3,
+											2 * $author$project$Game$hit_base_points(h)))
 									]))),
 							_Utils_Tuple2(
 							A2(get, cs, a) === 3,
@@ -9154,7 +9175,7 @@ var $author$project$Game$player_added = F2(
 							var spid = _v2.a;
 							var s = _v2.b;
 							return (_Utils_eq(spid, pid) && _Utils_eq(acc, $elm$core$Maybe$Nothing)) ? $elm$core$Maybe$Just(
-								_Utils_Tuple2(spid, s)) : $elm$core$Maybe$Nothing;
+								_Utils_Tuple2(spid, s)) : acc;
 						}),
 					$elm$core$Maybe$Nothing,
 					sl);
@@ -9526,21 +9547,21 @@ var $author$project$Main$update = F2(
 			return _Utils_update(
 				s,
 				{
-					b: A2($author$project$Game$player_removed, s.d, s.b)
+					b: A2($author$project$Game$player_removed, s.c, s.b)
 				});
 		};
 		var post_add_player = function (s) {
 			return _Utils_update(
 				s,
 				{
-					b: A2($author$project$Game$player_added, s.d, s.b)
+					b: A2($author$project$Game$player_added, s.c, s.b)
 				});
 		};
 		var new_player = F3(
 			function (_v5, _v6, i) {
 				var n = _v5;
 				var s = _v6;
-				return {aH: _List_Nil, z: i, S: s, R: n};
+				return {aH: _List_Nil, z: i, R: s, S: n};
 			});
 		var move_player_up = F2(
 			function (l, i) {
@@ -9600,7 +9621,7 @@ var $author$project$Main$update = F2(
 					function (p) {
 						return id_num(p.z);
 					},
-					state.d));
+					state.c));
 			var check = F2(
 				function (v, acc) {
 					return _Utils_eq(v, acc) ? (v + 1) : acc;
@@ -9644,7 +9665,7 @@ var $author$project$Main$update = F2(
 					return _Utils_update(
 						state,
 						{
-							b: A2($author$project$Game$new_game, state.b, state.d),
+							b: A2($author$project$Game$new_game, state.b, state.c),
 							F: true,
 							h: $author$project$Types$PlayGame($elm$core$Maybe$Nothing)
 						});
@@ -9658,7 +9679,7 @@ var $author$project$Main$update = F2(
 					return _Utils_update(
 						state,
 						{
-							b: A2($author$project$Game$new_game, state.b, state.d),
+							b: A2($author$project$Game$new_game, state.b, state.c),
 							F: false,
 							h: $author$project$Types$Home
 						});
@@ -9685,7 +9706,7 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							state,
 							{
-								d: A3(add_player, state.d, p, i),
+								c: A3(add_player, state.c, p, i),
 								h: A2($author$project$Types$EditPlayers, '', '')
 							}));
 				case 11:
@@ -9694,7 +9715,7 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							state,
 							{
-								d: A2(delete_player, state.d, i)
+								c: A2(delete_player, state.c, i)
 							}));
 				case 12:
 					var h = action.a;
@@ -9744,14 +9765,14 @@ var $author$project$Main$update = F2(
 					return _Utils_update(
 						state,
 						{
-							d: A2(move_player_up, state.d, i)
+							c: A2(move_player_up, state.c, i)
 						});
 				default:
 					var i = action.a;
 					return _Utils_update(
 						state,
 						{
-							d: A2(move_player_down, state.d, i)
+							c: A2(move_player_down, state.c, i)
 						});
 			}
 		}();
@@ -9950,7 +9971,7 @@ var $author$project$Main$list_editable_players = function (l) {
 					_List_fromArray(
 						[
 							$elm$html$Html$text(
-							$author$project$Types$Text$player_name_text(player.R) + (' (' + ($author$project$Types$Text$player_initials_text(player.S) + ')')))
+							$author$project$Types$Text$player_name_text(player.S) + (' (' + ($author$project$Types$Text$player_initials_text(player.R) + ')')))
 						])),
 					A2(
 					$elm$html$Html$td,
@@ -10093,7 +10114,7 @@ var $author$project$Main$render_edit_players = F3(
 									$elm$html$Html$text('Players')
 								]))
 						]),
-					$author$project$Main$list_editable_players(state.d))));
+					$author$project$Main$list_editable_players(state.c))));
 	});
 var $author$project$Types$EndGame = {$: 5};
 var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
@@ -10418,6 +10439,31 @@ var $author$project$Main$render_board = function () {
 				miss,
 				_Utils_ap(end_turn, number_ring))));
 }();
+var $author$project$Main$append_to_name = F3(
+	function (l, s, mid) {
+		var unwrap = function (_v1) {
+			var x = _v1;
+			return x;
+		};
+		var name = function (id) {
+			return A3(
+				$elm$core$List$foldr,
+				F2(
+					function (p, acc) {
+						return _Utils_eq(p.z, id) ? unwrap(p.S) : acc;
+					}),
+				'?????',
+				l);
+		};
+		if (!mid.$) {
+			var id = mid.a;
+			return _Utils_ap(
+				name(id),
+				s);
+		} else {
+			return '?????' + s;
+		}
+	});
 var $author$project$Game$current_player_id = function (g) {
 	switch (g.$) {
 		case 0:
@@ -10458,26 +10504,6 @@ var $author$project$Game$current_player_id = function (g) {
 };
 var $author$project$Main$render_current_player_name = F2(
 	function (gs, l) {
-		var find_name = function (mid) {
-			if (!mid.$) {
-				var id = mid.a;
-				var _v1 = $elm$core$List$head(
-					A2(
-						$elm$core$List$filter,
-						function (p) {
-							return _Utils_eq(p.z, id);
-						},
-						l));
-				if (_v1.$ === 1) {
-					return '????? is throwing.';
-				} else {
-					var p = _v1.a;
-					return $author$project$Types$Text$player_name_text(p.R) + ' is throwing.';
-				}
-			} else {
-				return '????? is throwing.';
-			}
-		};
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
@@ -10487,90 +10513,93 @@ var $author$project$Main$render_current_player_name = F2(
 			_List_fromArray(
 				[
 					$elm$html$Html$text(
-					find_name(
+					A3(
+						$author$project$Main$append_to_name,
+						l,
+						' is throwing.',
 						$author$project$Game$current_player_id(gs)))
 				]));
 	});
 var $author$project$Types$Text$sub_hit_text = function (s) {
 	switch (s) {
 		case 0:
-			return 'Missed';
+			return '';
 		case 1:
-			return 'Single';
+			return '\u2802';
 		case 2:
-			return 'Double';
+			return '\u2805';
 		default:
-			return 'Triple';
+			return '\u2807';
 	}
 };
 var $author$project$Types$Text$hit_text = function (h) {
 	switch (h.$) {
 		case 0:
-			return 'Miss';
+			return '\u2297';
 		case 1:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '1');
+			return '\u2460' + $author$project$Types$Text$sub_hit_text(s);
 		case 2:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '2');
+			return '\u2461' + $author$project$Types$Text$sub_hit_text(s);
 		case 3:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '3');
+			return '\u2462' + $author$project$Types$Text$sub_hit_text(s);
 		case 4:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '4');
+			return '\u2463' + $author$project$Types$Text$sub_hit_text(s);
 		case 5:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '5');
+			return '\u2464' + $author$project$Types$Text$sub_hit_text(s);
 		case 6:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '6');
+			return '\u2465' + $author$project$Types$Text$sub_hit_text(s);
 		case 7:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '7');
+			return '\u2466' + $author$project$Types$Text$sub_hit_text(s);
 		case 8:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '8');
+			return '\u2467' + $author$project$Types$Text$sub_hit_text(s);
 		case 9:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '9');
+			return '\u2468' + $author$project$Types$Text$sub_hit_text(s);
 		case 10:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '10');
+			return '\u2469' + $author$project$Types$Text$sub_hit_text(s);
 		case 11:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '11');
+			return '\u246A' + $author$project$Types$Text$sub_hit_text(s);
 		case 12:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '12');
+			return '\u246B' + $author$project$Types$Text$sub_hit_text(s);
 		case 13:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '13');
+			return '\u246C' + $author$project$Types$Text$sub_hit_text(s);
 		case 14:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '14');
+			return '\u246D' + $author$project$Types$Text$sub_hit_text(s);
 		case 15:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '15');
+			return '\u246E' + $author$project$Types$Text$sub_hit_text(s);
 		case 16:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '16');
+			return '\u246F' + $author$project$Types$Text$sub_hit_text(s);
 		case 17:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '17');
+			return '\u2470' + $author$project$Types$Text$sub_hit_text(s);
 		case 18:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '18');
+			return '\u2471' + $author$project$Types$Text$sub_hit_text(s);
 		case 19:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '19');
+			return '\u2472' + $author$project$Types$Text$sub_hit_text(s);
 		case 20:
 			var s = h.a;
-			return $author$project$Types$Text$sub_hit_text(s) + (' ' + '20');
+			return '\u2473' + $author$project$Types$Text$sub_hit_text(s);
 		case 21:
-			return 'Bull';
+			return '\u24B7';
 		default:
-			return 'Double Bull';
+			return '\u2805\u24B7';
 	}
 };
 var $author$project$Main$render_hits = function (hits) {
@@ -10579,7 +10608,7 @@ var $author$project$Main$render_hits = function (hits) {
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('col-4')
+					$elm$html$Html$Attributes$class('col-4 text-center')
 				]),
 			_List_fromArray(
 				[
@@ -10640,54 +10669,55 @@ var $author$project$Types$TossModalCancel = {$: 14};
 var $author$project$Types$TossModalSelect = function (a) {
 	return {$: 13, a: a};
 };
+var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $author$project$Types$Text$short_hit_text = function (h) {
 	switch (h.$) {
 		case 0:
-			return 'Miss';
+			return '\u2297';
 		case 1:
-			return '1';
+			return '\u2460';
 		case 2:
-			return '2';
+			return '\u2461';
 		case 3:
-			return '3';
+			return '\u2462';
 		case 4:
-			return '4';
+			return '\u2463';
 		case 5:
-			return '5';
+			return '\u2464';
 		case 6:
-			return '6';
+			return '\u2465';
 		case 7:
-			return '7';
+			return '\u2466';
 		case 8:
-			return '8';
+			return '\u2467';
 		case 9:
-			return '9';
+			return '\u2468';
 		case 10:
-			return '10';
+			return '\u2469';
 		case 11:
-			return '11';
+			return '\u246A';
 		case 12:
-			return '12';
+			return '\u246B';
 		case 13:
-			return '13';
+			return '\u246C';
 		case 14:
-			return '14';
+			return '\u246D';
 		case 15:
-			return '15';
+			return '\u246E';
 		case 16:
-			return '16';
+			return '\u246F';
 		case 17:
-			return '17';
+			return '\u2470';
 		case 18:
-			return '18';
+			return '\u2471';
 		case 19:
-			return '19';
+			return '\u2472';
 		case 20:
-			return '20';
+			return '\u2473';
 		case 21:
-			return 'Bull';
+			return '\u24B7';
 		default:
-			return 'Double Bull';
+			return '\u2805\u24B7';
 	}
 };
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
@@ -10860,8 +10890,14 @@ var $author$project$Main$render_modal = function (modal) {
 													]),
 												_List_fromArray(
 													[
-														$elm$html$Html$text(
-														$author$project$Types$Text$short_hit_text(h))
+														A2(
+														$elm$html$Html$h1,
+														_List_Nil,
+														_List_fromArray(
+															[
+																$elm$html$Html$text(
+																$author$project$Types$Text$short_hit_text(h))
+															]))
 													]))
 											])),
 										A2(
@@ -11271,7 +11307,13 @@ var $author$project$Main$render_modal = function (modal) {
 												]),
 											_List_fromArray(
 												[
-													$elm$html$Html$text('Finish Turn')
+													A2(
+													$elm$html$Html$h1,
+													_List_Nil,
+													_List_fromArray(
+														[
+															$elm$html$Html$text('Finish Turn')
+														]))
 												]))
 										])),
 									A2(
@@ -11348,6 +11390,609 @@ var $author$project$Main$render_modal = function (modal) {
 		return _List_Nil;
 	}
 };
+var $author$project$Main$player_initials = F2(
+	function (l, pid) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (p, acc) {
+					return _Utils_eq(pid, p.z) ? p.R : acc;
+				}),
+			'??',
+			l);
+	});
+var $author$project$Main$render_atc = F3(
+	function (lp, c, l) {
+		var hits_to_string = function (hl) {
+			return A2(
+				$elm$core$String$join,
+				' ',
+				A3(
+					$elm$core$List$foldl,
+					F2(
+						function (h, acc) {
+							return A2(
+								$elm$core$List$cons,
+								$author$project$Types$Text$hit_text(h),
+								acc);
+						}),
+					_List_Nil,
+					hl));
+		};
+		var row = F2(
+			function (i, _v1) {
+				var pid = _v1.a;
+				var hl = _v1.b;
+				return A2(
+					$elm$html$Html$tr,
+					_Utils_eq(i, c) ? _List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('table-info')
+						]) : _List_Nil,
+					A2(
+						$elm$core$List$cons,
+						A2(
+							$elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									function (_v0) {
+										var x = _v0;
+										return x;
+									}(
+										A2($author$project$Main$player_initials, lp, pid)))
+								])),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text(
+										hits_to_string(hl))
+									]))
+							])));
+			});
+		return A2(
+			$elm$html$Html$table,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('table')
+				]),
+			A2($elm$core$List$indexedMap, row, l));
+	});
+var $elm$core$Tuple$second = function (_v0) {
+	var y = _v0.b;
+	return y;
+};
+var $author$project$Main$render_atc_180 = F3(
+	function (lp, c, l) {
+		var unpack = function (_v4) {
+			var s = _v4;
+			return s;
+		};
+		var sum_scores = function (sl) {
+			return A3(
+				$elm$core$List$foldr,
+				F2(
+					function (_v2, _v3) {
+						var a = _v2;
+						var b = _v3;
+						return a + b;
+					}),
+				0,
+				sl);
+		};
+		var hits_to_string = function (hl) {
+			return A2(
+				$elm$core$String$join,
+				' ',
+				A3(
+					$elm$core$List$foldl,
+					F2(
+						function (h, acc) {
+							return A2(
+								$elm$core$List$cons,
+								$author$project$Types$Text$hit_text(h),
+								acc);
+						}),
+					_List_Nil,
+					hl));
+		};
+		var row = F2(
+			function (i, _v1) {
+				var pid = _v1.a;
+				var hsl = _v1.b;
+				return A2(
+					$elm$html$Html$tr,
+					_Utils_eq(i, c) ? _List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('table-info')
+						]) : _List_Nil,
+					A2(
+						$elm$core$List$cons,
+						A2(
+							$elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									function (_v0) {
+										var x = _v0;
+										return x;
+									}(
+										A2($author$project$Main$player_initials, lp, pid)))
+								])),
+						A2(
+							$elm$core$List$cons,
+							A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text(
+										$elm$core$String$fromInt(
+											unpack(
+												sum_scores(
+													A2($elm$core$List$map, $elm$core$Tuple$second, hsl)))))
+									])),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$td,
+									_List_Nil,
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											hits_to_string(
+												A2($elm$core$List$map, $elm$core$Tuple$first, hsl)))
+										]))
+								]))));
+			});
+		return A2(
+			$elm$html$Html$table,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('table')
+				]),
+			A2($elm$core$List$indexedMap, row, l));
+	});
+var $author$project$Main$render_bbl = F4(
+	function (lp, c, _v0, l) {
+		var i = _v0;
+		var inning_score = F2(
+			function (x, _v5) {
+				var s = _v5;
+				return $elm$core$String$fromInt(
+					A3(
+						$elm$core$List$foldl,
+						F2(
+							function (_v4, acc) {
+								var y = _v4.a;
+								var z = _v4.c;
+								return _Utils_eq(y, x) ? z : acc;
+							}),
+						0,
+						s));
+			});
+		var player_inning = F2(
+			function (x, _v3) {
+				var s = _v3.b;
+				return A2(
+					$elm$html$Html$td,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							A2(inning_score, x, s))
+						]));
+			});
+		var inning = function (x) {
+			return A2(
+				$elm$html$Html$tr,
+				_List_Nil,
+				_Utils_ap(
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$td,
+							_Utils_eq(i, x) ? _List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('table-info')
+								]) : _List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									$elm$core$String$fromInt(x))
+								]))
+						]),
+					A2(
+						$elm$core$List$map,
+						player_inning(x),
+						l)));
+		};
+		var innings = A2(
+			$elm$core$List$map,
+			inning,
+			A2(
+				$elm$core$List$range,
+				1,
+				A2($elm$core$Basics$max, 9, i)));
+		var hdr = _List_fromArray(
+			[
+				A2(
+				$elm$html$Html$tr,
+				_List_Nil,
+				_Utils_ap(
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text('IN')
+								]))
+						]),
+					A2(
+						$elm$core$List$indexedMap,
+						F2(
+							function (x, _v1) {
+								var pid = _v1.a;
+								return A2(
+									$elm$html$Html$td,
+									_Utils_eq(c, x) ? _List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('table-info')
+										]) : _List_Nil,
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											function (_v2) {
+												var y = _v2;
+												return y;
+											}(
+												A2($author$project$Main$player_initials, lp, pid)))
+										]));
+							}),
+						l)))
+			]);
+		return A2(
+			$elm$html$Html$table,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('table')
+				]),
+			_Utils_ap(hdr, innings));
+	});
+var $author$project$Main$render_ckt = F3(
+	function (lp, c, l) {
+		var slice = function (x) {
+			switch (x) {
+				case 0:
+					return '';
+				case 1:
+					return '\u002D';
+				case 2:
+					return '\u002B';
+				case 3:
+					return '\u2295';
+				default:
+					return '\u229B';
+			}
+		};
+		var hdr = _List_fromArray(
+			[
+				A2(
+				$elm$html$Html$tr,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2($elm$html$Html$td, _List_Nil, _List_Nil),
+						A2(
+						$elm$html$Html$td,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('\u2473')
+							])),
+						A2(
+						$elm$html$Html$td,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('\u2472')
+							])),
+						A2(
+						$elm$html$Html$td,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('\u2471')
+							])),
+						A2(
+						$elm$html$Html$td,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('\u2470')
+							])),
+						A2(
+						$elm$html$Html$td,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('\u246F')
+							])),
+						A2(
+						$elm$html$Html$td,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('\u246E')
+							])),
+						A2(
+						$elm$html$Html$td,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('\u24B7')
+							])),
+						A2($elm$html$Html$td, _List_Nil, _List_Nil)
+					]))
+			]);
+		var extract = function (_v2) {
+			var s = _v2;
+			return $elm$core$String$fromInt(s);
+		};
+		var row = F2(
+			function (i, _v1) {
+				var pid = _v1.a;
+				var s = _v1.b;
+				return A2(
+					$elm$html$Html$tr,
+					_Utils_eq(i, c) ? _List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('table-info')
+						]) : _List_Nil,
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									function (_v0) {
+										var x = _v0;
+										return x;
+									}(
+										A2($author$project$Main$player_initials, lp, pid)))
+								])),
+							A2(
+							$elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									slice(s.o))
+								])),
+							A2(
+							$elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									slice(s.n))
+								])),
+							A2(
+							$elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									slice(s.m))
+								])),
+							A2(
+							$elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									slice(s.l))
+								])),
+							A2(
+							$elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									slice(s.k))
+								])),
+							A2(
+							$elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									slice(s.j))
+								])),
+							A2(
+							$elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									slice(s.p))
+								])),
+							A2(
+							$elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									extract(s.a))
+								]))
+						]));
+			});
+		return A2(
+			$elm$html$Html$table,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('table')
+				]),
+			_Utils_ap(
+				hdr,
+				A2($elm$core$List$indexedMap, row, l)));
+	});
+var $author$project$Main$render_ctd = F3(
+	function (lp, c, l) {
+		var hits_to_string = function (hl) {
+			return A2(
+				$elm$core$String$join,
+				' ',
+				A3(
+					$elm$core$List$foldl,
+					F2(
+						function (h, acc) {
+							return A2(
+								$elm$core$List$cons,
+								$author$project$Types$Text$hit_text(h),
+								acc);
+						}),
+					_List_Nil,
+					hl));
+		};
+		var row = F2(
+			function (i, _v1) {
+				var pid = _v1.a;
+				var hl = _v1.b;
+				return A2(
+					$elm$html$Html$tr,
+					_Utils_eq(i, c) ? _List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('table-info')
+						]) : _List_Nil,
+					A2(
+						$elm$core$List$cons,
+						A2(
+							$elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									function (_v0) {
+										var x = _v0;
+										return x;
+									}(
+										A2($author$project$Main$player_initials, lp, pid)))
+								])),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text(
+										hits_to_string(hl))
+									]))
+							])));
+			});
+		return A2(
+			$elm$html$Html$table,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('table')
+				]),
+			A2($elm$core$List$indexedMap, row, l));
+	});
+var $author$project$Main$render_numbers = F3(
+	function (lp, c, l) {
+		var row = F2(
+			function (i, _v1) {
+				var pid = _v1.a;
+				var s = _v1.b;
+				return A2(
+					$elm$html$Html$tr,
+					_Utils_eq(i, c) ? _List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('table-info')
+						]) : _List_Nil,
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									function (_v0) {
+										var x = _v0;
+										return x;
+									}(
+										A2($author$project$Main$player_initials, lp, pid)))
+								])),
+							A2(
+							$elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									$elm$core$String$fromInt(s))
+								]))
+						]));
+			});
+		return A2(
+			$elm$html$Html$table,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('table')
+				]),
+			A2($elm$core$List$indexedMap, row, l));
+	});
+var $author$project$Main$render_scores = F2(
+	function (lp, g) {
+		switch (g.$) {
+			case 0:
+				return $elm$html$Html$text('No Game');
+			case 1:
+				var c = g.c;
+				var l = g.e;
+				return A3($author$project$Main$render_numbers, lp, c, l);
+			case 2:
+				var c = g.c;
+				var l = g.e;
+				return A3($author$project$Main$render_numbers, lp, c, l);
+			case 3:
+				var c = g.c;
+				var l = g.e;
+				return A3($author$project$Main$render_numbers, lp, c, l);
+			case 4:
+				var c = g.b;
+				var l = g.d;
+				return A3($author$project$Main$render_atc, lp, c, l);
+			case 5:
+				var c = g.b;
+				var l = g.d;
+				return A3($author$project$Main$render_atc_180, lp, c, l);
+			case 6:
+				var c = g.b;
+				var i = g.d;
+				var l = g.e;
+				return A4($author$project$Main$render_bbl, lp, c, i, l);
+			case 7:
+				var c = g.b;
+				var l = g.d;
+				return A3($author$project$Main$render_ctd, lp, c, l);
+			default:
+				var c = g.b;
+				var l = g.d;
+				return A3($author$project$Main$render_ckt, lp, c, l);
+		}
+	});
 var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
 var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
 var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
@@ -11405,7 +12050,7 @@ var $author$project$Main$render_game = F2(
 										]))
 								]))
 						])),
-					A2($author$project$Main$render_current_player_name, state.b, state.d),
+					A2($author$project$Main$render_current_player_name, state.b, state.c),
 					$author$project$Main$render_hits(
 					$author$project$Game$hits(state.b)),
 					A2(
@@ -11425,7 +12070,8 @@ var $author$project$Main$render_game = F2(
 									$elm$svg$Svg$Attributes$viewBox('0 0 100 100')
 								]),
 							$author$project$Main$render_board)
-						]))
+						])),
+					A2($author$project$Main$render_scores, state.c, state.b)
 				]),
 			$author$project$Main$render_modal(modal));
 	});
@@ -11604,7 +12250,7 @@ var $author$project$Types$Dom$game_name = function (mode) {
 	}
 };
 var $author$project$Main$render_home = function (state) {
-	var start_game = (($elm$core$List$length(state.d) > 0) && ((!_Utils_eq(state.b, $author$project$Types$NoGame)) && (!state.F))) ? _List_fromArray(
+	var start_game = (($elm$core$List$length(state.c) > 0) && ((!_Utils_eq(state.b, $author$project$Types$NoGame)) && (!state.F))) ? _List_fromArray(
 		[
 			A2(
 			$elm$html$Html$li,
@@ -11650,7 +12296,7 @@ var $author$project$Main$render_home = function (state) {
 						]))
 				]))
 		]) : _List_Nil;
-	var resume_game = (($elm$core$List$length(state.d) > 0) && ((!_Utils_eq(state.b, $author$project$Types$NoGame)) && state.F)) ? _List_fromArray(
+	var resume_game = (($elm$core$List$length(state.c) > 0) && ((!_Utils_eq(state.b, $author$project$Types$NoGame)) && state.F)) ? _List_fromArray(
 		[
 			A2(
 			$elm$html$Html$li,
@@ -11691,7 +12337,7 @@ var $author$project$Main$render_home = function (state) {
 					_List_fromArray(
 						[
 							$elm$html$Html$text(
-							$author$project$Types$Text$player_name_text(p.R))
+							$author$project$Types$Text$player_name_text(p.S))
 						])),
 					A2(
 					$elm$html$Html$div,
@@ -11702,11 +12348,11 @@ var $author$project$Main$render_home = function (state) {
 					_List_fromArray(
 						[
 							$elm$html$Html$text(
-							$author$project$Types$Text$player_initials_text(p.S))
+							$author$project$Types$Text$player_initials_text(p.R))
 						]))
 				]));
 	};
-	var players = A2($elm$core$List$map, player, state.d);
+	var players = A2($elm$core$List$map, player, state.c);
 	return _List_fromArray(
 		[
 			A2(

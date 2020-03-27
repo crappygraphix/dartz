@@ -57,7 +57,7 @@ current_player_id g =
 player_added : List Player -> GameState -> GameState
 player_added l g =
   let
-    find pid sl = List.foldl (\(spid, s) acc -> if spid == pid && acc == Nothing then Just (spid, s) else Nothing) Nothing sl
+    find pid sl = List.foldl (\(spid, s) acc -> if spid == pid && acc == Nothing then Just (spid, s) else acc) Nothing sl
     add_missing f s p = case find p.id s of
       Nothing -> f p
       Just v -> v
@@ -196,9 +196,7 @@ finalize_turn state =
 find_by_id : PlayerID -> List (PlayerID, a) -> Maybe a
 find_by_id p l =
   let
-    check (i, a) acc = case acc of
-      Nothing -> if p == i then Just a else Nothing 
-      v -> v
+    check (i, a) acc = if p == i && acc == Nothing then Just a else acc 
   in
     List.foldr check Nothing l
   
@@ -449,16 +447,16 @@ baseball v c hl (Inning i) sl =
       SubMissed -> 0
 
     points_for_inning h acc = case (i, h) of
-      (1, Hit1 s) -> points_for_sub s
-      (2, Hit2 s) -> points_for_sub s
-      (3, Hit3 s) -> points_for_sub s
-      (4, Hit4 s) -> points_for_sub s
-      (5, Hit5 s) -> points_for_sub s
-      (6, Hit6 s) -> points_for_sub s
-      (7, Hit7 s) -> points_for_sub s
-      (8, Hit8 s) -> points_for_sub s
-      (9, Hit9 s) -> points_for_sub s
-      _ -> 0
+      (1, Hit1 s) -> acc + points_for_sub s
+      (2, Hit2 s) -> acc + points_for_sub s
+      (3, Hit3 s) -> acc + points_for_sub s
+      (4, Hit4 s) -> acc + points_for_sub s
+      (5, Hit5 s) -> acc + points_for_sub s
+      (6, Hit6 s) -> acc + points_for_sub s
+      (7, Hit7 s) -> acc + points_for_sub s
+      (8, Hit8 s) -> acc + points_for_sub s
+      (9, Hit9 s) -> acc + points_for_sub s
+      _ -> acc
 
     update_inning_score s (Inning i2, s2, Score sc2) acc =
       if i == i2
@@ -481,9 +479,9 @@ baseball v c hl (Inning i) sl =
           x -> apply_inning_points l x
 
     points_for_tie h acc = case h of
-      HitBullseye -> 1
-      HitDoubleBullseye -> 2
-      _ -> 0
+      HitBullseye -> acc + 1
+      HitDoubleBullseye -> acc + 2
+      _ -> acc
     
     calc_tie_game il =
       List.foldr points_for_tie 0 hl |>
@@ -595,6 +593,13 @@ cricket c hl sl =
         [ ( x == DoubleHit, set cs a SliceOpen)
         -- ^ Double Tally on a Single Opens
         , ( x == TripleHit, set_with_score pid cs a SliceOpen (hit_base_points h))
+         -- ^ Triple Tally on a Double that isn't closed awards points
+        ] )
+      , (get cs a  == Slice2, cascade (set cs a SliceOpen)
+        -- ^ Single Tally on a Double
+        [ ( x == DoubleHit, set_with_score pid cs a SliceOpen (hit_base_points h))
+        -- ^ Double Tally on a Double that isn't closed awards points
+        , ( x == TripleHit, set_with_score pid cs a SliceOpen (2 * hit_base_points h))
          -- ^ Triple Tally on a Double that isn't closed awards points
         ] )
       , (get cs a == SliceOpen, set_with_score pid cs a SliceOpen (hit_points h))
