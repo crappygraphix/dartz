@@ -127,13 +127,13 @@ view state =
   let 
     block_scroll modal =
       case modal of
-         Just _ -> div [ class "modal-open" ]
-         Nothing -> div []
+         Just _ -> div [ class "modal-open main" ]
+         Nothing -> div [ class "main" ]
     render = 
       case state.screen of
-        Home -> div [] <| render_home state
-        EditPlayers np ni -> div [] <| render_edit_players state np ni
-        SelectGame -> div [] <| render_select_game state.game
+        Home -> div [ class "main" ] <| render_home state
+        EditPlayers np ni -> div [ class "main" ] <| render_edit_players state np ni
+        SelectGame -> div [ class "main" ] <| render_select_game state.game
         PlayGame modal -> block_scroll modal <| render_game state modal
   in
     render    
